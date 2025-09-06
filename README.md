@@ -11,6 +11,8 @@ Contributions are welcome. But please note that before raising a pull request, m
 
 Contributions are welcome. But please note that before raising a pull request, make sure to open an issue first. This way, we can streamline the discussions on the issue & proposed solutions and keep things organized. PRs without any issue will be closed without any consideration.
 
+Contributions are welcome. But please note that before raising a pull request, make sure to open an issue first. This way, we can streamline the discussions on the issue & proposed solutions and keep things organized. PRs without any issue will be closed without any consideration.
+
 ## Local setup
 
 In order to start, please read the following documentations:
