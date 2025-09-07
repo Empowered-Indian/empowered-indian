@@ -386,6 +386,7 @@ a:focus-visible {
 .btn-secondary:hover:not(:disabled) {
   background: var(--primary-50);
   border-color: var(--primary-300);
+  color:var(--primary-color);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
