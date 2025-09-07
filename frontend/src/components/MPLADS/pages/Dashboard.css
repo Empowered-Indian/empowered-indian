@@ -326,6 +326,7 @@
 
 .action-btn:hover:not(:disabled) {
   background-color: #2a4e7c;
+  color: white;
 }
 
 .action-btn:disabled {
