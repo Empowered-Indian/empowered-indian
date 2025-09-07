@@ -17,6 +17,8 @@ In order to start, please read the following documentations:
 - FE: [README](frontend/README.md) [CONTRIBUTING](frontend/CONTRIBUTING.md)
 - BE: [README](backend/README.md) [CONTRIBUTING](backend/CONTRIBUTING.md)
 
+Make sure to install all the recommended extensions mentioned in the .vscode/extensions.json
+
 ## License
 
 - AGPL-3.0 — see [LICENSE](./LICENSE).
