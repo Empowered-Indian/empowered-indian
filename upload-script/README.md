@@ -1,31 +1,54 @@
-# Empowered Indian
+Empowered Indian — MPLADS Upload Scripts
 
-This is the monorepo we'll be using to contain all the code related to the empowered indian platform.
+Overview
+Automation utilities to fetch, transform, and upload MPLADS data into MongoDB for the Empowered Indian platform. Designed to replace manual CSV workflows with a streamlined, API-first pipeline.
 
-Work in progress:
-- As of now, the frontend and backend components are available in their respective folders.
-- The goal is to turn into a monorepo where frontend and backend will packages sharing the same set of packages and dev tools & ergonomics.
-- We are actively gathering data on MLALADS and plan to begin development around this dataset soon.
+Quick Start
+- Requirements: Node.js 18+, access to MongoDB Atlas or local MongoDB
+- Install: `npm install`
+- Run: `npm start` (runs `basic-api-uploader.js`)
 
-Contributions are welcome. But please note that before raising a pull request, make sure to open an issue first. This way, we can streamline the discussions on the issue & proposed solutions and keep things organized. PRs without any issue will be closed without any consideration.
+Environment Variables
+Copy `.env.example` to `.env` and set values:
+- `MONGODB_URI` — Connection string (DO NOT COMMIT)
+- `DATABASE_NAME` — Target database
+- `LS_TERM` — `17` | `18` | `both` (default `both`)
 
-Contributions are welcome. But please note that before raising a pull request, make sure to open an issue first. This way, we can streamline the discussions on the issue & proposed solutions and keep things organized. PRs without any issue will be closed without any consideration.
+CLI Usage
+```bash
+cd upload-scripts
+npm start  # or npm run basic
 
-Contributions are welcome. But please note that before raising a pull request, make sure to open an issue first. This way, we can streamline the discussions on the issue & proposed solutions and keep things organized. PRs without any issue will be closed without any consideration.
+# Control Lok Sabha term scope
+node index.js --ls-term=17   # 17th Lok Sabha only
+node index.js --ls-term=18   # 18th Lok Sabha only
+node index.js --ls-term=both # both terms (default)
+```
 
-## Local setup
+What it does
+- Fetches fresh data from MPLADS API
+- Creates collections: `mps`, `expenditures`, `works_completed`, `works_recommended`, `summaries`
+- Calculates utilization rates using official MPLADS standards
+- Generates MP summaries and state-wise analytics
+- Supports 17th and 18th Lok Sabha (adds `lsTerm` to LS records; Rajya Sabha `lsTerm=null`)
 
-In order to start, please read the following documentations:
-- FE: [README](frontend/README.md) [CONTRIBUTING](frontend/CONTRIBUTING.md)
-- BE: [README](backend/README.md) [CONTRIBUTING](backend/CONTRIBUTING.md)
+Data Structure
+- `mps`: Members of Parliament
+- `expenditures`: Expenditure records
+- `works_completed`: Completed projects
+- `works_recommended`: Recommended projects
+- `summaries`: MP, state, overall aggregates
 
-Make sure to install all the recommended extensions mentioned in the .vscode/extensions.json
+Performance
+- Typical runtime: ~2 minutes; memory usage <150MB (varies by dataset)
+- Proper indexes for dashboard query performance
 
-## License
+Security
+- Never commit `.env` or credentials. Use `.env.example` as a template only.
+- Rotate any credentials previously committed and rewrite history before publishing.
 
-- AGPL-3.0 — see [LICENSE](./LICENSE).
+License
+AGPL-3.0. See `LICENSE`.
 
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Empowered-Indian/empowered-indian&type=Date)](https://star-history.com/#Empowered-Indian/empowered-indian)
-
+Code of Conduct
+See `CODE_OF_CONDUCT.md` for community expectations.
