@@ -32,7 +32,7 @@
 
 .project-tabs .tab-btn:hover {
   border-color: #3b82f6;
-  color: #3b82f6;
+  color: #fff;
 }
 
 .project-tabs .tab-btn.active {
