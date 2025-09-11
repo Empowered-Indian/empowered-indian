@@ -8,7 +8,7 @@ import MPPersonalityDistribution from '../components/Charts/MPPersonalityDistrib
 import ProjectListing from '../components/Projects/ProjectListing';
 import './StateDetail.css';
 import { formatINRCompact } from '../../../utils/formatters';
-import { buildMPSlugHuman } from '../../../utils/slug';
+import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
 import { useFilters } from '../../../contexts/FilterContext';
 
 const StateDetail = () => {
@@ -500,7 +500,7 @@ const StateDetail = () => {
                     <div key={mp.id || mp._id} className="mobile-mp-card">
                       <div className="mp-card-header">
                         <div className="mp-primary-info">
-                          <Link to={`/mplads/mps/${encodeURIComponent(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp.id || mp._id))}`} className="mp-name-link">
+                          <Link to={`/mplads/mps/${encodeURIComponent(normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp.id || mp._id)))}`} className="mp-name-link">
                             <h4>{mp.mpName || mp.name}</h4>
                           </Link>
                           <p className="mp-constituency">{mp.constituency}</p>
@@ -544,7 +544,7 @@ const StateDetail = () => {
                       {sortedMPs.map((mp) => (
                         <tr key={mp.id || mp._id}>
                           <td>
-                            <Link to={`/mplads/mps/${encodeURIComponent(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp.id || mp._id))}`} className="mp-link">
+                            <Link to={`/mplads/mps/${encodeURIComponent(normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp.id || mp._id)))}`} className="mp-link">
                               {mp.mpName || mp.name}
                             </Link>
                           </td>
