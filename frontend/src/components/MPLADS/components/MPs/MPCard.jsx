@@ -3,7 +3,7 @@ import { FiUser, FiMapPin, FiTrendingUp, FiTrendingDown, FiMinus, FiCheckCircle,
 import InfoTooltip from '../Common/InfoTooltip';
 import './MPCard.css';
 import { formatINRCompact } from '../../../../utils/formatters';
-import { buildMPSlugHuman } from '../../../../utils/slug';
+import { buildMPSlugHuman, normalizeMPSlug } from '../../../../utils/slug';
 import { useFilters } from '../../../../contexts/FilterContext';
 
 const MPCard = ({ mp, rank }) => {
@@ -35,7 +35,7 @@ const MPCard = ({ mp, rank }) => {
 
   const { filters } = useFilters();
   const mpId = mp.id || mp._id;
-  const slug = buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm });
+  const slug = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }));
   // Use utilization percentage as primary metric
   const utilizationPercentage = mp.utilizationPercentage || 0;
   const completionRate = mp.completionRate || 

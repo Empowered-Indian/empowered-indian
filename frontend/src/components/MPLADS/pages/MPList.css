@@ -104,7 +104,8 @@
 /* Controls */
 .mps-controls {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 32px;
   padding: var(--spacing-6);
@@ -169,6 +170,10 @@
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
+}
+
+.mps-controls .filter-group {
+  margin-bottom: 0;
 }
 
 .filter-group {

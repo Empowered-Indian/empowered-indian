@@ -91,9 +91,11 @@
   border-color: var(--primary-400);
 }
 
-.mp-details {
+.mp-card .mp-details {
   flex: 1;
   min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .mp-name {
@@ -523,8 +525,17 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 0.3; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
 }
 
 .efficiency-section:hover {
@@ -589,8 +600,15 @@
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 .efficiency-breakdown {
@@ -651,8 +669,13 @@
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .efficiency-fill.efficiency-high {
@@ -701,6 +724,7 @@
     transform: translateX(-10px);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -715,8 +739,15 @@
 }
 
 @keyframes pulse-icon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .payment-warning span {
@@ -819,51 +850,51 @@
     padding: var(--spacing-4);
     border-radius: var(--radius-xl);
   }
-  
+
   .mp-name {
     font-size: var(--text-lg);
   }
-  
+
   .mp-avatar {
     width: 48px;
     height: 48px;
     font-size: var(--text-xl);
   }
-  
+
   .stat-row {
     grid-template-columns: 1fr;
     gap: var(--spacing-3);
     margin-bottom: var(--spacing-4);
   }
-  
+
   .works-section {
     grid-template-columns: 1fr;
     gap: var(--spacing-2);
   }
-  
+
   .utilization-section {
     padding: var(--spacing-3);
   }
-  
+
   .efficiency-section {
     padding: var(--spacing-3);
   }
-  
+
   .efficiency-breakdown {
     grid-template-columns: 1fr;
     gap: var(--spacing-2);
   }
-  
+
   .payment-warning {
     padding: var(--spacing-2);
     font-size: var(--text-xs);
   }
-  
+
   .mps-list .mp-card {
     grid-template-columns: 1fr;
     gap: var(--spacing-4);
   }
-  
+
   .mps-list .mp-stats {
     flex-direction: column;
     gap: var(--spacing-4);
@@ -876,26 +907,26 @@
     padding: var(--spacing-3);
     border-radius: var(--radius-lg);
   }
-  
+
   .mp-card-header {
     flex-direction: column;
     gap: var(--spacing-3);
     align-items: stretch;
   }
-  
+
   .mp-info {
     gap: var(--spacing-3);
   }
-  
+
   .mp-rank {
     align-self: flex-end;
     min-width: 64px;
   }
-  
+
   .mp-name {
     font-size: var(--text-base);
   }
-  
+
   .mp-avatar {
     width: 44px;
     height: 44px;
@@ -905,6 +936,7 @@
 
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
+
   .mp-card:hover,
   .mp-card:hover .mp-avatar,
   .mp-card:hover .mp-rank,
@@ -913,7 +945,7 @@
   .works-stat:hover {
     transform: none;
   }
-  
+
   .utilization-fill::after {
     animation: none;
   }

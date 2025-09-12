@@ -5,6 +5,7 @@ This is the monorepo we'll be using to contain all the code related to the empow
 Work in progress:
 - As of now, the frontend and backend components are available in their respective folders.
 - The goal is to turn into a monorepo where frontend and backend will be apps sharing the same set of packages and dev tools & ergonomics.
+- We are actively gathering data on MLALADS and plan to begin development around this dataset soon.
 
 Initial plan is to have something like this,
 
@@ -34,3 +35,8 @@ In order to start, please read the following documentations:
 ## License
 
 - AGPL-3.0 — see [LICENSE](./LICENSE).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Empowered-Indian/empowered-indian&type=Date)](https://star-history.com/#Empowered-Indian/empowered-indian)
+

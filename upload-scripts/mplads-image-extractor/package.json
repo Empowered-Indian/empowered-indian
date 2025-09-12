@@ -1,0 +1,27 @@
+{
+  "name": "mplads-image-extractor",
+  "version": "1.0.0",
+  "description": "Extract and store MPLADS work images with concurrent processing",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node src/test.js",
+    "health": "node -e \"console.log('Health check passed')\"",
+    "postinstall": "echo 'Dependencies installed successfully'"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.400.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0",
+    "mongoose": "^8.0.0",
+    "sharp": "^0.32.0",
+    "p-limit": "^4.0.0",
+    "progress": "^2.0.3",
+    "winston": "^3.10.0"
+  },
+  "keywords": ["mplads", "images", "government", "transparency", "api"],
+  "author": "Empowered Indian Platform",
+  "license": "MIT"
+}

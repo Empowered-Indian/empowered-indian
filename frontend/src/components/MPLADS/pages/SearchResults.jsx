@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
 import { useMPSummary } from '../../../hooks/useApi';
-import { buildMPSlugHuman } from '../../../utils/slug';
+import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
 import { useFilters } from '../../../contexts/FilterContext';
 import SearchBar from '../components/Search/SearchBar';
 import FilterPanel from '../components/Filters/FilterPanel';
@@ -108,7 +108,7 @@ const SearchResults = () => {
                 {results.map((mp) => (
                   <Link 
                     key={mp._id || mp.id} 
-                    to={`/mplads/mps/${encodeURIComponent(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp._id || mp.id))}`}
+                    to={`/mplads/mps/${encodeURIComponent(normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp._id || mp.id)))}`}
                     className="result-card"
                   >
                     <div className="result-header">

@@ -8,7 +8,7 @@ import InfoTooltip from '../components/Common/InfoTooltip';
 import ProjectListing from '../components/Projects/ProjectListing';
 import SkeletonLoader from '../components/Common/SkeletonLoader';
 import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling.jsx';
-import { getIdFromSlug, isBareObjectId, buildMPSlugHuman, buildMPSlugCandidates } from '../../../utils/slug';
+import { getIdFromSlug, isBareObjectId, buildMPSlugHuman, buildMPSlugCandidates, normalizeMPSlug } from '../../../utils/slug';
 import { summaryAPI } from '../../../services/api';
 import { useFilters } from '../../../contexts/FilterContext';
 import './MPDetail.css';
@@ -88,7 +88,7 @@ const MPDetail = () => {
     if (!mp || mpLoading) return;
     // If URL has an ID (either as bare or trailing), canonicalize to human slug without ID
     if (idInParam || bareId) {
-      const human = buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm });
+      const human = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }));
       if (human) {
         // preserve the resolved id so data remains while URL updates
         if (!resolvedIdFromSlug) setResolvedIdFromSlug(idInParam || bareId);
@@ -107,7 +107,7 @@ const MPDetail = () => {
   useEffect(() => {
     if (effectiveId) return; // already have id
     if (!mpId || idInParam || bareId) return; // param has an id or is empty
-    const slug = String(mpId);
+    const slug = normalizeMPSlug(String(mpId));
 
     const LS_KEY = 'mplads_slug_index';
     const readIndex = () => {
@@ -189,7 +189,7 @@ const MPDetail = () => {
         <div className="performance-summary" style={{ marginTop: 16 }}>
           <div className="performance-cards">
             {ambiguousMatches.map((m) => {
-              const slug = buildMPSlugHuman(m, { lsTerm: filters?.lsTerm });
+              const slug = normalizeMPSlug(buildMPSlugHuman(m, { lsTerm: filters?.lsTerm }));
               const id = m._id || m.id;
               return (
                 <Link key={id} to={`/mplads/mps/${encodeURIComponent(slug)}`} className="performance-card" style={{ textDecoration: 'none' }}>

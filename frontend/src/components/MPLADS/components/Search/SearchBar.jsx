@@ -7,7 +7,7 @@ import { useDebounce } from '../../../../hooks/useDebounce';
 import { useSearchMPs } from '../../../../hooks/useApi';
 import { sanitizeInput, sanitizeForSubmission } from '../../../../utils/inputSanitization';
 import './SearchBar.css';
-import { buildMPSlugHuman } from '../../../../utils/slug';
+import { buildMPSlugHuman, normalizeMPSlug } from '../../../../utils/slug';
 
 // A lean and robust search bar built from scratch.
 // - No suggestions dropdown
@@ -72,7 +72,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
 
     const id = match?._id || match?.id;
     if (id) {
-      const slug = buildMPSlugHuman(match, { lsTerm: filters?.lsTerm }) || String(id);
+      const slug = normalizeMPSlug(buildMPSlugHuman(match, { lsTerm: filters?.lsTerm }) || String(id));
       navigate(`/mplads/mps/${encodeURIComponent(slug)}`);
       return true;
     }
@@ -111,7 +111,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
         const s = suggestions[activeIndex];
         const id = s?._id || s?.id;
         if (id) {
-          const slug = buildMPSlugHuman(s, { lsTerm: filters?.lsTerm }) || String(id);
+          const slug = normalizeMPSlug(buildMPSlugHuman(s, { lsTerm: filters?.lsTerm }) || String(id));
           navigate(`/mplads/mps/${encodeURIComponent(slug)}`);
           setOpen(false);
           return;
@@ -184,7 +184,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
                     const id = s?._id || s?.id;
                     if (id) {
                       trackEngagement('mp_profile', id, 'suggestion_click');
-                      const slug = buildMPSlugHuman(s, { lsTerm: filters?.lsTerm }) || String(id);
+                      const slug = normalizeMPSlug(buildMPSlugHuman(s, { lsTerm: filters?.lsTerm }) || String(id));
                       navigate(`/mplads/mps/${encodeURIComponent(slug)}`);
                       setOpen(false);
                     }

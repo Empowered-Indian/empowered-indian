@@ -20,6 +20,68 @@ export const slugify = (str = '') => {
     .replace(/-{2,}/g, '-');
 };
 
+// Normalize an MP slug by ensuring that any house/term token appears at most once,
+// and only as a single suffix at the end of the slug.
+// Examples:
+//  - "narendra-modi-varanasi-17th-lok-sabha-17th-lok-sabha" => "narendra-modi-varanasi-17th-lok-sabha"
+//  - "abc-rajya-sabha-rajya-sabha" => "abc-rajya-sabha"
+//  - "abc-lok-sabha" => "abc-lok-sabha"
+export const normalizeMPSlug = (slug = '') => {
+  if (!slug) return '';
+  // First, ensure a consistent hyphenated, lowercase form
+  const s = slugify(String(slug));
+  if (!s) return s;
+
+  const parts = s.split('-').filter(Boolean);
+  const base = [];
+
+  let foundRajyaSabha = false;
+  let foundGenericLokSabha = false;
+  let foundOrdinalLokSabha = null; // e.g., "17th-lok-sabha"
+
+  const isOrdinal = (tok) => /^(\d+)(st|nd|rd|th)$/.test(tok);
+
+  for (let i = 0; i < parts.length; ) {
+    const tok = parts[i];
+
+    // Match ordinal-lok-sabha (e.g., 17th-lok-sabha)
+    if (isOrdinal(tok) && parts[i + 1] === 'lok' && parts[i + 2] === 'sabha') {
+      foundOrdinalLokSabha = `${tok}-lok-sabha`;
+      i += 3;
+      continue;
+    }
+
+    // Match generic lok-sabha
+    if (tok === 'lok' && parts[i + 1] === 'sabha') {
+      foundGenericLokSabha = true;
+      i += 2;
+      continue;
+    }
+
+    // Match rajya-sabha
+    if (tok === 'rajya' && parts[i + 1] === 'sabha') {
+      foundRajyaSabha = true;
+      i += 2;
+      continue;
+    }
+
+    // Otherwise, it's part of the base slug
+    base.push(tok);
+    i += 1;
+  }
+
+  // Rebuild base and append exactly one suffix (if any), with this priority:
+  // ordinal-lok-sabha > generic lok-sabha > rajya-sabha
+  let normalized = base.join('-');
+  let suffix = '';
+  if (foundOrdinalLokSabha) suffix = foundOrdinalLokSabha;
+  else if (foundGenericLokSabha) suffix = 'lok-sabha';
+  else if (foundRajyaSabha) suffix = 'rajya-sabha';
+
+  if (suffix) normalized = [normalized, suffix].filter(Boolean).join('-');
+  return normalized;
+};
+
 // Build a canonical MP slug like:
 //   mp-name-constituency-state-<24hexId>
 export const buildMPSlug = (mp) => {
@@ -52,7 +114,7 @@ export const buildMPSlugHuman = (mp, opts = {}) => {
       parts.push('rajya-sabha');
     }
   }
-  return parts.filter(Boolean).join('-');
+  return normalizeMPSlug(parts.filter(Boolean).join('-'));
 };
 
 export const buildMPSlugCandidates = (mp) => {
@@ -64,7 +126,8 @@ export const buildMPSlugCandidates = (mp) => {
     candidates.add(buildMPSlugHuman(mp, { includeHouse: true, includeTerm: true, lsTerm: 18 }));
     candidates.add(buildMPSlugHuman(mp, { includeHouse: true, includeTerm: true, lsTerm: 17 }));
   }
-  return Array.from(candidates).filter(Boolean);
+  // Ensure all candidates are normalized and unique
+  return Array.from(new Set(Array.from(candidates).map((c) => normalizeMPSlug(c)))).filter(Boolean);
 };
 
 // Extract id from a slug if present (expects trailing 24-hex)

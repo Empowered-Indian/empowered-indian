@@ -386,6 +386,7 @@ a:focus-visible {
 .btn-secondary:hover:not(:disabled) {
   background: var(--primary-50);
   border-color: var(--primary-300);
+  color:var(--primary-color);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
@@ -498,6 +499,7 @@ button:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  color : white;
 }
 
 button:active:not(:disabled) {

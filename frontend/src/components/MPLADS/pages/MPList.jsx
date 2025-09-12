@@ -486,7 +486,7 @@ const MPList = () => {
             </button>
           </div>
 
-          <div className="tooltip-wrapper" style={{ display: 'inline-block' }}>
+          <div className="tooltip-wrapper">
             <button className="download-btn" disabled aria-describedby="export-disabled-tooltip">
               <FiDownload />
               Export

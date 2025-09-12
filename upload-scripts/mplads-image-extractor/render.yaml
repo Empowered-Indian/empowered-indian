@@ -1,0 +1,36 @@
+services:
+  - type: worker
+    name: mplads-image-extractor
+    env: node
+    plan: starter  # Free tier
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: mongodb-uri
+          property: connectionString
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      - key: R2_PUBLIC_DOMAIN
+        sync: false
+      - key: MPLADS_BASE_URL
+        value: https://mplads.sbi
+      - key: MPLADS_SESSION_COOKIE
+        sync: false
+      - key: BATCH_SIZE
+        value: "15"
+      - key: RATE_LIMIT_DELAY
+        value: "2000"
+      - key: MAX_CONCURRENT_WORKERS
+        value: "2"
+      - key: ENABLE_THUMBNAILS
+        value: "true"
