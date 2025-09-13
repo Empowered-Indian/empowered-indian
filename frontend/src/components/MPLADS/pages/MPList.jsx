@@ -565,7 +565,6 @@ const MPList = () => {
                 <MPCard 
                   key={mp.id || mp._id || `${mp.mpName}-${mp.constituency}-${index}`} 
                   mp={mp}
-                  rank={sortBy === 'utilizationPercentage' && sortOrder === 'desc' ? index + 1 : null}
                 />
               ))}
 
