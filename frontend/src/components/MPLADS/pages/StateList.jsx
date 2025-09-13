@@ -17,10 +17,8 @@ const StateList = () => {
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [filterRange, setFilterRange] = useState('all'); // all, high, medium, low
 
-  const { data, isLoading, error } = useStateSummary({
-    sortBy,
-    order: sortOrder
-  });
+  // Fetch once; perform filter/sort client-side to avoid extra calls
+  const { data, isLoading, error } = useStateSummary();
 
   const { filters } = useFilters();
   const periodLabel = (filters?.house || 'Lok Sabha') === 'Lok Sabha'
@@ -63,21 +61,22 @@ const StateList = () => {
     };
   }, [states]);
 
-  // Filter and sort states based on search and performance range
+  // Filter and sort states locally to avoid unnecessary API calls
   const filteredStates = useMemo(() => {
     let filtered = uniqueStates;
-    
+
     // Apply search filter
     if (searchQuery) {
-      filtered = filtered.filter(state => {
-        const stateName = state.state || state.name || '';
-        return stateName.toLowerCase().includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter((state) => {
+        const stateName = (state.state || state.name || '').toLowerCase();
+        return stateName.includes(q);
       });
     }
-    
+
     // Apply performance filter
     if (filterRange !== 'all') {
-      filtered = filtered.filter(state => {
+      filtered = filtered.filter((state) => {
         const utilization = state.utilizationPercentage || 0;
         switch (filterRange) {
           case 'high':
@@ -91,9 +90,41 @@ const StateList = () => {
         }
       });
     }
-    
-    return filtered;
-  }, [uniqueStates, searchQuery, filterRange]);
+
+    // Apply sort locally
+    const sorted = [...filtered].sort((a, b) => {
+      const getVal = (s) => {
+        switch (sortBy) {
+          case 'name':
+            return (s.state || s.name || '').toString();
+          case 'totalAllocated':
+            return Number(s.totalAllocated || 0);
+          case 'totalExpenditure':
+            return Number(s.totalExpenditure || 0);
+          case 'totalWorksCompleted':
+            return Number(s.totalWorksCompleted || 0);
+          case 'utilizationPercentage':
+          default:
+            return Number(s.utilizationPercentage || 0);
+        }
+      };
+
+      const va = getVal(a);
+      const vb = getVal(b);
+
+      if (sortBy === 'name') {
+        // String compare
+        const cmp = va.localeCompare(vb, undefined, { sensitivity: 'base' });
+        return sortOrder === 'asc' ? cmp : -cmp;
+      }
+
+      // Numeric compare
+      const cmp = va - vb;
+      return sortOrder === 'asc' ? cmp : -cmp;
+    });
+
+    return sorted;
+  }, [uniqueStates, searchQuery, filterRange, sortBy, sortOrder]);
 
   // Currency formatting handled via formatINRCompact
 
