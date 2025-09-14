@@ -641,11 +641,24 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   );
 };
 
-const ExportPdfButton = ({ filteredStates = [], meta = {}, layout = "cards" }) => {
+const ExportPdfButton = React.forwardRef(({ filteredStates = [], meta = {}, layout = "cards" }, ref) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentFilteredStates, setCurrentFilteredStates] = useState(filteredStates);
 
-  if (!filteredStates || filteredStates.length === 0) {
+  // Update the filtered states when prop changes
+  React.useEffect(() => {
+    setCurrentFilteredStates(filteredStates);
+  }, [filteredStates]);
+
+  // Expose method to update filtered states
+  React.useImperativeHandle(ref, () => ({
+    updateFilteredStates: (newStates) => {
+      setCurrentFilteredStates(newStates);
+    }
+  }));
+
+  if (!currentFilteredStates || currentFilteredStates.length === 0) {
     return (
       <button
         disabled
@@ -674,7 +687,7 @@ const ExportPdfButton = ({ filteredStates = [], meta = {}, layout = "cards" }) =
     setError(null);
     setLoading(true);
     try {
-      await generatePdfWithOptions(filteredStates, {
+      await generatePdfWithOptions(currentFilteredStates, {
         fileName: `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`,
         meta,
         layout,
@@ -709,6 +722,6 @@ const ExportPdfButton = ({ filteredStates = [], meta = {}, layout = "cards" }) =
       {loading ? "Generating PDF..." : error ? "Export Failed" : "Export PDF"}
     </button>
   );
-};
+});
 
 export default ExportPdfButton;

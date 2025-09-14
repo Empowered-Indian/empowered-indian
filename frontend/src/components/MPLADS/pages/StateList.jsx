@@ -17,8 +17,16 @@ const StateList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('utilizationPercentage');
   const [sortOrder, setSortOrder] = useState('desc');
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
-  const [filterRange, setFilterRange] = useState('all'); // all, high, medium, low
+  const [viewMode, setViewMode] = useState('grid');
+  const [filterRange, setFilterRange] = useState('all');
+
+  const exportPdfRef = React.useRef(null);
+
+  const updateExportPdfStates = (newStates) => {
+    if (exportPdfRef.current && exportPdfRef.current.updateFilteredStates) {
+      exportPdfRef.current.updateFilteredStates(newStates);
+    }
+  };
 
   // Fetch once; perform filter/sort client-side to avoid extra calls
   const { data, isLoading, error } = useStateSummary();
@@ -339,7 +347,7 @@ const StateList = () => {
             </button>
           </div>
           {filteredStates.length > 0 && (
-            <ExportPdfButton filteredStates={filteredStates} />
+            <ExportPdfButton ref={exportPdfRef} filteredStates={filteredStates} />
           )}
         </div>
       </div>
@@ -367,6 +375,7 @@ const StateList = () => {
             {viewMode === 'list' ? (
               <StateCardList
                 states={filteredStates}
+                onSortedStatesChange={updateExportPdfStates}
               />) : (
               <div className={`states-grid`}>
                 {filteredStates.map((state, index) => (

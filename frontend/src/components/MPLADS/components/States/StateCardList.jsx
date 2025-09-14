@@ -4,7 +4,7 @@ import './StateCardList.css';
 import { formatINRCompact } from '../../../../utils/formatters';
 import { useNavigate } from "react-router-dom";
 
-const StateCardList = ({ states = [] }) => {
+const StateCardList = ({ states = [], onSortedStatesChange }) => {
   const clonedStates = states;
   const navigate = useNavigate();
 
@@ -62,8 +62,13 @@ const StateCardList = ({ states = [] }) => {
       return 0;
     });
 
+    if (onSortedStatesChange && typeof onSortedStatesChange === 'function') {
+      const sortedStatesData = sorted.map(row => row.raw);
+      onSortedStatesChange(sortedStatesData);
+    }
+
     return sorted;
-  }, [clonedStates, sortConfig]);
+  }, [clonedStates, sortConfig, onSortedStatesChange]);
 
   const requestSort = (key) => {
     setSortConfig(prev => {
