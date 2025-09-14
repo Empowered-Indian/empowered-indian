@@ -107,7 +107,6 @@ const MyDocument = ({ data = [] }) => {
 
   return (
     <Document>
-      {/* Cover / Title */}
       <Page size="A4" style={styles.page}>
         <View style={styles.headerRow}>
           <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
@@ -154,23 +153,6 @@ const MyDocument = ({ data = [] }) => {
             </View>
           </View>
         </View>
-
-        <Text style={styles.footer}>Empowered Indian • https://empoweredindian.in/</Text>
-      </Page>
-
-      {/* Detail cards page */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.headerRow}>
-          <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-          <View style={styles.titleBlock}>
-            <Text style={styles.title}>States — Detailed Cards</Text>
-            <Text style={styles.subtitle}>A compact, readable card for each state</Text>
-          </View>
-          <View style={{ width: 110 }}>
-            <Text style={styles.timestamp}>{timestamp}</Text>
-          </View>
-        </View>
-
         <View style={styles.cardsContainer}>
           {data.map((s, i) => {
             const pct = Number(s.utilizationPercentage || 0);
@@ -215,13 +197,14 @@ const MyDocument = ({ data = [] }) => {
           })}
         </View>
 
-        <Text style={styles.footer}>Generated {new Date().toLocaleString()} • Empowered Indian</Text>
+        <Text style={styles.footer}>Generated {new Date().toLocaleString()} • Empowered Indian • https://empoweredindian.in/</Text>
       </Page>
     </Document>
   );
 };
 
 const ExportPdfButton = ({ filteredStates = [] }) => (
+  console.error(filteredStates),
   <PDFDownloadLink document={<MyDocument data={filteredStates} />} fileName="states_report.pdf">
     {({ loading }) => (
       <button style={{ display: "inline-flex", gap: 8, alignItems: "center", padding: "8px 12px", borderRadius: 6 }}>
