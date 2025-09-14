@@ -65,8 +65,7 @@
 }
 
 .error-suggestions li {
-  padding: var(--spacing-sm) 0;
-  padding-left: var(--spacing-lg);
+  padding-left: var(--spacing-6);
   position: relative;
   color: var(--text-primary);
 }
@@ -90,8 +89,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--border-radius);
+  padding: var(--spacing-2) var(--spacing-2);
+  border-radius: var(--radius-md);
   font-size: 1rem;
   font-weight: 500;
   border: none;
@@ -117,8 +116,8 @@
 
 .error-button-secondary {
   background-color: transparent;
-  color: var(--primary-color);
   border: 2px solid var(--primary-color);
+  margin-left: 10px;
 }
 
 .error-button-secondary:hover {
