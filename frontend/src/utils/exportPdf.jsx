@@ -1,123 +1,231 @@
+import React from "react";
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 
 const styles = StyleSheet.create({
-  page: { padding: 30, fontSize: 10, fontFamily: "Helvetica" },
-  coverPage: { flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" },
-  coverTitle: { fontSize: 20, fontWeight: "bold", alignItems: "center", textAlign: "center" },
-  coverSubtitle: { fontSize: 14, marginBottom: 20, alignItems: "center", textAlign: "center" },
-  header: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginBottom: 10 },
-  logo: { width: 60, height: 60, borderRadius: 30 },
-  title: { fontSize: 18, fontWeight: "bold", textAlign: "center", flex: 1 },
-  section: { marginBottom: 15 },
-  sectionTitle: { fontSize: 14, marginBottom: 6, fontWeight: "bold", textDecoration: "underline" },
-  listItem: { fontSize: 10, marginBottom: 3 },
-  table: { display: "table", width: "auto", marginTop: 10, borderWidth: 1, borderColor: "#000" },
-  row: { flexDirection: "row" },
-  colHeader: {
-    width: "14.28%", borderStyle: "solid", borderWidth: 1, borderColor: "#000",
-    backgroundColor: "#1f2937", color: "white", padding: 4, fontWeight: "bold", textAlign: "center"
+  page: {
+    padding: 24,
+    fontSize: 10,
+    fontFamily: "Helvetica",
+    color: "#0f172a",
+    backgroundColor: "#ffffff",
   },
-  col: {
-    width: "14.28%", borderStyle: "solid", borderWidth: 1, borderColor: "#ccc",
-    padding: 4, textAlign: "center"
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
   },
-  colAlt: { backgroundColor: "#f9f9f9" }, // zebra rows
-  footer: { position: "absolute", bottom: 20, left: 30, right: 30, fontSize: 9, textAlign: "center", color: "gray" },
+  logo: { width: 48, height: 48, borderRadius: 8, marginRight: 12 },
+  titleBlock: { flex: 1 },
+  title: { fontSize: 16, fontWeight: "bold", color: "#0f172a" },
+  subtitle: { fontSize: 10, color: "#475569", marginTop: 2 },
+  timestamp: { fontSize: 9, color: "#6b7280", textAlign: "right" },
+
+  // Card list container
+  cardsContainer: {
+    marginTop: 6,
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+  },
+  card: {
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e6eef4",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  stateLeft: { width: "36%", paddingRight: 8 },
+  stateName: { fontSize: 12, fontWeight: "700", color: "#0f172a" },
+  mpBadge: {
+    marginTop: 6,
+    display: "inline-flex",
+    backgroundColor: "#eef2ff",
+    color: "#3730a3",
+    padding: "2 6",
+    borderRadius: 999,
+    fontSize: 9,
+    fontWeight: "700",
+    alignSelf: "flex-start",
+  },
+  metricsRight: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  metricBlock: { width: "16%", alignItems: "flex-end" },
+  metricLabel: { fontSize: 8, color: "#64748b" },
+  metricValue: { fontSize: 11, fontWeight: "700", color: "#0f172a", marginTop: 4 },
+
+  // Utilization bar
+  utilBlock: { width: "22%", alignItems: "flex-end" },
+  utilLabel: { fontSize: 11, fontWeight: "700", marginBottom: 4 },
+  utilBarOuter: {
+    width: "100%",
+    height: 8,
+    backgroundColor: "#f1f5f9",
+    borderRadius: 999,
+    overflow: "hidden",
+  },
+  utilFillGreen: { height: "100%", backgroundColor: "#10b981" },
+  utilFillOrange: { height: "100%", backgroundColor: "#f59e0b" },
+  utilFillRed: { height: "100%", backgroundColor: "#ef4444" },
+
+  // Summary and performers
+  summary: { marginTop: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: "#eef2f6" },
+  summaryRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 6 },
+  summaryTitle: { fontSize: 12, fontWeight: "700", color: "#0f172a" },
+  smallText: { fontSize: 10, color: "#475569" },
+
+  performers: { marginTop: 8, flexDirection: "row", gap: 8 },
+  performerCol: { width: "48%" },
+  performerItem: { fontSize: 10, marginBottom: 4, color: "#0f172a" },
+
+  footer: { marginTop: 12, fontSize: 9, color: "#6b7280", textAlign: "center" },
 });
 
-// --- Main Document ---
-const MyDocument = ({ data }) => {
+/* Helper to choose bar style */
+const utilBarStyleFor = (p) => {
+  if (p >= 75) return styles.utilFillGreen;
+  if (p >= 40) return styles.utilFillOrange;
+  return styles.utilFillRed;
+};
+
+const MyDocument = ({ data = [] }) => {
   const timestamp = new Date().toLocaleString();
 
-  // National totals
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
-  const avgUtilization = data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length;
+  const avgUtilization = data.length ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length : 0;
 
-  // Top 3 performers
-  const topPerformers = [...data]
-    .sort((a, b) => b.utilizationPercentage - a.utilizationPercentage)
-    .slice(0, 3);
-
-  // Bottom 3 performers
-  const bottomPerformers = [...data]
-    .sort((a, b) => a.utilizationPercentage - b.utilizationPercentage)
-    .slice(0, 3);
+  const topPerformers = [...data].sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0)).slice(0, 3);
+  const bottomPerformers = [...data].sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0)).slice(0, 3);
 
   return (
     <Document>
-      {/* Detailed Table */}
+      {/* Cover / Title */}
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Image src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" style={styles.logo} />
-          <Text style={styles.coverTitle}>Empowered Indian • MPLADS Report</Text>
-        </View>
-        <View style={styles.table}>
-          <View style={styles.row}>
-            <Text style={styles.colHeader}>State</Text>
-            <Text style={styles.colHeader}>MP Count</Text>
-            <Text style={styles.colHeader}>Allocated</Text>
-            <Text style={styles.colHeader}>Expenditure</Text>
-            <Text style={styles.colHeader}>Utilization</Text>
-            <Text style={styles.colHeader}>Works Completed</Text>
-            <Text style={styles.colHeader}>Works Recommended</Text>
+        <View style={styles.headerRow}>
+          <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+          <View style={styles.titleBlock}>
+            <Text style={styles.title}>Empowered Indian — MPLADS Report</Text>
+            <Text style={styles.subtitle}>State-level funding & utilization snapshot (card view)</Text>
           </View>
-          {data.map((item, i) => (
-            <View key={i} style={[styles.row, i % 2 === 0 ? styles.colAlt : null]}>
-              <Text style={styles.col}>{item.state}</Text>
-              <Text style={styles.col}>{item.mpCount}</Text>
-              <Text style={styles.col}>{formatINRCompact(item.totalAllocated)}</Text>
-              <Text style={styles.col}>{formatINRCompact(item.totalExpenditure)}</Text>
-              <Text
-                style={[
-                  styles.col,
-                  { color: item.utilizationPercentage > 70 ? "green" : item.utilizationPercentage > 30 ? "orange" : "red" }
-                ]}
-              >
-                {item.utilizationPercentage?.toFixed(1)}%
-              </Text>
-              <Text style={styles.col}>{item.totalWorksCompleted}</Text>
-              <Text style={styles.col}>{item.recommendedWorksCount}</Text>
+          <View style={{ width: 110 }}>
+            <Text style={styles.timestamp}>{timestamp}</Text>
+            <Text style={{ fontSize: 9, color: "#6b7280", marginTop: 6 }}>Generated by Empowered Indian</Text>
+          </View>
+        </View>
+
+        <View style={styles.summary}>
+          <View style={styles.summaryRow}>
+            <View>
+              <Text style={styles.summaryTitle}>National Summary</Text>
+              <Text style={styles.smallText}>Total Allocated: {formatINRCompact(totalAllocated)}</Text>
+              <Text style={styles.smallText}>Total Expenditure: {formatINRCompact(totalExpenditure)}</Text>
+              <Text style={styles.smallText}>Avg Utilization: {avgUtilization.toFixed(1)}%</Text>
             </View>
-          ))}
-        </View>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>National Summary</Text>
-          <Text>Total Allocated: {formatINRCompact(totalAllocated)}</Text>
-          <Text>Total Expenditure: {formatINRCompact(totalExpenditure)}</Text>
-          <Text>Average Utilization: {avgUtilization.toFixed(1)}%</Text>
+            <View>
+              <Text style={styles.summaryTitle}>Counts</Text>
+              <Text style={styles.smallText}>States: {data.length}</Text>
+            </View>
+          </View>
+
+          <View style={styles.performers}>
+            <View style={styles.performerCol}>
+              <Text style={{ fontSize: 11, fontWeight: "700", marginBottom: 6 }}>Top 3 Performers</Text>
+              {topPerformers.map((s, i) => (
+                <Text key={i} style={styles.performerItem}>
+                  {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
+                </Text>
+              ))}
+            </View>
+            <View style={styles.performerCol}>
+              <Text style={{ fontSize: 11, fontWeight: "700", marginBottom: 6 }}>Bottom 3 Performers</Text>
+              {bottomPerformers.map((s, i) => (
+                <Text key={i} style={styles.performerItem}>
+                  {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
+                </Text>
+              ))}
+            </View>
+          </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Top 3 High Performers</Text>
-          {topPerformers.map((s, i) => (
-            <Text key={i} style={styles.listItem}>
-              {i + 1}. {s.state} — {s.utilizationPercentage.toFixed(1)}%
-            </Text>
-          ))}
+        <Text style={styles.footer}>Empowered Indian • https://empoweredindian.in/</Text>
+      </Page>
+
+      {/* Detail cards page */}
+      <Page size="A4" style={styles.page}>
+        <View style={styles.headerRow}>
+          <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+          <View style={styles.titleBlock}>
+            <Text style={styles.title}>States — Detailed Cards</Text>
+            <Text style={styles.subtitle}>A compact, readable card for each state</Text>
+          </View>
+          <View style={{ width: 110 }}>
+            <Text style={styles.timestamp}>{timestamp}</Text>
+          </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Bottom 3 Low Performers</Text>
-          {bottomPerformers.map((s, i) => (
-            <Text key={i} style={styles.listItem}>
-              {i + 1}. {s.state} — {s.utilizationPercentage.toFixed(1)}%
-            </Text>
-          ))}
+        <View style={styles.cardsContainer}>
+          {data.map((s, i) => {
+            const pct = Number(s.utilizationPercentage || 0);
+            const fillStyle = utilBarStyleFor(pct);
+            return (
+              <View key={i} style={styles.card}>
+                <View style={styles.stateLeft}>
+                  <Text style={styles.stateName}>{s.state}</Text>
+                  <Text style={styles.mpBadge}>MPs: {s.mpCount ?? 0}</Text>
+                </View>
+
+                <View style={styles.metricsRight}>
+                  <View style={styles.metricBlock}>
+                    <Text style={styles.metricLabel}>Allocated</Text>
+                    <Text style={styles.metricValue}>{formatINRCompact(s.totalAllocated ?? 0)}</Text>
+                  </View>
+
+                  <View style={styles.metricBlock}>
+                    <Text style={styles.metricLabel}>Expenditure</Text>
+                    <Text style={styles.metricValue}>{formatINRCompact(s.totalExpenditure ?? 0)}</Text>
+                  </View>
+
+                  <View style={styles.utilBlock}>
+                    <Text style={styles.utilLabel}>{pct.toFixed(1)}%</Text>
+                    <View style={styles.utilBarOuter}>
+                      <View style={[fillStyle, { width: `${Math.max(0, Math.min(100, pct))}%` }]} />
+                    </View>
+                  </View>
+
+                  <View style={styles.metricBlock}>
+                    <Text style={styles.metricLabel}>Works Done</Text>
+                    <Text style={styles.metricValue}>{s.totalWorksCompleted ?? 0}</Text>
+                  </View>
+
+                  <View style={styles.metricBlock}>
+                    <Text style={styles.metricLabel}>Recommended</Text>
+                    <Text style={styles.metricValue}>{s.recommendedWorksCount ?? 0}</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })}
         </View>
-        <Text style={styles.footer}>Generated {timestamp} • https://empoweredindian.in/</Text>
+
+        <Text style={styles.footer}>Generated {new Date().toLocaleString()} • Empowered Indian</Text>
       </Page>
     </Document>
   );
 };
 
-const ExportPdfButton = ({ filteredStates }) => (
+const ExportPdfButton = ({ filteredStates = [] }) => (
   <PDFDownloadLink document={<MyDocument data={filteredStates} />} fileName="states_report.pdf">
     {({ loading }) => (
-      <button>
-        <FiDownload />Export PDF
+      <button style={{ display: "inline-flex", gap: 8, alignItems: "center", padding: "8px 12px", borderRadius: 6 }}>
+        <FiDownload /> {loading ? "Preparing..." : "Export PDF"}
       </button>
     )}
   </PDFDownloadLink>

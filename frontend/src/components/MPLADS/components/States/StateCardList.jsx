@@ -79,6 +79,12 @@ const StateCardList = ({ states = [] }) => {
     navigate(`/mplads/states/${stateSlug}`);
   };
 
+  const getUtilizationClass = (percentage) => {
+    if (percentage >= 90) return 'high';
+    if (percentage >= 70) return 'medium';
+    return 'low';
+  };
+
   return (
     <div className="state-table-container" role="region" aria-label="States table">
       <div className="state-table">
@@ -114,14 +120,14 @@ const StateCardList = ({ states = [] }) => {
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onRowActivate(row); }}
               aria-label={`Open details for ${row.state}`}
             >
-              <div className="table-cell" style={{ width: columns[0].width, textAlign: columns[0].align }}>{row.id}</div>
-              <div className="table-cell state-name" style={{ width: columns[1].width, textAlign: columns[1].align }}>
+              <div className="table-cell" data-label={columns[0].label} style={{ width: columns[0].width, textAlign: columns[0].align }}>{row.id}</div>
+              <div className="table-cell state-name" data-label={columns[1].label} style={{ width: columns[1].width, textAlign: columns[1].align }}>
                 <div className="state-title">{row.state}</div>
               </div>
-              <div className="table-cell" style={{ width: columns[2].width, textAlign: columns[2].align }}>{row.mpCount}</div>
-              <div className="table-cell" style={{ width: columns[3].width, textAlign: columns[3].align }}>{row.totalAllocated != null ? formatINRCompact(row.totalAllocated) : '—'}</div>
-              <div className="table-cell" style={{ width: columns[4].width, textAlign: columns[4].align }}>{row.totalExpenditure != null ? formatINRCompact(row.totalExpenditure) : '—'}</div>
-              <div className="table-cell utilization-cell" style={{ width: columns[5].width, textAlign: columns[5].align }}>
+              <div className="table-cell" data-label={columns[2].label} style={{ width: columns[2].width, textAlign: columns[2].align }}>{row.mpCount}</div>
+              <div className="table-cell" data-label={columns[3].label} style={{ width: columns[3].width, textAlign: columns[3].align }}>{row.totalAllocated != null ? formatINRCompact(row.totalAllocated) : '—'}</div>
+              <div className="table-cell" data-label={columns[4].label} style={{ width: columns[4].width, textAlign: columns[4].align }}>{row.totalExpenditure != null ? formatINRCompact(row.totalExpenditure) : '—'}</div>
+              <div className="table-cell utilization-cell" data-label={columns[5].label} style={{ width: columns[5].width, textAlign: columns[5].align }}>
                 {(() => {
                   const utilClass = row.utilizationPercentage >= 75
                     ? 'utilization-high'
@@ -131,9 +137,9 @@ const StateCardList = ({ states = [] }) => {
                   return (
                     <>
                       <div className={`utilization-label ${utilClass}`}>{row.utilizationPercentage.toFixed(1)}%</div>
-                      <div className="utilization-bar-outer" aria-hidden>
+                      <div className="utilization-bar">
                         <div
-                          className={`utilization-bar ${utilClass}`}
+                          className={`utilization-fill utilization-${getUtilizationClass(row.utilizationPercentage)}`}
                           style={{ width: `${row.utilizationPercentage}%` }}
                         />
                       </div>
@@ -141,8 +147,8 @@ const StateCardList = ({ states = [] }) => {
                   );
                 })()}
               </div>
-              <div className="table-cell" style={{ width: columns[6].width, textAlign: columns[6].align }}>{row.totalWorksCompleted}</div>
-              <div className="table-cell" style={{ width: columns[7].width, textAlign: columns[7].align }}>{row.recommendedWorksCount}</div>
+              <div className="table-cell" data-label={columns[6].label} style={{ width: columns[6].width, textAlign: columns[6].align }}>{row.totalWorksCompleted}</div>
+              <div className="table-cell" data-label={columns[7].label} style={{ width: columns[7].width, textAlign: columns[7].align }}>{row.recommendedWorksCount}</div>
             </div>
           ))}
         </div>
