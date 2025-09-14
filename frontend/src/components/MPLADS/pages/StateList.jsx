@@ -332,23 +332,27 @@ const StateList = () => {
             </div>
           ) : (<></>)}
 
-          <div className="view-controls">
-            <button
-              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-            >
-              Grid
-            </button>
-            <button
-              className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              List
-            </button>
+          <div className="view-controls"> 
+            <div>
+              <button
+                className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+              >
+                Grid
+              </button>
+              <button
+                className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                List
+              </button>
+            </div>
+            <div style={{ marginLeft: '10px' }}>
+              {filteredStates.length > 0 && viewMode === 'list' && (
+                <ExportStatesListAsPdf ref={exportPdfRef} filteredStates={filteredStates} />
+              )}
+            </div>
           </div>
-          {filteredStates.length > 0 && viewMode === 'list' && (
-            <ExportStatesListAsPdf ref={exportPdfRef} filteredStates={filteredStates} />
-          )}
         </div>
       </div>
 

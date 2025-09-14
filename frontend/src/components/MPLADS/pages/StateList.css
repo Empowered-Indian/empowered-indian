@@ -165,6 +165,19 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   overflow: hidden;
+  align-items: center;
+  gap: 0px;
+  justify-content: space-between;
+}
+
+.view-controls .view-controls {
+  display: flex;
+  background: none;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  justify-content: flex-start;
+  flex: 1;
 }
 
 .view-btn {
@@ -184,6 +197,40 @@
 .view-btn.active {
   background: #2c5282;
   color: white;
+}
+
+/* Export controls within view-controls */
+.view-controls .export-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.view-controls .export-controls .export-btn {
+  background: #3b82f6;
+  color: white;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.view-controls .export-controls .export-btn:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.view-controls .export-controls .export-btn:disabled {
+  background: #9ca3af;
+  border-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .download-btn {
