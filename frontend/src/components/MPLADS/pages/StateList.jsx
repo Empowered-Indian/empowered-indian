@@ -338,7 +338,9 @@ const StateList = () => {
               List
             </button>
           </div>
-          <ExportPdfButton filteredStates={filteredStates}/>
+          {filteredStates.length > 0 && (
+            <ExportPdfButton filteredStates={filteredStates} />
+          )}
         </div>
       </div>
 

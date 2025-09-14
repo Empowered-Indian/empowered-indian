@@ -1,5 +1,5 @@
-import React from "react";
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from "@react-pdf/renderer";
+import React, { useMemo, useState } from "react";
+import { Document, Page, Text, View, StyleSheet, Image, pdf } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
   footer: { marginTop: 12, fontSize: 9, color: "#6b7280", textAlign: "center" },
 });
 
-/* Helper to choose bar style */
 const utilBarStyleFor = (p) => {
   if (p >= 75) return styles.utilFillGreen;
   if (p >= 40) return styles.utilFillOrange;
@@ -203,15 +202,58 @@ const MyDocument = ({ data = [] }) => {
   );
 };
 
-const ExportPdfButton = ({ filteredStates = [] }) => (
-  console.error(filteredStates),
-  <PDFDownloadLink document={<MyDocument data={filteredStates} />} fileName="states_report.pdf">
-    {({ loading }) => (
-      <button style={{ display: "inline-flex", gap: 8, alignItems: "center", padding: "8px 12px", borderRadius: 6 }}>
-        <FiDownload /> {loading ? "Preparing..." : "Export PDF"}
+const ExportPdfButton = ({ filteredStates = [] }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const docNode = useMemo(() => <MyDocument data={filteredStates} />, [filteredStates]);
+  const fileName = `states_report_${new Date().toISOString()}.pdf`;
+
+  if (!filteredStates || filteredStates.length === 0) {
+    return (
+      <button
+        disabled
+        style={{
+          display: "inline-flex",
+          gap: 8,
+          alignItems: "center",
+          padding: "8px 12px",
+          borderRadius: 6,
+          opacity: 0.6,
+        }}
+      >
+        <FiDownload /> No data to export
       </button>
-    )}
-  </PDFDownloadLink>
-);
+    );
+  }
+
+  const handleClick = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const asPdf = pdf(docNode);
+      const blob = await asPdf.toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = window.document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      window.document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("PDF generation failed", e);
+      setError("Failed to generate PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button onClick={handleClick} disabled={loading} style={{ display: "inline-flex", gap: 8, alignItems: "center", padding: "8px 12px", borderRadius: 6 }}>
+      <FiDownload /> {loading ? "Preparing..." : error ? "Error" : "Export PDF"}
+    </button>
+  );
+};
 
 export default ExportPdfButton;
