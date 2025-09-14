@@ -3,53 +3,259 @@ import { Document, Page, Text, View, StyleSheet, Image, pdf } from "@react-pdf/r
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 
+const colors = {
+  primary: "#1e40af",
+  primaryLight: "#3b82f6",
+  primaryDark: "#1e3a8a",
+  secondary: "#059669",
+  accent: "#dc2626",
+  warning: "#d97706",
+  success: "#16a34a",
+  background: "#fafbfc",
+  surface: "#ffffff", 
+  surfaceElevated: "#ffffff",
+  textPrimary: "#0f172a",
+  textSecondary: "#475569",
+  textMuted: "#64748b",
+  border: "#e2e8f0",
+  borderLight: "#f1f5f9",
+  shadow: "rgba(0, 0, 0, 0.1)",
+  gradient: {
+    primary: ["#1e40af", "#3b82f6"],
+    secondary: ["#059669", "#10b981"],
+    accent: ["#dc2626", "#ef4444"],
+    neutral: ["#f8fafc", "#e2e8f0"],
+  }
+};
+
 const styles = StyleSheet.create({
   page: {
-    padding: 24,
+    padding: 0,
     fontSize: 10,
     fontFamily: "Helvetica",
-    color: "#0f172a",
-    backgroundColor: "#ffffff",
+    color: colors.textPrimary,
+    backgroundColor: colors.background,
+    position: "relative",
+  },
+
+  // Premium header with gradient background
+  header: {
+    backgroundColor: colors.surface,
+    padding: "16px 20px 12px 20px",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    position: "relative",
+  },
+  headerGradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+    backgroundColor: colors.primary,
+  },
+  headerAccent: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 100,
+    height: 4,
+    backgroundColor: colors.secondary,
   },
   headerRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
+    alignItems: "flex-start",
+    marginBottom: 4,
   },
-  logo: { width: 48, height: 48, borderRadius: 8, marginRight: 12 },
-  titleBlock: { flex: 1 },
-  title: { fontSize: 16, fontWeight: "bold", color: "#0f172a" },
-  subtitle: { fontSize: 10, color: "#475569", marginTop: 2 },
-  timestamp: { fontSize: 9, color: "#6b7280", textAlign: "right" },
+  logo: {
+    width: 40,
+    height: 40,
+    borderRadius: 6,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  titleBlock: {
+    flex: 1,
+    paddingTop: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    marginBottom: 1,
+    letterSpacing: -0.2,
+  },
+  subtitle: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    marginBottom: 2,
+    fontWeight: "500",
+  },
+  metaInfo: {
+    flexDirection: "row",
+    gap: 6,
+    marginTop: 2,
+  },
+  metaTag: {
+    backgroundColor: colors.borderLight,
+    color: colors.textSecondary,
+    padding: "4px 8px",
+    borderRadius: 6,
+    fontSize: 9,
+    fontWeight: "600",
+  },
+  timestamp: {
+    fontSize: 10,
+    color: colors.textMuted,
+    textAlign: "right",
+    fontWeight: "500",
+  },
+  generatedBy: {
+    fontSize: 9,
+    color: colors.textMuted,
+    marginTop: 4,
+    textAlign: "right",
+  },
 
-  // Card list container
+  // Premium content area
+  content: {
+    padding: "12px 20px",
+  },
+
+  // Enhanced summary section
+  summary: {
+    marginBottom: 12,
+    backgroundColor: colors.surface,
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  summaryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  summaryIcon: {
+    width: 16,
+    height: 16,
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    marginRight: 6,
+  },
+  summaryTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    letterSpacing: -0.2,
+  },
+  summaryGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  summaryColumn: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  summaryMetric: {
+    marginBottom: 8,
+  },
+  summaryMetricLabel: {
+    fontSize: 8,
+    color: colors.textMuted,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
+    marginBottom: 2,
+  },
+  summaryMetricValue: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+  },
+  summaryMetricSub: {
+    fontSize: 9,
+    color: colors.textSecondary,
+    marginTop: 1,
+  },
+
+  // Premium performers section
+  performers: {
+    marginTop: 10,
+    flexDirection: "row",
+    gap: 12,
+  },
+  performerCol: {
+    flex: 1,
+    backgroundColor: colors.borderLight,
+    borderRadius: 6,
+    padding: 8,
+  },
+  performerTitle: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    marginBottom: 6,
+    textAlign: "center",
+  },
+  performerItem: {
+    fontSize: 9,
+    marginBottom: 4,
+    color: colors.textPrimary,
+    padding: "2px 0",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  performerItemLast: {
+    fontSize: 9,
+    color: colors.textPrimary,
+    padding: "2px 0",
+  },
+
+  // Premium cards container
   cardsContainer: {
-    marginTop: 6,
     display: "flex",
     flexDirection: "column",
-    gap: 8,
+    gap: 6,
   },
   card: {
     borderRadius: 8,
-    padding: 10,
-    backgroundColor: "#fff",
+    padding: 12,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: "#e6eef4",
+    borderColor: colors.border,
     flexDirection: "row",
     alignItems: "center",
+    position: "relative",
   },
-  stateLeft: { width: "36%", paddingRight: 8 },
-  stateName: { fontSize: 12, fontWeight: "700", color: "#0f172a" },
+  cardShadow: {
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  stateLeft: {
+    width: "30%",
+    paddingRight: 8,
+  },
+  stateName: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    marginBottom: 4,
+    letterSpacing: -0.1,
+  },
   mpBadge: {
-    marginTop: 6,
-    display: "inline-flex",
-    backgroundColor: "#eef2ff",
-    color: "#3730a3",
-    padding: "2 6",
-    borderRadius: 999,
-    fontSize: 9,
-    fontWeight: "700",
+    backgroundColor: colors.primary,
+    color: colors.surface,
+    padding: "2px 6px",
+    borderRadius: 4,
+    fontSize: 8,
+    fontWeight: "bold",
     alignSelf: "flex-start",
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
   metricsRight: {
     flex: 1,
@@ -57,35 +263,144 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  metricBlock: { width: "16%", alignItems: "flex-end" },
-  metricLabel: { fontSize: 8, color: "#64748b" },
-  metricValue: { fontSize: 11, fontWeight: "700", color: "#0f172a", marginTop: 4 },
+  metricBlock: {
+    width: "16%",
+    alignItems: "center",
+    padding: "0 2px",
+  },
+  metricLabel: {
+    fontSize: 7,
+    color: colors.textMuted,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.2,
+    textAlign: "center",
+    marginBottom: 2,
+  },
+  metricValue: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    textAlign: "center",
+  },
 
-  // Utilization bar
-  utilBlock: { width: "22%", alignItems: "flex-end" },
-  utilLabel: { fontSize: 11, fontWeight: "700", marginBottom: 4 },
+  // Enhanced utilization bar
+  utilBlock: {
+    width: "20%",
+    alignItems: "center",
+    padding: "0 4px",
+  },
+  utilLabel: {
+    fontSize: 10,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: colors.textPrimary,
+  },
   utilBarOuter: {
     width: "100%",
     height: 8,
-    backgroundColor: "#f1f5f9",
-    borderRadius: 999,
+    backgroundColor: colors.borderLight,
+    borderRadius: 4,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  utilFillGreen: {
+    height: "100%",
+    backgroundColor: colors.success,
+  },
+  utilFillOrange: {
+    height: "100%",
+    backgroundColor: colors.warning,
+  },
+  utilFillRed: {
+    height: "100%",
+    backgroundColor: colors.accent,
+  },
+
+  // Premium table layout
+  table: {
+    marginTop: 12,
+    backgroundColor: colors.surface,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
     overflow: "hidden",
   },
-  utilFillGreen: { height: "100%", backgroundColor: "#10b981" },
-  utilFillOrange: { height: "100%", backgroundColor: "#f59e0b" },
-  utilFillRed: { height: "100%", backgroundColor: "#ef4444" },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: colors.primary,
+    padding: "8px 12px",
+  },
+  tableHeaderCell: {
+    fontSize: 9,
+    fontWeight: "bold",
+    color: colors.surface,
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
+  },
+  tableRow: {
+    flexDirection: "row",
+    padding: "8px 12px",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+  },
+  tableRowEven: {
+    backgroundColor: colors.borderLight,
+  },
+  tableCell: {
+    fontSize: 9,
+    color: colors.textPrimary,
+  },
+  tableCellRight: {
+    textAlign: "right",
+  },
 
-  // Summary and performers
-  summary: { marginTop: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: "#eef2f6" },
-  summaryRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 6 },
-  summaryTitle: { fontSize: 12, fontWeight: "700", color: "#0f172a" },
-  smallText: { fontSize: 10, color: "#475569" },
+  // Premium footer
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.surface,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    padding: "8px 20px",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  footerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  footerLogo: {
+    width: 20,
+    height: 20,
+    marginRight: 6,
+  },
+  footerText: {
+    fontSize: 8,
+    color: colors.textMuted,
+    fontWeight: "500",
+  },
+  pageNumber: {
+    fontSize: 8,
+    color: colors.textMuted,
+    fontWeight: "600",
+  },
 
-  performers: { marginTop: 8, flexDirection: "row", gap: 8 },
-  performerCol: { width: "48%" },
-  performerItem: { fontSize: 10, marginBottom: 4, color: "#0f172a" },
-
-  footer: { marginTop: 12, fontSize: 9, color: "#6b7280", textAlign: "center" },
+  // Utility classes
+  smallText: {
+    fontSize: 9,
+    color: colors.textSecondary,
+    fontWeight: "500",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: 12,
+  },
 });
 
 const utilBarStyleFor = (p) => {
@@ -94,120 +409,241 @@ const utilBarStyleFor = (p) => {
   return styles.utilFillRed;
 };
 
-const MyDocument = ({ data = [] }) => {
-  const timestamp = new Date().toLocaleString();
 
+// Enhanced PDF generation
+export async function generatePdfWithOptions(data = [], options = {}) {
+  // options: { fileName, meta, layout, orientation }
+  const { fileName: fn, meta = {}, layout = "cards", orientation = "portrait" } = options;
+
+  const fileName = fn || `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const docNode = <MyDocument data={data} meta={meta} layout={layout} />;
+  const asPdf = pdf(docNode, { author: "Empowered Indian" });
+  const blob = await asPdf.toBlob();
+  const url = URL.createObjectURL(blob);
+  const a = window.document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  window.document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  return true;
+}
+
+// Premium MyDocument with enhanced styling
+const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
+  const timestamp = new Date().toLocaleString();
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
   const avgUtilization = data.length ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length : 0;
+  const totalWorks = data.reduce((sum, s) => sum + (s.totalWorksCompleted || 0), 0);
 
   const topPerformers = [...data].sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0)).slice(0, 3);
   const bottomPerformers = [...data].sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0)).slice(0, 3);
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.headerRow}>
-          <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-          <View style={styles.titleBlock}>
-            <Text style={styles.title}>Empowered Indian — MPLADS Report</Text>
-            <Text style={styles.subtitle}>State-level funding & utilization snapshot (card view)</Text>
-          </View>
-          <View style={{ width: 110 }}>
-            <Text style={styles.timestamp}>{timestamp}</Text>
-            <Text style={{ fontSize: 9, color: "#6b7280", marginTop: 6 }}>Generated by Empowered Indian</Text>
-          </View>
-        </View>
-
-        <View style={styles.summary}>
-          <View style={styles.summaryRow}>
-            <View>
-              <Text style={styles.summaryTitle}>National Summary</Text>
-              <Text style={styles.smallText}>Total Allocated: {formatINRCompact(totalAllocated)}</Text>
-              <Text style={styles.smallText}>Total Expenditure: {formatINRCompact(totalExpenditure)}</Text>
-              <Text style={styles.smallText}>Avg Utilization: {avgUtilization.toFixed(1)}%</Text>
+      <Page size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
+        {/* Premium Header */}
+        <View style={styles.header}>
+          <View style={styles.headerGradient} />
+          <View style={styles.headerAccent} />
+          <View style={styles.headerRow}>
+            <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+            <View style={styles.titleBlock}>
+              <Text style={styles.title}>Empowered Indian</Text>
+              <Text style={styles.subtitle}>MPLADS State Performance Report</Text>
+              <View style={styles.metaInfo}>
+                {meta && meta.key && (
+                  <Text style={styles.metaTag}>Sorted: {meta.key} ({meta.direction || "desc"})</Text>
+                )}
+                {meta && meta.filter && <Text style={styles.metaTag}>Filter: {meta.filter}</Text>}
+                {meta && meta.selected && <Text style={styles.metaTag}>Export: {meta.selected}</Text>}
+              </View>
             </View>
-            <View>
-              <Text style={styles.summaryTitle}>Counts</Text>
-              <Text style={styles.smallText}>States: {data.length}</Text>
-            </View>
-          </View>
-
-          <View style={styles.performers}>
-            <View style={styles.performerCol}>
-              <Text style={{ fontSize: 11, fontWeight: "700", marginBottom: 6 }}>Top 3 Performers</Text>
-              {topPerformers.map((s, i) => (
-                <Text key={i} style={styles.performerItem}>
-                  {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
-                </Text>
-              ))}
-            </View>
-            <View style={styles.performerCol}>
-              <Text style={{ fontSize: 11, fontWeight: "700", marginBottom: 6 }}>Bottom 3 Performers</Text>
-              {bottomPerformers.map((s, i) => (
-                <Text key={i} style={styles.performerItem}>
-                  {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
-                </Text>
-              ))}
+            <View style={{ width: 120 }}>
+              <Text style={styles.timestamp}>{timestamp}</Text>
+              <Text style={styles.generatedBy}>Generated by Empowered Indian</Text>
             </View>
           </View>
         </View>
-        <View style={styles.cardsContainer}>
-          {data.map((s, i) => {
-            const pct = Number(s.utilizationPercentage || 0);
-            const fillStyle = utilBarStyleFor(pct);
-            return (
-              <View key={i} style={styles.card}>
-                <View style={styles.stateLeft}>
-                  <Text style={styles.stateName}>{s.state}</Text>
-                  <Text style={styles.mpBadge}>MPs: {s.mpCount ?? 0}</Text>
+
+        {/* Premium Content Area */}
+        <View style={styles.content}>
+          {/* Premium Summary Section */}
+          <View style={styles.summary}>
+            <View style={styles.summaryHeader}>
+              <View style={styles.summaryIcon} />
+              <Text style={styles.summaryTitle}>Average Performance Summary</Text>
+            </View>
+
+            <View style={styles.summaryGrid}>
+              <View style={styles.summaryColumn}>
+                <View style={styles.summaryMetric}>
+                  <Text style={styles.summaryMetricLabel}>Total Allocated</Text>
+                  <Text style={styles.summaryMetricValue}>{formatINRCompact(totalAllocated)}</Text>
+                  <Text style={styles.summaryMetricSub}>Across {data.length} states</Text>
                 </View>
-
-                <View style={styles.metricsRight}>
-                  <View style={styles.metricBlock}>
-                    <Text style={styles.metricLabel}>Allocated</Text>
-                    <Text style={styles.metricValue}>{formatINRCompact(s.totalAllocated ?? 0)}</Text>
-                  </View>
-
-                  <View style={styles.metricBlock}>
-                    <Text style={styles.metricLabel}>Expenditure</Text>
-                    <Text style={styles.metricValue}>{formatINRCompact(s.totalExpenditure ?? 0)}</Text>
-                  </View>
-
-                  <View style={styles.utilBlock}>
-                    <Text style={styles.utilLabel}>{pct.toFixed(1)}%</Text>
-                    <View style={styles.utilBarOuter}>
-                      <View style={[fillStyle, { width: `${Math.max(0, Math.min(100, pct))}%` }]} />
-                    </View>
-                  </View>
-
-                  <View style={styles.metricBlock}>
-                    <Text style={styles.metricLabel}>Works Done</Text>
-                    <Text style={styles.metricValue}>{s.totalWorksCompleted ?? 0}</Text>
-                  </View>
-
-                  <View style={styles.metricBlock}>
-                    <Text style={styles.metricLabel}>Recommended</Text>
-                    <Text style={styles.metricValue}>{s.recommendedWorksCount ?? 0}</Text>
-                  </View>
+                <View style={styles.summaryMetric}>
+                  <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
+                  <Text style={styles.summaryMetricValue}>{formatINRCompact(totalExpenditure)}</Text>
+                  <Text style={styles.summaryMetricSub}>
+                    {totalAllocated > 0 ? ((totalExpenditure / totalAllocated) * 100).toFixed(1) : 0}% of allocation
+                  </Text>
                 </View>
               </View>
-            );
-          })}
+
+              <View style={styles.summaryColumn}>
+                <View style={styles.summaryMetric}>
+                  <Text style={styles.summaryMetricLabel}>Average Utilization</Text>
+                  <Text style={styles.summaryMetricValue}>{avgUtilization.toFixed(1)}%</Text>
+                  <Text style={styles.summaryMetricSub}>National average</Text>
+                </View>
+                <View style={styles.summaryMetric}>
+                  <Text style={styles.summaryMetricLabel}>Total Works Completed</Text>
+                  <Text style={styles.summaryMetricValue}>{totalWorks.toLocaleString()}</Text>
+                  <Text style={styles.summaryMetricSub}>Projects delivered</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Premium Performers Section */}
+            <View style={styles.performers}>
+              <View style={styles.performerCol}>
+                <Text style={styles.performerTitle}>★ Top Performers</Text>
+                {topPerformers.map((s, i) => (
+                  <Text key={i} style={i === topPerformers.length - 1 ? styles.performerItemLast : styles.performerItem}>
+                    {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
+                  </Text>
+                ))}
+              </View>
+              <View style={styles.performerCol}>
+                <Text style={styles.performerTitle}>Areas for Improvement</Text>
+                {bottomPerformers.map((s, i) => (
+                  <Text key={i} style={i === bottomPerformers.length - 1 ? styles.performerItemLast : styles.performerItem}>
+                    {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
+                  </Text>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          {/* Visual Separator */}
+          <View style={styles.divider} />
+
+          {/* Premium Layout Switch: Table or Cards */}
+          {layout === "table" ? (
+            <View style={styles.table}>
+              {/* Premium Table Header */}
+              <View style={styles.tableHeader}>
+                <Text style={[styles.tableHeaderCell, { width: "20%" }]}>State</Text>
+                <Text style={[styles.tableHeaderCell, { width: "20%", textAlign: "right" }]}>Allocated</Text>
+                <Text style={[styles.tableHeaderCell, { width: "20%", textAlign: "right" }]}>Expenditure</Text>
+                <Text style={[styles.tableHeaderCell, { width: "15%", textAlign: "right" }]}>Utilization</Text>
+                <Text style={[styles.tableHeaderCell, { width: "15%", textAlign: "right" }]}>Works</Text>
+                <Text style={[styles.tableHeaderCell, { width: "10%", textAlign: "right" }]}>MPs</Text>
+              </View>
+
+              {/* Premium Table Rows */}
+              {data.map((s, i) => {
+                const pct = Number(s.utilizationPercentage || 0);
+                return (
+                  <View key={i} style={[styles.tableRow, i % 2 === 0 ? styles.tableRowEven : {}]}>
+                    <Text style={[styles.tableCell, { width: "20%", fontWeight: "600" }]}>{s.state}</Text>
+                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "20%" }]}>
+                      {formatINRCompact(s.totalAllocated ?? 0)}
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "20%" }]}>
+                      {formatINRCompact(s.totalExpenditure ?? 0)}
+                    </Text>
+                    <Text style={[
+                      styles.tableCell,
+                      styles.tableCellRight,
+                      {
+                        width: "15%",
+                        color: pct >= 75 ? colors.success : pct >= 40 ? colors.warning : colors.accent,
+                        fontWeight: "bold"
+                      }
+                    ]}>
+                      {pct.toFixed(1)}%
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "15%" }]}>
+                      {s.totalWorksCompleted ?? 0}
+                    </Text>
+                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "10%" }]}>
+                      {s.mpCount ?? 0}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <View style={styles.cardsContainer}>
+              {data.map((s, i) => {
+                const pct = Number(s.utilizationPercentage || 0);
+                const fillStyle = utilBarStyleFor(pct);
+                const utilColor = pct >= 75 ? colors.success : pct >= 40 ? colors.warning : colors.accent;
+                return (
+                  <View key={i} style={styles.card}>
+                    <View style={styles.stateLeft}>
+                      <Text style={styles.stateName}>{s.state}</Text>
+                      <Text style={styles.mpBadge}>MPS: {s.mpCount ?? 0}</Text>
+                    </View>
+
+                    <View style={styles.metricsRight}>
+                      <View style={styles.metricBlock}>
+                        <Text style={styles.metricLabel}>ALLOCATED</Text>
+                        <Text style={styles.metricValue}>{formatINRCompact(s.totalAllocated ?? 0)}</Text>
+                      </View>
+
+                      <View style={styles.metricBlock}>
+                        <Text style={styles.metricLabel}>EXPENDITURE</Text>
+                        <Text style={styles.metricValue}>{formatINRCompact(s.totalExpenditure ?? 0)}</Text>
+                      </View>
+
+                      <View style={styles.utilBlock}>
+                        <Text style={[styles.utilLabel, { color: utilColor }]}>
+                          {pct.toFixed(1)}%
+                        </Text>
+                        <View style={styles.utilBarOuter}>
+                          <View style={[fillStyle, { width: `${Math.max(0, Math.min(100, pct))}%` }]} />
+                        </View>
+                      </View>
+
+                      <View style={styles.metricBlock}>
+                        <Text style={styles.metricLabel}>WORKS DONE</Text>
+                        <Text style={styles.metricValue}>{s.totalWorksCompleted ?? 0}</Text>
+                      </View>
+
+                      <View style={styles.metricBlock}>
+                        <Text style={styles.metricLabel}>RECOMMENDED</Text>
+                        <Text style={styles.metricValue}>{s.recommendedWorksCount ?? 0}</Text>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          )}
         </View>
 
-        <Text style={styles.footer}>Generated {new Date().toLocaleString()} • Empowered Indian • https://empoweredindian.in/</Text>
+        <View style={styles.footer}>
+          <View style={styles.footerLeft}>
+            <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+            <Text style={styles.footerText}>
+              Generated {new Date().toLocaleString()} • Empowered Indian • https://empoweredindian.in/
+            </Text>
+          </View>
+          <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`} fixed />
+        </View>
       </Page>
     </Document>
   );
 };
 
-const ExportPdfButton = ({ filteredStates = [] }) => {
+const ExportPdfButton = ({ filteredStates = [], meta = {}, layout = "cards" }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const docNode = useMemo(() => <MyDocument data={filteredStates} />, [filteredStates]);
-  const fileName = `states_report_${new Date().toISOString()}.pdf`;
 
   if (!filteredStates || filteredStates.length === 0) {
     return (
@@ -217,12 +653,19 @@ const ExportPdfButton = ({ filteredStates = [] }) => {
           display: "inline-flex",
           gap: 8,
           alignItems: "center",
-          padding: "8px 12px",
-          borderRadius: 6,
+          padding: "12px 16px",
+          borderRadius: 8,
+          backgroundColor: "#f8fafc",
+          border: "1px solid #e2e8f0",
+          color: "#64748b",
+          fontSize: "14px",
+          fontWeight: "600",
+          cursor: "not-allowed",
           opacity: 0.6,
+          transition: "all 0.2s ease",
         }}
       >
-        <FiDownload /> No data to export
+        <FiDownload size={16} /> No data to export
       </button>
     );
   }
@@ -231,16 +674,11 @@ const ExportPdfButton = ({ filteredStates = [] }) => {
     setError(null);
     setLoading(true);
     try {
-      const asPdf = pdf(docNode);
-      const blob = await asPdf.toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = window.document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      window.document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      await generatePdfWithOptions(filteredStates, {
+        fileName: `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`,
+        meta,
+        layout,
+      });
     } catch (e) {
       console.error("PDF generation failed", e);
       setError("Failed to generate PDF");
@@ -250,8 +688,25 @@ const ExportPdfButton = ({ filteredStates = [] }) => {
   };
 
   return (
-    <button onClick={handleClick} disabled={loading} style={{ display: "inline-flex", gap: 8, alignItems: "center", padding: "8px 12px", borderRadius: 6 }}>
-      <FiDownload /> {loading ? "Preparing..." : error ? "Error" : "Export PDF"}
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      style={{
+        display: "inline-flex",
+        gap: 8,
+        alignItems: "center",
+        padding: "12px 20px",
+        borderRadius: 8,
+        fontSize: "14px",
+        fontWeight: "600",
+        cursor: loading ? "not-allowed" : "pointer",
+        opacity: loading ? 0.7 : 1,
+        transition: "all 0.2s ease",
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <FiDownload />
+      {loading ? "Generating PDF..." : error ? "Export Failed" : "Export PDF"}
     </button>
   );
 };

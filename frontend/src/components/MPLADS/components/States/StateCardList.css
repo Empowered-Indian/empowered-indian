@@ -11,6 +11,37 @@
     align-items: center;
 }
 
+/* Center cells vertically and control horizontal alignment via utility classes */
+.table-header-cell,
+.table-cell {
+  display: flex;
+  align-items: center;       /* vertical center */
+  padding: 8px 12px;
+  box-sizing: border-box;
+  min-height: 44px;         /* ensures consistent row height */
+}
+
+/* horizontal alignment helpers */
+.table-cell.align-left,
+.table-header-cell.align-left {
+  justify-content: flex-start;
+  text-align: left;
+  padding-left: 16px;
+}
+
+.table-cell.align-center,
+.table-header-cell.align-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.table-cell.align-right,
+.table-header-cell.align-right {
+  justify-content: flex-end;
+  text-align: right;
+  padding-right: 16px;
+}
+
 .state-table-container {
     width: 100%;
     font-family: var(--font-primary, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial);
@@ -37,7 +68,6 @@
 .table-header-row {
     border-bottom: 1px solid rgba(16, 24, 40, 0.06);
     padding: 8px 12px;
-    background: linear-gradient(180deg, rgba(250, 250, 250, 0.8), rgba(245, 245, 245, 0.8));
     position: sticky;
     top: 0;
     z-index: 2;
@@ -102,9 +132,12 @@
     text-overflow: ellipsis;
 }
 
-.state-name .state-title {
-    font-weight: 500;
-    font-size: 15px;
+/* Make state title take full width so left-align works reliably */
+.table-cell.state-name .state-title {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .state-sub {
@@ -124,10 +157,10 @@
 }
 
 .utilization-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .utilization-label {
