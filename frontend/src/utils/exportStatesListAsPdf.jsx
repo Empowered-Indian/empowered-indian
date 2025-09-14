@@ -12,7 +12,7 @@ const colors = {
   warning: "#d97706",
   success: "#16a34a",
   background: "#fafbfc",
-  surface: "#ffffff", 
+  surface: "#ffffff",
   surfaceElevated: "#ffffff",
   textPrimary: "#0f172a",
   textSecondary: "#475569",
@@ -38,10 +38,10 @@ const styles = StyleSheet.create({
     position: "relative",
   },
 
-  // Premium header with gradient background
+  // header with gradient background
   header: {
     backgroundColor: colors.surface,
-    padding: "16px 20px 12px 20px",
+    padding: "8px 16px 6px 16px",
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     position: "relative",
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     paddingTop: 1,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: colors.textPrimary,
     marginBottom: 1,
@@ -114,28 +114,27 @@ const styles = StyleSheet.create({
   generatedBy: {
     fontSize: 9,
     color: colors.textMuted,
-    marginTop: 4,
-    textAlign: "right",
+    marginTop: 4
   },
 
-  // Premium content area
+  // content area
   content: {
-    padding: "12px 20px",
+    padding: "6px 16px",
   },
 
   // Enhanced summary section
   summary: {
-    marginBottom: 12,
+    marginBottom: 8,
     backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 6,
+    padding: 8,
     borderWidth: 1,
     borderColor: colors.border,
   },
   summaryHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   summaryIcon: {
     width: 16,
@@ -145,7 +144,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   summaryTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     color: colors.textPrimary,
     letterSpacing: -0.2,
@@ -180,11 +179,11 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // Premium performers section
+  // performers section
   performers: {
-    marginTop: 10,
+    marginTop: 6,
     flexDirection: "row",
-    gap: 12,
+    gap: 8,
   },
   performerCol: {
     flex: 1,
@@ -213,15 +212,15 @@ const styles = StyleSheet.create({
     padding: "2px 0",
   },
 
-  // Premium cards container
+  // cards container
   cardsContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: 6,
+    gap: 4,
   },
   card: {
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 6,
+    padding: 8,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
@@ -240,10 +239,10 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   stateName: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: "bold",
     color: colors.textPrimary,
-    marginBottom: 4,
+    marginBottom: 3,
     letterSpacing: -0.1,
   },
   mpBadge: {
@@ -300,7 +299,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 8,
     backgroundColor: colors.borderLight,
-    borderRadius: 4,
+    borderRadius: 8,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: colors.border,
@@ -308,17 +307,20 @@ const styles = StyleSheet.create({
   utilFillGreen: {
     height: "100%",
     backgroundColor: colors.success,
+    borderRadius: 6,
   },
   utilFillOrange: {
     height: "100%",
     backgroundColor: colors.warning,
+    borderRadius: 6,
   },
   utilFillRed: {
     height: "100%",
     backgroundColor: colors.accent,
+    borderRadius: 6,
   },
 
-  // Premium table layout
+  // table layout
   table: {
     marginTop: 12,
     backgroundColor: colors.surface,
@@ -356,7 +358,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
 
-  // Premium footer
+  // footer
   footer: {
     position: "absolute",
     bottom: 0,
@@ -365,7 +367,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    padding: "8px 20px",
+    padding: "4px 16px",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -399,20 +401,19 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: colors.border,
-    marginVertical: 12,
+    marginVertical: 6,
   },
 });
 
 const utilBarStyleFor = (p) => {
-  if (p >= 75) return styles.utilFillGreen;
-  if (p >= 40) return styles.utilFillOrange;
+  if (p >= 80) return styles.utilFillGreen;
+  if (p >= 50) return styles.utilFillOrange;
   return styles.utilFillRed;
 };
 
 
 // Enhanced PDF generation
 export async function generatePdfWithOptions(data = [], options = {}) {
-  // options: { fileName, meta, layout, orientation }
   const { fileName: fn, meta = {}, layout = "cards", orientation = "portrait" } = options;
 
   const fileName = fn || `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -430,21 +431,18 @@ export async function generatePdfWithOptions(data = [], options = {}) {
   return true;
 }
 
-// Premium MyDocument with enhanced styling
 const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   const timestamp = new Date().toLocaleString();
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
   const avgUtilization = data.length ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length : 0;
   const totalWorks = data.reduce((sum, s) => sum + (s.totalWorksCompleted || 0), 0);
-
   const topPerformers = [...data].sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0)).slice(0, 3);
   const bottomPerformers = [...data].sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0)).slice(0, 3);
 
   return (
     <Document>
       <Page size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
-        {/* Premium Header */}
         <View style={styles.header}>
           <View style={styles.headerGradient} />
           <View style={styles.headerAccent} />
@@ -453,24 +451,14 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
             <View style={styles.titleBlock}>
               <Text style={styles.title}>Empowered Indian</Text>
               <Text style={styles.subtitle}>MPLADS State Performance Report</Text>
-              <View style={styles.metaInfo}>
-                {meta && meta.key && (
-                  <Text style={styles.metaTag}>Sorted: {meta.key} ({meta.direction || "desc"})</Text>
-                )}
-                {meta && meta.filter && <Text style={styles.metaTag}>Filter: {meta.filter}</Text>}
-                {meta && meta.selected && <Text style={styles.metaTag}>Export: {meta.selected}</Text>}
-              </View>
             </View>
-            <View style={{ width: 120 }}>
+            <View style={{ width: '50%' }}>
               <Text style={styles.timestamp}>{timestamp}</Text>
               <Text style={styles.generatedBy}>Generated by Empowered Indian</Text>
             </View>
           </View>
         </View>
-
-        {/* Premium Content Area */}
         <View style={styles.content}>
-          {/* Premium Summary Section */}
           <View style={styles.summary}>
             <View style={styles.summaryHeader}>
               <View style={styles.summaryIcon} />
@@ -507,7 +495,6 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
               </View>
             </View>
 
-            {/* Premium Performers Section */}
             <View style={styles.performers}>
               <View style={styles.performerCol}>
                 <Text style={styles.performerTitle}>★ Top Performers</Text>
@@ -528,13 +515,9 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
             </View>
           </View>
 
-          {/* Visual Separator */}
           <View style={styles.divider} />
-
-          {/* Premium Layout Switch: Table or Cards */}
           {layout === "table" ? (
             <View style={styles.table}>
-              {/* Premium Table Header */}
               <View style={styles.tableHeader}>
                 <Text style={[styles.tableHeaderCell, { width: "20%" }]}>State</Text>
                 <Text style={[styles.tableHeaderCell, { width: "20%", textAlign: "right" }]}>Allocated</Text>
@@ -544,7 +527,6 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                 <Text style={[styles.tableHeaderCell, { width: "10%", textAlign: "right" }]}>MPs</Text>
               </View>
 
-              {/* Premium Table Rows */}
               {data.map((s, i) => {
                 const pct = Number(s.utilizationPercentage || 0);
                 return (
@@ -561,7 +543,7 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                       styles.tableCellRight,
                       {
                         width: "15%",
-                        color: pct >= 75 ? colors.success : pct >= 40 ? colors.warning : colors.accent,
+                        color: pct >= 80 ? colors.success : pct >= 50 ? colors.warning : colors.accent,
                         fontWeight: "bold"
                       }
                     ]}>
@@ -582,7 +564,7 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
               {data.map((s, i) => {
                 const pct = Number(s.utilizationPercentage || 0);
                 const fillStyle = utilBarStyleFor(pct);
-                const utilColor = pct >= 75 ? colors.success : pct >= 40 ? colors.warning : colors.accent;
+                const utilColor = pct >= 80 ? colors.success : pct >= 50 ? colors.warning : colors.accent;
                 return (
                   <View key={i} style={styles.card}>
                     <View style={styles.stateLeft}>
@@ -602,6 +584,7 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                       </View>
 
                       <View style={styles.utilBlock}>
+                        <Text style={styles.metricLabel}>EXPENDITURE</Text>
                         <Text style={[styles.utilLabel, { color: utilColor }]}>
                           {pct.toFixed(1)}%
                         </Text>
@@ -616,7 +599,7 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                       </View>
 
                       <View style={styles.metricBlock}>
-                        <Text style={styles.metricLabel}>RECOMMENDED</Text>
+                        <Text style={styles.metricLabel}>WORKs RECOMMENDED</Text>
                         <Text style={styles.metricValue}>{s.recommendedWorksCount ?? 0}</Text>
                       </View>
                     </View>
@@ -641,17 +624,15 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   );
 };
 
-const ExportPdfButton = React.forwardRef(({ filteredStates = [], meta = {}, layout = "cards" }, ref) => {
+const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}, layout = "cards" }, ref) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentFilteredStates, setCurrentFilteredStates] = useState(filteredStates);
 
-  // Update the filtered states when prop changes
   React.useEffect(() => {
     setCurrentFilteredStates(filteredStates);
   }, [filteredStates]);
 
-  // Expose method to update filtered states
   React.useImperativeHandle(ref, () => ({
     updateFilteredStates: (newStates) => {
       setCurrentFilteredStates(newStates);
@@ -705,12 +686,11 @@ const ExportPdfButton = React.forwardRef(({ filteredStates = [], meta = {}, layo
       onClick={handleClick}
       disabled={loading}
       style={{
+        padding: "10px",
         display: "inline-flex",
-        gap: 8,
         alignItems: "center",
-        padding: "12px 20px",
         borderRadius: 8,
-        fontSize: "14px",
+        fontSize: "12px",
         fontWeight: "600",
         cursor: loading ? "not-allowed" : "pointer",
         opacity: loading ? 0.7 : 1,
@@ -724,4 +704,4 @@ const ExportPdfButton = React.forwardRef(({ filteredStates = [], meta = {}, layo
   );
 });
 
-export default ExportPdfButton;
+export default ExportStatesListAsPdf;

@@ -11,7 +11,7 @@ import { useFilters } from '../../../contexts/FilterContext';
 import { getPeriodLabel } from '../../../utils/lsTerm';
 import { sanitizeInput } from '../../../utils/inputSanitization';
 import StateCardList from '../components/States/StateCardList';
-import ExportPdfButton from '../../../utils/exportPdf';
+import ExportStatesListAsPdf from '../../../utils/exportStatesListAsPdf';
 
 const StateList = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -346,8 +346,8 @@ const StateList = () => {
               List
             </button>
           </div>
-          {filteredStates.length > 0 && (
-            <ExportPdfButton ref={exportPdfRef} filteredStates={filteredStates} />
+          {filteredStates.length > 0 && viewMode === 'list' && (
+            <ExportStatesListAsPdf ref={exportPdfRef} filteredStates={filteredStates} />
           )}
         </div>
       </div>

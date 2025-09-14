@@ -85,8 +85,8 @@ const StateCardList = ({ states = [], onSortedStatesChange }) => {
   };
 
   const getUtilizationClass = (percentage) => {
-    if (percentage >= 90) return 'high';
-    if (percentage >= 70) return 'medium';
+    if (percentage >= 80) return 'high';
+    if (percentage >= 50) return 'medium';
     return 'low';
   };
 
@@ -134,9 +134,9 @@ const StateCardList = ({ states = [], onSortedStatesChange }) => {
               <div className={`table-cell align-${columns[4].align}`} data-label={columns[4].label} style={{ width: columns[4].width, minWidth: columns[4].minWidth }}>{row.totalExpenditure != null ? formatINRCompact(row.totalExpenditure) : '—'}</div>
                <div className="table-cell utilization-cell" data-label={columns[5].label} style={{ width: columns[5].width, textAlign: columns[5].align, minWidth: columns[5].minWidth }}>
                  {(() => {
-                   const utilClass = row.utilizationPercentage >= 75
+                   const utilClass = row.utilizationPercentage >= 80
                      ? 'utilization-high'
-                     : row.utilizationPercentage >= 40
+                     : row.utilizationPercentage >= 50
                        ? 'utilization-medium'
                        : 'utilization-low';
                    return (
