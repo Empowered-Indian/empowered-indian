@@ -435,7 +435,7 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   const timestamp = new Date().toLocaleString();
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
-  const avgUtilization = data.length ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length : 0;
+  const totalWorksRecommended = data.reduce((sum, s) => sum + (s.recommendedWorksCount || 0), 0);
   const totalWorks = data.reduce((sum, s) => sum + (s.totalWorksCompleted || 0), 0);
   const topPerformers = [...data].sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0)).slice(0, 3);
   const bottomPerformers = [...data].sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0)).slice(0, 3);
@@ -483,14 +483,12 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
 
               <View style={styles.summaryColumn}>
                 <View style={styles.summaryMetric}>
-                  <Text style={styles.summaryMetricLabel}>Average Utilization</Text>
-                  <Text style={styles.summaryMetricValue}>{avgUtilization.toFixed(1)}%</Text>
-                  <Text style={styles.summaryMetricSub}>National average</Text>
-                </View>
-                <View style={styles.summaryMetric}>
                   <Text style={styles.summaryMetricLabel}>Total Works Completed</Text>
                   <Text style={styles.summaryMetricValue}>{totalWorks.toLocaleString()}</Text>
-                  <Text style={styles.summaryMetricSub}>Projects delivered</Text>
+                </View>
+                <View style={styles.summaryMetric}>
+                  <Text style={styles.summaryMetricLabel}>Total Works Recommended</Text>
+                  <Text style={styles.summaryMetricValue}>{totalWorksRecommended.toLocaleString()}</Text>
                 </View>
               </View>
             </View>
