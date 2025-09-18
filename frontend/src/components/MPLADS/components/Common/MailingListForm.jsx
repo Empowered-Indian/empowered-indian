@@ -53,6 +53,7 @@ const MailingListForm = () => {
       <div className="mailing-input-group">
         <FiMail className="mail-icon" />
         <input
+          style={{ width: '100%' }}
           type="email"
           placeholder="Enter your email"
           value={email}

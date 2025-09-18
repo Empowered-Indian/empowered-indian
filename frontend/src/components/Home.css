@@ -328,8 +328,7 @@
 }
 
 .features-container .status-container,
-.mission-container,
-.newsletter-container {
+.mission-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0px 24px;
@@ -482,9 +481,10 @@
 /* mission values layout */
 .mission-values {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-top: 32px;
+  justify-self: center;
 }
 
 .value-item {
@@ -584,6 +584,7 @@
   }
 
   .stats-item {
+    min-width: 170px;
     padding: 1.25rem;
   }
 
@@ -672,8 +673,8 @@
   }
 
   .stats-item {
+    min-width: 150px;
     padding: 16px;
-
   }
 
   .stats-icon {
@@ -702,7 +703,7 @@
 
   .section-subtitle {
     font-size: 16px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
   }
 
   .feature-card {
@@ -716,9 +717,12 @@
   }
 
   .mission,
-  .newsletter,
-  .status-section {
+  .newsletter {
     padding: 20px 20px;
+  }
+
+  .status-section {
+    padding: 0px 0px;
   }
 
   .value-item {
@@ -727,6 +731,11 @@
 
   .newsletter-content {
     padding: 32px 24px;
+  }
+
+  .mission-values {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
 

@@ -2,15 +2,15 @@ import { FiAlertCircle, FiRefreshCw, FiHome } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import './ErrorDisplay.css';
 
-const ErrorDisplay = ({ 
-  error, 
-  onRetry, 
+const ErrorDisplay = ({
+  error,
+  onRetry,
   title = 'Something went wrong',
   showHomeButton = true,
-  customActions = null 
+  customActions = null
 }) => {
   const navigate = useNavigate();
-  
+
   // Extract error message
   const getErrorMessage = () => {
     if (typeof error === 'string') return error;
@@ -27,7 +27,6 @@ const ErrorDisplay = ({
   const getErrorSuggestions = () => {
     const message = getErrorMessage().toLowerCase();
     const suggestions = [];
-
     if (message.includes('network') || message.includes('connection')) {
       suggestions.push('Check your internet connection');
       suggestions.push('Try disabling VPN if you\'re using one');
@@ -46,7 +45,6 @@ const ErrorDisplay = ({
       suggestions.push('Refresh the page and try again');
       suggestions.push('Clear your browser cache');
     }
-
     return suggestions;
   };
 
@@ -55,11 +53,8 @@ const ErrorDisplay = ({
       <div className="error-icon">
         <FiAlertCircle />
       </div>
-      
       <h2 className="error-title">{title}</h2>
-      
       <p className="error-message">{getErrorMessage()}</p>
-      
       <div className="error-suggestions">
         <h3>What you can try:</h3>
         <ul>
@@ -68,11 +63,10 @@ const ErrorDisplay = ({
           ))}
         </ul>
       </div>
-      
-      <div className="error-actions">
+
+      <div className="error-action">
         {onRetry && (
-          <button 
-            className="error-button error-button-primary"
+          <button
             onClick={onRetry}
             aria-label="Retry loading data"
           >
@@ -80,10 +74,10 @@ const ErrorDisplay = ({
             Try Again
           </button>
         )}
-        
+
         {showHomeButton && (
-          <button 
-            className="error-button error-button-secondary"
+          <button
+            className='dashboard-button'
             onClick={() => navigate('/mplads')}
             aria-label="Go to homepage"
           >
@@ -91,10 +85,9 @@ const ErrorDisplay = ({
             Go to Dashboard
           </button>
         )}
-        
         {customActions}
       </div>
-      
+
       {import.meta.env.DEV && error?.stack && (
         <details className="error-details">
           <summary>Technical Details</summary>

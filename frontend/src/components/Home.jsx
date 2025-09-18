@@ -20,11 +20,9 @@ function Home() {
         current += step
         if (current >= target) {
           counter.textContent = formatNumber(Math.round(target))
-          counter.setAttribute('aria-valuenow', Math.round(target))
           clearInterval(id)
         } else {
           counter.textContent = formatNumber(Math.floor(current))
-          counter.setAttribute('aria-valuenow', Math.floor(current))
         }
       }, 1000 / fps)
     }
