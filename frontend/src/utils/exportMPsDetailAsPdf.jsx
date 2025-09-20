@@ -369,6 +369,56 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
 
+    // Yearly breakdown section
+    yearlyBreakdown: {
+        marginTop: 16,
+        backgroundColor: colors.surface,
+        borderRadius: 12,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    yearlyHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 12,
+    },
+    yearlyIcon: {
+        width: 18,
+        height: 18,
+        backgroundColor: colors.warning,
+        borderRadius: 9,
+        marginRight: 8,
+    },
+    yearlyTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: colors.textPrimary,
+        letterSpacing: -0.3,
+    },
+    yearlyItem: {
+        marginBottom: 8,
+        padding: 10,
+        backgroundColor: colors.borderLight,
+        borderRadius: 6,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    yearlyYear: {
+        fontSize: 12,
+        fontWeight: "bold",
+        color: colors.textPrimary,
+    },
+    yearlyStats: {
+        fontSize: 9,
+        color: colors.textSecondary,
+    },
+
     // footer
     footer: {
         position: "absolute",
@@ -437,17 +487,57 @@ export async function generateMPDetailPdf(data, options = {}) {
 const MPDetailDocument = ({ data }) => {
     const timestamp = new Date().toLocaleString();
     const mp = data.mp || {};
-    const expenditure = data.expenditure || {};
-    const works = data.works || {};
-    const worksList = data.worksList || [];
-    const totalExpenditure = expenditure.summary?.totalExpenditure || 0;
+    const completedWorksData = data.completedWorks || {};
+    const recommendedWorksData = data.recommendedWorks || {};
+
+    // Calculate insights from actual data
     const allocatedAmount = mp.allocatedAmount || 0;
+    const totalExpenditure = mp.totalExpenditure || 0;
     const utilizationPercentage = mp.utilizationPercentage || 0;
-    const completedWorks = works.completedCount || 0;
-    const recommendedWorks = works.recommendedCount || 0;
     const completionRate = mp.completionRate || 0;
-    const yearlyData = expenditure.yearlyTrend || [];
+
+    // Get works arrays
+    const completedWorks = completedWorksData.completedWorks || [];
+    const recommendedWorks = recommendedWorksData.recommendedWorks || [];
+
+    // Calculate totals from works data
+    const totalCompletedCost = completedWorksData.summary?.totalCost || 0;
+
+    // Group works by category for better visualization
+    const categoryStats = {};
+    completedWorks.forEach(work => {
+        const category = work.category || 'Normal/Others';
+        if (!categoryStats[category]) {
+            categoryStats[category] = { count: 0, totalCost: 0 };
+        }
+        categoryStats[category].count++;
+        categoryStats[category].totalCost += work.cost || 0;
+    });
+
+    // Group works by year
+    const yearlyStats = {};
+    completedWorks.forEach(work => {
+        const year = work.completion_year || 'Unknown';
+        if (!yearlyStats[year]) {
+            yearlyStats[year] = { count: 0, totalCost: 0 };
+        }
+        yearlyStats[year].count++;
+        yearlyStats[year].totalCost += work.cost || 0;
+    });
+
+    // Prepare yearly data for chart
+    const yearlyData = Object.entries(yearlyStats).map(([year, stats]) => ({
+        _id: year,
+        totalAmount: stats.totalCost,
+        transactionCount: stats.count
+    })).sort((a, b) => a._id - b._id);
+
     const maxYearlyAmount = Math.max(...yearlyData.map(y => y.totalAmount || 0));
+
+    // Top categories for insights
+    const topCategories = Object.entries(categoryStats)
+        .sort(([, a], [, b]) => b.totalCost - a.totalCost)
+        .slice(0, 3);
 
     return (
         <Document>
@@ -491,7 +581,7 @@ const MPDetailDocument = ({ data }) => {
                                     <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
                                     <Text style={styles.summaryMetricValue}>{formatINRCompact(totalExpenditure)}</Text>
                                     <Text style={styles.summaryMetricSub}>
-                                        {allocatedAmount > 0 ? ((totalExpenditure / allocatedAmount) * 100).toFixed(1) : 0}% utilization
+                                        {utilizationPercentage.toFixed(1)}% fund utilization
                                     </Text>
                                 </View>
                             </View>
@@ -499,42 +589,16 @@ const MPDetailDocument = ({ data }) => {
                             <View style={styles.summaryColumn}>
                                 <View style={styles.summaryMetric}>
                                     <Text style={styles.summaryMetricLabel}>Works Completed</Text>
-                                    <Text style={styles.summaryMetricValue}>{completedWorks}</Text>
+                                    <Text style={styles.summaryMetricValue}>{completedWorks.length}</Text>
                                     <Text style={styles.summaryMetricSub}>
                                         {completionRate.toFixed(1)}% completion rate
                                     </Text>
                                 </View>
                                 <View style={styles.summaryMetric}>
                                     <Text style={styles.summaryMetricLabel}>Works Recommended</Text>
-                                    <Text style={styles.summaryMetricValue}>{recommendedWorks}</Text>
+                                    <Text style={styles.summaryMetricValue}>{recommendedWorks.length}</Text>
                                     <Text style={styles.summaryMetricSub}>{mp.pendingWorks || 0} pending works</Text>
                                 </View>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Insights */}
-                    <View style={styles.insights}>
-                        <View style={styles.insightsHeader}>
-                            <View style={styles.insightsIcon} />
-                            <Text style={styles.insightsTitle}>Key Performance Insights</Text>
-                        </View>
-                        <View style={styles.insightsGrid}>
-                            <View style={styles.insightCard}>
-                                <Text style={styles.insightValue}>{utilizationPercentage.toFixed(1)}%</Text>
-                                <Text style={styles.insightLabel}>Fund Utilization</Text>
-                            </View>
-                            <View style={styles.insightCard}>
-                                <Text style={styles.insightValue}>{completionRate.toFixed(1)}%</Text>
-                                <Text style={styles.insightLabel}>Work Completion</Text>
-                            </View>
-                            <View style={styles.insightCard}>
-                                <Text style={styles.insightValue}>{formatINRCompact(mp.unspentAmount || 0)}</Text>
-                                <Text style={styles.insightLabel}>Unspent Amount</Text>
-                            </View>
-                            <View style={styles.insightCard}>
-                                <Text style={styles.insightValue}>{mp.paymentGapPercentage?.toFixed(1) || 0}%</Text>
-                                <Text style={styles.insightLabel}>Payment Gap</Text>
                             </View>
                         </View>
                     </View>
@@ -563,23 +627,19 @@ const MPDetailDocument = ({ data }) => {
                         </View>
                     )}
 
-                    {/* Recent Completed Works */}
-                    {works.recentCompleted && works.recentCompleted.length > 0 && (
-                        <View style={styles.works}>
-                            <View style={styles.worksHeader}>
-                                <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Recent Completed Works</Text>
+                    {/* Yearly Breakdown */}
+                    {yearlyData.length > 0 && (
+                        <View style={styles.yearlyBreakdown}>
+                            <View style={styles.yearlyHeader}>
+                                <View style={styles.yearlyIcon} />
+                                <Text style={styles.yearlyTitle}>Yearly Performance Breakdown</Text>
                             </View>
-                            {works.recentCompleted.map((work, i) => (
-                                <View key={i} style={styles.workItem}>
-                                    <Text style={styles.workTitle}>{work.workCategory || 'Work'}</Text>
-                                    <Text style={styles.workDescription}>{work.workDescription || 'No description'}</Text>
-                                    <View style={styles.workMeta}>
-                                        <Text style={styles.workMetaItem}>
-                                            Completed: {new Date(work.completedDate).toLocaleDateString()}
-                                        </Text>
-                                        <Text style={styles.workMetaItem}>
-                                            Amount: {formatINRCompact(work.finalAmount || 0)}
+                            {yearlyData.map((yearData, i) => (
+                                <View key={i} style={styles.yearlyItem}>
+                                    <Text style={styles.yearlyYear}>{yearData._id}</Text>
+                                    <View>
+                                        <Text style={styles.yearlyStats}>
+                                            {yearData.transactionCount} works • {formatINRCompact(yearData.totalAmount)}
                                         </Text>
                                     </View>
                                 </View>
@@ -587,31 +647,80 @@ const MPDetailDocument = ({ data }) => {
                         </View>
                     )}
 
-                    {/* All Works List */}
-                    {worksList.length > 0 && (
+                    {/* Category Breakdown */}
+                    {Object.keys(categoryStats).length > 0 && (
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>All Works ({worksList.length})</Text>
+                                <Text style={styles.worksTitle}>Work Categories Breakdown</Text>
                             </View>
-                            {worksList.slice(0, 10).map((work, i) => (
+                            {topCategories.map(([category, stats], i) => (
                                 <View key={i} style={styles.workItem}>
-                                    <Text style={styles.workTitle}>{work.workCategory || 'Work'}</Text>
-                                    <Text style={styles.workDescription}>{work.workDescription || 'No description'}</Text>
+                                    <Text style={styles.workTitle}>{category}</Text>
+                                    <Text style={styles.workDescription}>
+                                        {stats.count} works • Total cost: {formatINRCompact(stats.totalCost)}
+                                    </Text>
                                     <View style={styles.workMeta}>
                                         <Text style={styles.workMetaItem}>
-                                            Status: {work.status || 'Unknown'}
+                                            Average: {formatINRCompact(stats.totalCost / stats.count)}
                                         </Text>
                                         <Text style={styles.workMetaItem}>
-                                            {work.finalAmount ? `Amount: ${formatINRCompact(work.finalAmount)}` :
-                                                work.recommendedAmount ? `Recommended: ${formatINRCompact(work.recommendedAmount)}` : ''}
+                                            {((stats.totalCost / totalExpenditure) * 100).toFixed(1)}% of total
                                         </Text>
                                     </View>
                                 </View>
                             ))}
-                            {worksList.length > 10 && (
+                        </View>
+                    )}
+
+                    {/* Completed Works */}
+                    {completedWorks.length > 0 && (
+                        <View style={styles.works}>
+                            <View style={styles.worksHeader}>
+                                <View style={styles.worksIcon} />
+                                <Text style={styles.worksTitle}>Completed Works ({completedWorks.length})</Text>
+                            </View>
+                            {completedWorks.map((work, i) => (
+                                <View key={i} style={styles.workItem}>
+                                    <Text style={styles.workTitle}>{work.category || 'Work'}</Text>
+                                    <Text style={styles.workDescription}>{work.work_description || 'No description'}</Text>
+                                    <View style={styles.workMeta}>
+                                        <Text style={styles.workMetaItem}>
+                                            Completed: {new Date(work.completion_date).toLocaleDateString()}
+                                        </Text>
+                                        <Text style={styles.workMetaItem}>
+                                            Amount: {formatINRCompact(work.cost || 0)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    )}
+
+                    {/* Recommended Works */}
+                    {recommendedWorks.length > 0 && (
+                        <View style={styles.works}>
+                            <View style={styles.worksHeader}>
+                                <View style={styles.worksIcon} />
+                                <Text style={styles.worksTitle}>Recommended Works ({recommendedWorks.length})</Text>
+                            </View>
+                            {recommendedWorks.slice(0, 5).map((work, i) => (
+                                <View key={i} style={styles.workItem}>
+                                    <Text style={styles.workTitle}>{work.category || 'Work'}</Text>
+                                    <Text style={styles.workDescription}>{work.work_description || 'No description'}</Text>
+                                    <View style={styles.workMeta}>
+                                        <Text style={styles.workMetaItem}>
+                                            Recommended: {new Date(work.recommendationDate || work.createdAt).toLocaleDateString()}
+                                        </Text>
+                                        <Text style={styles.workMetaItem}>
+                                            Amount: {formatINRCompact(work.recommendedAmount || work.totalPaid || 0)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                            {recommendedWorks.length > 5 && (
                                 <Text style={[styles.smallText, { textAlign: 'center', marginTop: 8 }]}>
-                                    ... and {worksList.length - 10} more works
+                                    ... and {recommendedWorks.length - 5} more recommended works
                                 </Text>
                             )}
                         </View>
@@ -625,7 +734,6 @@ const MPDetailDocument = ({ data }) => {
                             * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
                         </Text>
                     </View>
-                    <Text style={styles.pageNumber}>Page 1 of 1</Text>
                 </View>
             </Page>
         </Document>
@@ -690,7 +798,7 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
         setLoading(true);
         try {
             await generateMPDetailPdf(data, {
-                fileName: `empowered_indian_mp_detail_${data.map?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`
+                fileName: `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`
             });
         } catch (e) {
             console.error("PDF generation failed", e);
