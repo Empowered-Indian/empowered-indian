@@ -12,6 +12,7 @@ import { getIdFromSlug, isBareObjectId, buildMPSlugHuman, buildMPSlugCandidates,
 import { summaryAPI } from '../../../services/api';
 import { useFilters } from '../../../contexts/FilterContext';
 import './MPDetail.css';
+import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf.jsx';
 
 const MPDetail = () => {
   const navigate = useNavigate();
@@ -335,6 +336,7 @@ const MPDetail = () => {
               <FiBarChart2 />
               <span>Compare</span>
             </Link>
+            <ExportMPsDetailAsPdf mpData={mp} />
           </div>
         </div>
 

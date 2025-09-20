@@ -4,27 +4,27 @@ import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 
 const colors = {
-  primary: "#1e40af",
-  primaryLight: "#3b82f6",
-  primaryDark: "#1e3a8a",
-  secondary: "#059669",
-  accent: "#dc2626",
-  warning: "#d97706",
-  success: "#16a34a",
-  background: "#fafbfc",
-  surface: "#ffffff",
-  surfaceElevated: "#ffffff",
-  textPrimary: "#0f172a",
-  textSecondary: "#475569",
-  textMuted: "#64748b",
-  border: "#e2e8f0",
-  borderLight: "#f1f5f9",
-  shadow: "rgba(0, 0, 0, 0.1)",
+  primary: "#007AFF", //blue
+  primaryLight: "#4DA3FF",
+  primaryDark: "#005BD3",
+  secondary: "#34C759", //green
+  accent: "#FF3B30", //red
+  warning: "#FF9500", //orange
+  success: "#30D158", //green
+  background: "#F2F2F7", //light gray
+  surface: "#FFFFFF",
+  surfaceElevated: "#FFFFFF",
+  textPrimary: "#1C1C1E", //dark
+  textSecondary: "#3C3C43", //medium
+  textMuted: "#8E8E93", //light
+  border: "#C6C6C8", //border
+  borderLight: "#E5E5EA", //light border
+  shadow: "rgba(0, 0, 0, 0.05)", // Very subtle shadow
   gradient: {
-    primary: ["#1e40af", "#3b82f6"],
-    secondary: ["#059669", "#10b981"],
-    accent: ["#dc2626", "#ef4444"],
-    neutral: ["#f8fafc", "#e2e8f0"],
+    primary: ["#007AFF", "#4DA3FF"],
+    secondary: ["#34C759", "#30D158"],
+    accent: ["#FF3B30", "#FF453A"],
+    neutral: ["#F2F2F7", "#E5E5EA"],
   }
 };
 
@@ -40,10 +40,10 @@ const styles = StyleSheet.create({
 
   // header with gradient background
   header: {
-    backgroundColor: colors.surface,
-    padding: "8px 16px 6px 16px",
+    background: `linear-gradient(135deg, ${colors.surface} 0%, ${colors.background} 100%)`,
+    padding: "20px 32px 16px 32px",
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderLight,
     position: "relative",
   },
   headerGradient: {
@@ -80,17 +80,18 @@ const styles = StyleSheet.create({
     paddingTop: 1,
   },
   title: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     color: colors.textPrimary,
-    marginBottom: 1,
-    letterSpacing: -0.2,
+    marginBottom: 4,
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 10,
+    fontSize: 12,
     color: colors.textSecondary,
-    marginBottom: 2,
+    marginBottom: 4,
     fontWeight: "500",
+    letterSpacing: -0.2,
   },
   metaInfo: {
     flexDirection: "row",
@@ -119,17 +120,21 @@ const styles = StyleSheet.create({
 
   // content area
   content: {
-    padding: "6px 16px",
+    padding: "24px 32px",
   },
 
   // Enhanced summary section
   summary: {
-    marginBottom: 8,
+    marginBottom: 16,
     backgroundColor: colors.surface,
-    borderRadius: 6,
-    padding: 8,
+    borderRadius: 12,
+    padding: 20,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderLight,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   summaryHeader: {
     flexDirection: "row",
@@ -144,10 +149,10 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   summaryTitle: {
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: "bold",
     color: colors.textPrimary,
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   summaryGrid: {
     flexDirection: "row",
@@ -216,17 +221,21 @@ const styles = StyleSheet.create({
   cardsContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: 4,
+    gap: 12,
   },
   card: {
-    borderRadius: 6,
-    padding: 8,
+    borderRadius: 12,
+    padding: 16,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderLight,
     flexDirection: "row",
     alignItems: "center",
     position: "relative",
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   cardShadow: {
     shadowColor: colors.shadow,
@@ -322,12 +331,16 @@ const styles = StyleSheet.create({
 
   // table layout
   table: {
-    marginTop: 12,
+    marginTop: 20,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderLight,
     overflow: "hidden",
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   tableHeader: {
     flexDirection: "row",
@@ -366,8 +379,8 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    padding: "4px 16px",
+    borderTopColor: colors.borderLight,
+    padding: "12px 32px",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -390,6 +403,158 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: colors.textMuted,
     fontWeight: "600",
+  },
+
+  // Insights section
+  insights: {
+    marginTop: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  insightsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  insightsIcon: {
+    width: 18,
+    height: 18,
+    backgroundColor: colors.secondary,
+    borderRadius: 9,
+    marginRight: 8,
+  },
+  insightsTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  insightsGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  insightCard: {
+    flex: 1,
+    backgroundColor: colors.borderLight,
+    borderRadius: 6,
+    padding: 8,
+    alignItems: "center",
+  },
+  insightValue: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    marginBottom: 2,
+  },
+  insightLabel: {
+    fontSize: 8,
+    color: colors.textMuted,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
+    textAlign: "center",
+  },
+  recommendations: {
+    marginTop: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  recTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    marginBottom: 8,
+    letterSpacing: -0.2,
+  },
+  recItem: {
+    fontSize: 9,
+    color: colors.textSecondary,
+    marginBottom: 4,
+    paddingLeft: 8,
+  },
+  recBullet: {
+    fontSize: 9,
+    color: colors.primary,
+    fontWeight: "bold",
+    marginRight: 4,
+  },
+
+  // Chart section
+  chart: {
+    marginTop: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  chartHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  chartIcon: {
+    width: 18,
+    height: 18,
+    backgroundColor: colors.accent,
+    borderRadius: 9,
+    marginRight: 8,
+  },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  chartContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    height: 120,
+    marginTop: 8,
+  },
+  chartBar: {
+    flex: 1,
+    marginHorizontal: 1,
+    alignItems: "center",
+  },
+  chartBarFill: {
+    width: "100%",
+    backgroundColor: colors.primary,
+    borderRadius: 2,
+  },
+  chartLabel: {
+    fontSize: 7,
+    color: colors.textMuted,
+    textAlign: "center",
+    marginTop: 4,
+  },
+  chartValue: {
+    fontSize: 8,
+    color: colors.textPrimary,
+    fontWeight: "bold",
+    position: "absolute",
+    top: -12,
+    width: "100%",
+    textAlign: "center",
   },
 
   // Utility classes
@@ -440,6 +605,13 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   const topPerformers = [...data].sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0)).slice(0, 3);
   const bottomPerformers = [...data].sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0)).slice(0, 3);
 
+  // Additional insights
+  const avgUtilization = data.length > 0 ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length : 0;
+  const maxUtilization = Math.max(...data.map(s => s.utilizationPercentage || 0));
+  const minUtilization = Math.min(...data.map(s => s.utilizationPercentage || 0));
+  const highUtilStates = data.filter(s => (s.utilizationPercentage || 0) >= 80).length;
+  const lowUtilStates = data.filter(s => (s.utilizationPercentage || 0) < 50).length;
+
   return (
     <Document>
       <Page size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
@@ -451,8 +623,9 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
             <View style={styles.titleBlock}>
               <Text style={styles.title}>Empowered Indian</Text>
               <Text style={styles.subtitle}>MPLADS State Performance Report</Text>
+              <Text style={[styles.smallText, { marginTop: 2 }]}>Transparent • Data-Driven • Impactful</Text>
             </View>
-            <View style={{ width: '135px'}}>
+            <View style={{ width: '135px' }}>
               <Text style={styles.timestamp}>{timestamp}</Text>
               <Text style={styles.generatedBy}>Generated by Empowered Indian</Text>
             </View>
@@ -485,10 +658,14 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                 <View style={styles.summaryMetric}>
                   <Text style={styles.summaryMetricLabel}>Total Works Completed</Text>
                   <Text style={styles.summaryMetricValue}>{totalWorks.toLocaleString()}</Text>
+                  <Text style={styles.summaryMetricSub}>
+                    {totalWorksRecommended > 0 ? ((totalWorks / totalWorksRecommended) * 100).toFixed(1) : 0}% completion rate
+                  </Text>
                 </View>
                 <View style={styles.summaryMetric}>
                   <Text style={styles.summaryMetricLabel}>Total Works Recommended</Text>
                   <Text style={styles.summaryMetricValue}>{totalWorksRecommended.toLocaleString()}</Text>
+                  <Text style={styles.summaryMetricSub}>Pending implementation</Text>
                 </View>
               </View>
             </View>
@@ -510,6 +687,52 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                   </Text>
                 ))}
               </View>
+            </View>
+          </View>
+
+          <View style={styles.insights}>
+            <View style={styles.insightsHeader}>
+              <View style={styles.insightsIcon} />
+              <Text style={styles.insightsTitle}>Key Insights</Text>
+            </View>
+            <View style={styles.insightsGrid}>
+              <View style={styles.insightCard}>
+                <Text style={styles.insightValue}>{avgUtilization.toFixed(1)}%</Text>
+                <Text style={styles.insightLabel}>Average Utilization</Text>
+              </View>
+              <View style={styles.insightCard}>
+                <Text style={styles.insightValue}>{maxUtilization.toFixed(1)}%</Text>
+                <Text style={styles.insightLabel}>Highest Utilization</Text>
+              </View>
+              <View style={styles.insightCard}>
+                <Text style={styles.insightValue}>{minUtilization.toFixed(1)}%</Text>
+                <Text style={styles.insightLabel}>Lowest Utilization</Text>
+              </View>
+              <View style={styles.insightCard}>
+                <Text style={styles.insightValue}>{highUtilStates}</Text>
+                <Text style={styles.insightLabel}>States ≥80% Util</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.chart}>
+            <View style={styles.chartHeader}>
+              <View style={styles.chartIcon} />
+              <Text style={styles.chartTitle}>Utilization Overview</Text>
+            </View>
+            <View style={styles.chartContainer}>
+              {data.slice(0, 8).map((s, i) => {
+                const pct = s.utilizationPercentage || 0;
+                const height = Math.max(10, (pct / 100) * 100);
+                return (
+                  <View key={i} style={styles.chartBar}>
+                    <View style={[styles.chartBarFill, { height }]}>
+                      <Text style={styles.chartValue}>{pct.toFixed(0)}%</Text>
+                    </View>
+                    <Text style={styles.chartLabel}>{s.state}</Text>
+                  </View>
+                );
+              })}
             </View>
           </View>
 
@@ -611,11 +834,10 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
         <View style={styles.footer}>
           <View style={styles.footerLeft}>
             <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-            <Text style={styles.footerText}>
-              Generated {new Date().toLocaleString()} • Empowered Indian • https://empoweredindian.in/
+            <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
+              * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
             </Text>
           </View>
-          <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`} fixed />
         </View>
       </Page>
     </Document>
@@ -685,16 +907,22 @@ const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}
       onClick={handleClick}
       disabled={loading}
       style={{
-        padding: "10px",
+        padding: "12px 24px",
         display: "inline-flex",
         alignItems: "center",
-        borderRadius: 8,
-        fontSize: "12px",
-        fontWeight: "600",
+        gap: "8px",
+        borderRadius: 12,
+        fontSize: "15px",
+        fontWeight: "500",
         cursor: loading ? "not-allowed" : "pointer",
-        opacity: loading ? 0.7 : 1,
+        opacity: loading ? 0.6 : 1,
         transition: "all 0.2s ease",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+        boxShadow: loading ? "none" : "0 2px 8px rgba(0, 122, 255, 0.2)",
+        background: loading ? "#F2F2F7" : "linear-gradient(135deg, #007AFF 0%, #4DA3FF 100%)",
+        color: loading ? "#8E8E93" : "#FFFFFF",
+        border: "none",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <FiDownload />
