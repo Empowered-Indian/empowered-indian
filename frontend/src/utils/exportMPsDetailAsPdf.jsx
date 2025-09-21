@@ -1,30 +1,14 @@
 import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, Image, Link, pdf } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Image, Link } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 import { useMPWorks } from '../hooks/useApi';
 import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles } from "./pdfUIStyles";
+import { generateAndDownloadPdf } from "./pdfGenerator";
 
 const baseStyles = createBaseStyles(StyleSheet);
 const extendedStyles = createExtendedStyles(StyleSheet);
 const styles = { ...baseStyles, ...extendedStyles };
-
-export async function generateMPDetailPdf(data, options = {}) {
-    const { fileName: fn } = options;
-    const fileName = fn || `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`;
-    const docNode = <MPDetailDocument data={data} />;
-    const asPdf = pdf(docNode, { author: "Empowered Indian" });
-    const blob = await asPdf.toBlob();
-    const url = URL.createObjectURL(blob);
-    const a = window.document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    window.document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    return true;
-}
 
 const MPDetailDocument = ({ data }) => {
     const timestamp = new Date().toLocaleString();
@@ -294,9 +278,9 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
         setError(null);
         setLoading(true);
         try {
-            await generateMPDetailPdf(data, {
-                fileName: `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`
-            });
+            const fileName = `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`;
+            const docNode = <MPDetailDocument data={data} />;
+            await generateAndDownloadPdf(docNode, fileName);
         } catch (e) {
             console.error("PDF generation failed", e);
             setError("Failed to generate PDF");

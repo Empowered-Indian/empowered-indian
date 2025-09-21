@@ -1,31 +1,15 @@
 import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, Image, pdf } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 import { colors, createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles, utilBarStyleFor } from "./pdfUIStyles";
+import { generateAndDownloadPdf } from "./pdfGenerator";
 
 const baseStyles = createBaseStyles(StyleSheet);
 const extendedStyles = createExtendedStyles(StyleSheet);
 const styles = { ...baseStyles, ...extendedStyles };
 
-export async function generatePdfWithOptions(data = [], options = {}) {
-  const { fileName: fn, meta = {}, layout = "cards" } = options;
-  const fileName = fn || `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`;
-  const docNode = <MyDocument data={data} meta={meta} layout={layout} />;
-  const asPdf = pdf(docNode, { author: "Empowered Indian" });
-  const blob = await asPdf.toBlob();
-  const url = URL.createObjectURL(blob);
-  const a = window.document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  window.document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  return true;
-}
-
-const MyDocument = ({ data = [], meta = {} }) => {
+const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   const timestamp = new Date().toLocaleString();
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
@@ -277,11 +261,9 @@ const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}
     setError(null);
     setLoading(true);
     try {
-      await generatePdfWithOptions(currentFilteredStates, {
-        fileName: `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`,
-        meta,
-        layout,
-      });
+      const fileName = `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const docNode = <MyDocument data={currentFilteredStates} meta={meta} layout={layout} />;
+      await generateAndDownloadPdf(docNode, fileName);
     } catch (e) {
       console.error("PDF generation failed", e);
       setError("Failed to generate PDF");
