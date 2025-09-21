@@ -135,9 +135,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
     linkIcon: {
         width: 12,
         height: 12,
-        backgroundColor: colors.secondary,
-        borderRadius: 6,
-        marginRight: 4,
+        marginLeft: 8,
     },
     summaryTitle: {
         fontSize: 16,

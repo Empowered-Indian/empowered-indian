@@ -119,12 +119,12 @@ const MPDetailDocument = ({ data }) => {
                             <Link src={currentUrl} style={{ color: '#007AFF', textDecoration: 'underline', fontSize: 9, marginBottom: 4 }}>
                                 <Image
                                     src="https://img.icons8.com/?size=100&id=xPX4qmtKvtBp&format=png&color=000000"
-                                    style={{ width: 12, height: 12, marginRight: 4 }}
+                                    style={styles.linkIcon}
                                 />
                             </Link>
                         </View>
                         <Text style={[styles.smallText, { marginBottom: 8 }]}>
-                            {mp.constituency || 'Constituency'} • {mp.state || 'State'} • {mp.house || 'House'}
+                            {mp.constituency || 'Constituency'} • {mp.state || 'State'} • {mp.house !== 'Rajya Sabha' ? mp.house : ''}
                         </Text>
 
                         <View style={styles.summaryGrid}>
