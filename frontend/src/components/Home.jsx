@@ -90,12 +90,12 @@ function Home() {
                 </div>
                 <div className="stats-label">MPs Monitored</div>
               </div>
-              <div className="stats-item" role="group" aria-label="States covered">
+              <div className="stats-item" role="group" aria-label="States/UTs covered">
                 <div className="stats-icon">🗺️</div>
                 <div className="stats-number">
                   <span className="counter" data-target="38">38</span>
                 </div>
-                <div className="stats-label">States Covered</div>
+                <div className="stats-label">States/UTs Covered</div>
               </div>
               <div className="stats-item" role="group" aria-label="Projects tracked">
                 <div className="stats-icon">📑</div>
