@@ -9,7 +9,7 @@ const extendedStyles = createExtendedStyles(StyleSheet);
 const styles = { ...baseStyles, ...extendedStyles };
 
 export async function generatePdfWithOptions(data = [], options = {}) {
-  const { fileName: fn, meta = {}, layout = "cards", orientation = "portrait" } = options;
+  const { fileName: fn, meta = {}, layout = "cards" } = options;
   const fileName = fn || `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`;
   const docNode = <MyDocument data={data} meta={meta} layout={layout} />;
   const asPdf = pdf(docNode, { author: "Empowered Indian" });
@@ -39,7 +39,6 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   const maxUtilization = Math.max(...data.map(s => s.utilizationPercentage || 0));
   const minUtilization = Math.min(...data.map(s => s.utilizationPercentage || 0));
   const highUtilStates = data.filter(s => (s.utilizationPercentage || 0) >= 80).length;
-  const lowUtilStates = data.filter(s => (s.utilizationPercentage || 0) < 50).length;
 
   return (
     <Document>
@@ -320,7 +319,7 @@ const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}
     <button
       onClick={handleClick}
       disabled={loading}
-      style={getExportButtonStyles(loading, error)}
+      style={getExportButtonStyles(loading)}
     >
       <FiDownload />
       {loading ? "Generating PDF..." : error ? "Export Failed" : "Download Report"}

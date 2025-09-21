@@ -337,7 +337,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
 });
 
 // Export button styles for consistent UI
-export const getExportButtonStyles = (loading = false, error = false) => ({
+export const getExportButtonStyles = (loading = false) => ({
     padding: "12px 24px",
     display: "inline-flex",
     alignItems: "center",

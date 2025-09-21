@@ -213,7 +213,7 @@ const getMPWorks = async (req, res, next) => {
     const mpId = mp ? mp._id.toString() : null;
 
     // Validate and sanitize pagination
-    const { page, limit, skip } = validatePagination(req.query.page || 1, req.query.limit || 50);
+    const { page, limit, skip } = validatePagination(req.query.page || 1, req.query.limit || 50000);
     let works = [];
     let totalCount = 0;
     let totalCost = 0;
