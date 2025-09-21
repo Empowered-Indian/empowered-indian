@@ -2,471 +2,13 @@ import React, { useState } from "react";
 import { Document, Page, Text, View, StyleSheet, Image, pdf } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
-import { useCompletedWorks, useRecommendedWorks, useWorkCategories, useMPWorks } from '../hooks/useApi';
+import { useMPWorks } from '../hooks/useApi';
+import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles } from "./pdfUIStyles";
 
-// Reuse the same color scheme and base styles from exportStatesListAsPdf
-const colors = {
-    primary: "#007AFF", //blue
-    primaryLight: "#4DA3FF",
-    primaryDark: "#005BD3",
-    secondary: "#34C759", //green
-    accent: "#FF3B30", //red
-    warning: "#FF9500", //orange
-    success: "#30D158", //green
-    background: "#F2F2F7", //light gray
-    surface: "#FFFFFF",
-    surfaceElevated: "#FFFFFF",
-    textPrimary: "#1C1C1E", //dark
-    textSecondary: "#3C3C43", //medium
-    textMuted: "#8E8E93", //light
-    border: "#C6C6C8", //border
-    borderLight: "#E5E5EA", //light border
-    shadow: "rgba(0, 0, 0, 0.05)", // Very subtle shadow
-    gradient: {
-        primary: ["#007AFF", "#4DA3FF"],
-        secondary: ["#34C759", "#30D158"],
-        accent: ["#FF3B30", "#FF453A"],
-        neutral: ["#F2F2F7", "#E5E5EA"],
-    }
-};
+const baseStyles = createBaseStyles(StyleSheet);
+const extendedStyles = createExtendedStyles(StyleSheet);
+const styles = { ...baseStyles, ...extendedStyles };
 
-const styles = StyleSheet.create({
-    page: {
-        padding: 0,
-        fontSize: 10,
-        fontFamily: "Helvetica",
-        color: colors.textPrimary,
-        backgroundColor: colors.background,
-        position: "relative",
-    },
-
-    // header with gradient background
-    header: {
-        background: `linear-gradient(135deg, ${colors.surface} 0%, ${colors.background} 100%)`,
-        padding: "20px 32px 16px 32px",
-        borderBottomWidth: 1,
-        borderBottomColor: colors.borderLight,
-        position: "relative",
-    },
-    headerGradient: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        height: 4,
-        backgroundColor: colors.primary,
-    },
-    headerAccent: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        width: 100,
-        height: 4,
-        backgroundColor: colors.secondary,
-    },
-    headerRow: {
-        flexDirection: "row",
-        alignItems: "flex-start",
-        marginBottom: 4,
-    },
-    logo: {
-        width: 40,
-        height: 40,
-        borderRadius: 6,
-        marginRight: 10,
-        borderWidth: 1,
-        borderColor: colors.border,
-    },
-    titleBlock: {
-        flex: 1,
-        paddingTop: 1,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        marginBottom: 4,
-        letterSpacing: -0.5,
-    },
-    subtitle: {
-        fontSize: 12,
-        color: colors.textSecondary,
-        marginBottom: 4,
-        fontWeight: "500",
-        letterSpacing: -0.2,
-    },
-    metaInfo: {
-        flexDirection: "row",
-        gap: 6,
-        marginTop: 2,
-    },
-    metaTag: {
-        backgroundColor: colors.borderLight,
-        color: colors.textSecondary,
-        padding: "4px 8px",
-        borderRadius: 6,
-        fontSize: 9,
-        fontWeight: "600",
-    },
-    timestamp: {
-        fontSize: 10,
-        color: colors.textMuted,
-        textAlign: "right",
-        fontWeight: "500",
-    },
-    generatedBy: {
-        fontSize: 9,
-        color: colors.textMuted,
-        marginTop: 4
-    },
-
-    // content area
-    content: {
-        padding: "24px 32px",
-    },
-
-    // Enhanced summary section
-    summary: {
-        marginBottom: 16,
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: colors.borderLight,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
-    summaryHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 6,
-    },
-    summaryIcon: {
-        width: 16,
-        height: 16,
-        backgroundColor: colors.primary,
-        borderRadius: 8,
-        marginRight: 6,
-    },
-    summaryTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        letterSpacing: -0.3,
-    },
-    summaryGrid: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    summaryColumn: {
-        flex: 1,
-        paddingRight: 12,
-    },
-    summaryMetric: {
-        marginBottom: 8,
-    },
-    summaryMetricLabel: {
-        fontSize: 8,
-        color: colors.textMuted,
-        fontWeight: "600",
-        textTransform: "uppercase",
-        letterSpacing: 0.3,
-        marginBottom: 2,
-    },
-    summaryMetricValue: {
-        fontSize: 12,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-    },
-    summaryMetricSub: {
-        fontSize: 9,
-        color: colors.textSecondary,
-        marginTop: 1,
-    },
-
-    // Insights section
-    insights: {
-        marginTop: 16,
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: colors.borderLight,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
-    insightsHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 8,
-    },
-    insightsIcon: {
-        width: 18,
-        height: 18,
-        backgroundColor: colors.secondary,
-        borderRadius: 9,
-        marginRight: 8,
-    },
-    insightsTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        letterSpacing: -0.3,
-    },
-    insightsGrid: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        gap: 10,
-    },
-    insightCard: {
-        flex: 1,
-        backgroundColor: colors.borderLight,
-        borderRadius: 6,
-        padding: 8,
-        alignItems: "center",
-    },
-    insightValue: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        marginBottom: 2,
-    },
-    insightLabel: {
-        fontSize: 8,
-        color: colors.textMuted,
-        fontWeight: "600",
-        textTransform: "uppercase",
-        letterSpacing: 0.3,
-        textAlign: "center",
-    },
-
-    // Chart section
-    chart: {
-        marginTop: 16,
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: colors.borderLight,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
-    chartHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 8,
-    },
-    chartIcon: {
-        width: 18,
-        height: 18,
-        backgroundColor: colors.accent,
-        borderRadius: 9,
-        marginRight: 8,
-    },
-    chartTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        letterSpacing: -0.3,
-    },
-    chartContainer: {
-        flexDirection: "row",
-        alignItems: "flex-end",
-        height: 120,
-        marginTop: 8,
-    },
-    chartBar: {
-        flex: 1,
-        marginHorizontal: 1,
-        alignItems: "center",
-    },
-    chartBarFill: {
-        width: "100%",
-        backgroundColor: colors.primary,
-        borderRadius: 2,
-    },
-    chartLabel: {
-        fontSize: 7,
-        color: colors.textMuted,
-        textAlign: "center",
-        marginTop: 4,
-    },
-    chartValue: {
-        fontSize: 8,
-        color: colors.textPrimary,
-        fontWeight: "bold",
-        position: "absolute",
-        top: -12,
-        width: "100%",
-        textAlign: "center",
-    },
-
-    // Works section
-    works: {
-        marginTop: 16,
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: colors.borderLight,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
-    worksHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    worksIcon: {
-        width: 18,
-        height: 18,
-        backgroundColor: colors.warning,
-        borderRadius: 9,
-        marginRight: 8,
-    },
-    worksTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        letterSpacing: -0.3,
-    },
-    workItem: {
-        marginBottom: 12,
-        padding: 12,
-        backgroundColor: colors.borderLight,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: colors.border,
-    },
-    workTitle: {
-        fontSize: 11,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        marginBottom: 4,
-    },
-    workDescription: {
-        fontSize: 9,
-        color: colors.textSecondary,
-        marginBottom: 6,
-        lineHeight: 1.4,
-    },
-    workMeta: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    workMetaItem: {
-        fontSize: 8,
-        color: colors.textMuted,
-        fontWeight: "600",
-    },
-
-    // Yearly breakdown section
-    yearlyBreakdown: {
-        marginTop: 16,
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: colors.borderLight,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
-    yearlyHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    yearlyIcon: {
-        width: 18,
-        height: 18,
-        backgroundColor: colors.warning,
-        borderRadius: 9,
-        marginRight: 8,
-    },
-    yearlyTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-        letterSpacing: -0.3,
-    },
-    yearlyItem: {
-        marginBottom: 8,
-        padding: 10,
-        backgroundColor: colors.borderLight,
-        borderRadius: 6,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    yearlyYear: {
-        fontSize: 12,
-        fontWeight: "bold",
-        color: colors.textPrimary,
-    },
-    yearlyStats: {
-        fontSize: 9,
-        color: colors.textSecondary,
-    },
-
-    // footer
-    footer: {
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: colors.surface,
-        borderTopWidth: 1,
-        borderTopColor: colors.borderLight,
-        padding: "12px 32px",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    footerLeft: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    footerLogo: {
-        width: 20,
-        height: 20,
-        marginRight: 6,
-    },
-    footerText: {
-        fontSize: 8,
-        color: colors.textMuted,
-        fontWeight: "500",
-    },
-    pageNumber: {
-        fontSize: 8,
-        color: colors.textMuted,
-        fontWeight: "600",
-    },
-
-    // Utility classes
-    smallText: {
-        fontSize: 9,
-        color: colors.textSecondary,
-        fontWeight: "500",
-    },
-    divider: {
-        height: 1,
-        backgroundColor: colors.border,
-        marginVertical: 6,
-    },
-});
-
-// Enhanced PDF generation
 export async function generateMPDetailPdf(data, options = {}) {
     const { fileName: fn } = options;
     const fileName = fn || `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`;
@@ -489,40 +31,43 @@ const MPDetailDocument = ({ data }) => {
     const mp = data.mp || {};
     const completedWorksData = data.completedWorks || {};
     const recommendedWorksData = data.recommendedWorks || {};
-
-    // Calculate insights from actual data
     const allocatedAmount = mp.allocatedAmount || 0;
     const totalExpenditure = mp.totalExpenditure || 0;
     const utilizationPercentage = mp.utilizationPercentage || 0;
     const completionRate = mp.completionRate || 0;
+    // Get works arrays - handle both direct payload structure and nested structure
+    let completedWorks = completedWorksData.works || completedWorksData.completedWorks || [];
+    let recommendedWorks = recommendedWorksData.works || recommendedWorksData.recommendedWorks || [];
 
-    // Get works arrays
-    const completedWorks = completedWorksData.completedWorks || [];
-    const recommendedWorks = recommendedWorksData.recommendedWorks || [];
+    // Sort completed works by finalAmount (highest first) and take top 5
+    completedWorks = completedWorks
+        .sort((a, b) => (b.finalAmount || 0) - (a.finalAmount || 0))
+        .slice(0, 5);
 
-    // Calculate totals from works data
-    const totalCompletedCost = completedWorksData.summary?.totalCost || 0;
-
-    // Group works by category for better visualization
+    // Sort recommended works by recommendedAmount (highest first) and take top 5
+    recommendedWorks = recommendedWorks
+        .sort((a, b) => (b.recommendedAmount || 0) - (a.recommendedAmount || 0))
+        .slice(0, 5);
     const categoryStats = {};
     completedWorks.forEach(work => {
-        const category = work.category || 'Normal/Others';
+        const category = work.workCategory || 'Normal/Others';
         if (!categoryStats[category]) {
             categoryStats[category] = { count: 0, totalCost: 0 };
         }
         categoryStats[category].count++;
-        categoryStats[category].totalCost += work.cost || 0;
+        categoryStats[category].totalCost += work.finalAmount || 0;
     });
 
     // Group works by year
     const yearlyStats = {};
     completedWorks.forEach(work => {
-        const year = work.completion_year || 'Unknown';
+        const completedDate = work.completedDate || work.date;
+        const year = completedDate ? new Date(completedDate).getFullYear().toString() : 'Unknown';
         if (!yearlyStats[year]) {
             yearlyStats[year] = { count: 0, totalCost: 0 };
         }
         yearlyStats[year].count++;
-        yearlyStats[year].totalCost += work.cost || 0;
+        yearlyStats[year].totalCost += work.finalAmount || 0;
     });
 
     // Prepare yearly data for chart
@@ -552,7 +97,7 @@ const MPDetailDocument = ({ data }) => {
                             <Text style={styles.subtitle}>MP Performance Report</Text>
                             <Text style={[styles.smallText, { marginTop: 2 }]}>Transparent • Data-Driven • Impactful</Text>
                         </View>
-                        <View style={{ width: '135px' }}>
+                        <View style={{ width: '140px' }}>
                             <Text style={styles.timestamp}>{timestamp}</Text>
                             <Text style={styles.generatedBy}>Generated by Empowered Indian</Text>
                         </View>
@@ -678,18 +223,18 @@ const MPDetailDocument = ({ data }) => {
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Completed Works ({completedWorks.length})</Text>
+                                <Text style={styles.worksTitle}>Top 5 Completed Works by Amount ({completedWorks.length})</Text>
                             </View>
                             {completedWorks.map((work, i) => (
                                 <View key={i} style={styles.workItem}>
-                                    <Text style={styles.workTitle}>{work.category || 'Work'}</Text>
-                                    <Text style={styles.workDescription}>{work.work_description || 'No description'}</Text>
+                                    <Text style={styles.workTitle}>{work.workCategory || 'Work'}</Text>
+                                    <Text style={styles.workDescription}>{work.workDescription || 'No description'}</Text>
                                     <View style={styles.workMeta}>
                                         <Text style={styles.workMetaItem}>
-                                            Completed: {new Date(work.completion_date).toLocaleDateString()}
+                                            Completed: {new Date(work.completedDate || work.date).toLocaleDateString()}
                                         </Text>
                                         <Text style={styles.workMetaItem}>
-                                            Amount: {formatINRCompact(work.cost || 0)}
+                                            Amount: {formatINRCompact(work.finalAmount || 0)}
                                         </Text>
                                     </View>
                                 </View>
@@ -702,15 +247,15 @@ const MPDetailDocument = ({ data }) => {
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Recommended Works ({recommendedWorks.length})</Text>
+                                <Text style={styles.worksTitle}>Top 5 Recommended Works by Amount ({recommendedWorks.length})</Text>
                             </View>
-                            {recommendedWorks.slice(0, 5).map((work, i) => (
+                            {recommendedWorks.map((work, i) => (
                                 <View key={i} style={styles.workItem}>
-                                    <Text style={styles.workTitle}>{work.category || 'Work'}</Text>
-                                    <Text style={styles.workDescription}>{work.work_description || 'No description'}</Text>
+                                    <Text style={styles.workTitle}>{work.workCategory || 'Work'}</Text>
+                                    <Text style={styles.workDescription}>{work.workDescription || 'No description'}</Text>
                                     <View style={styles.workMeta}>
                                         <Text style={styles.workMetaItem}>
-                                            Recommended: {new Date(work.recommendationDate || work.createdAt).toLocaleDateString()}
+                                            Recommended: {new Date(work.recommendationDate || work.date).toLocaleDateString()}
                                         </Text>
                                         <Text style={styles.workMetaItem}>
                                             Amount: {formatINRCompact(work.recommendedAmount || work.totalPaid || 0)}
@@ -718,9 +263,9 @@ const MPDetailDocument = ({ data }) => {
                                     </View>
                                 </View>
                             ))}
-                            {recommendedWorks.length > 5 && (
+                            {recommendedWorks.length === 5 && (
                                 <Text style={[styles.smallText, { textAlign: 'center', marginTop: 8 }]}>
-                                    ... and {recommendedWorks.length - 5} more recommended works
+                                    Showing top 5 works by recommended amount
                                 </Text>
                             )}
                         </View>
@@ -747,17 +292,17 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
     const mpComWorksParams = {
         state: mpData?.state || '',
         constituency: mpData?.constituency || '',
-        status: 'Completed'
+        status: 'completed'
     };
 
     const mpRecWorksParams = {
         state: mpData?.state || '',
         constituency: mpData?.constituency || '',
-        status: 'In Progress'
+        status: 'recommended'
     };
 
-    const completedWorks = useCompletedWorks(mpComWorksParams);
-    const recommendedWorks = useRecommendedWorks(mpRecWorksParams);
+    const completedWorks = useMPWorks(mpData.id, mpComWorksParams);
+    const recommendedWorks = useMPWorks(mpData.id, mpRecWorksParams);
 
     const data = {
         mp: mpData,
@@ -771,22 +316,7 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
         return (
             <button
                 disabled
-                style={{
-                    display: "inline-flex",
-                    gap: 8,
-                    width: '135px',
-                    alignItems: "center",
-                    padding: "12px 16px",
-                    borderRadius: 8,
-                    backgroundColor: "#f8fafc",
-                    border: "1px solid #e2e8f0",
-                    color: "#64748b",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    cursor: "not-allowed",
-                    opacity: 0.6,
-                    transition: "all 0.2s ease",
-                }}
+                style={getDisabledButtonStyles()}
             >
                 <FiDownload /> No data to export
             </button>
@@ -812,24 +342,7 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
         <button
             onClick={handleClick}
             disabled={loading}
-            style={{
-                padding: "12px 24px",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                borderRadius: 12,
-                fontSize: "15px",
-                fontWeight: "500",
-                cursor: loading ? "not-allowed" : "pointer",
-                opacity: loading ? 0.6 : 1,
-                transition: "all 0.2s ease",
-                boxShadow: loading ? "none" : "0 2px 8px rgba(0, 122, 255, 0.2)",
-                background: loading ? "#F2F2F7" : "linear-gradient(135deg, #007AFF 0%, #4DA3FF 100%)",
-                color: loading ? "#8E8E93" : "#FFFFFF",
-                border: "none",
-                position: "relative",
-                overflow: "hidden",
-            }}
+            style={getExportButtonStyles(loading, error)}
         >
             <FiDownload />
             {loading ? "Generating PDF..." : error ? "Export Failed" : "Download Report"}
@@ -838,3 +351,324 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
 };
 
 export default ExportMPsDetailAsPdf;
+
+// Test function to verify PDF generation with the provided payload
+export async function testMPDetailPdfGeneration() {
+    const testPayload = {
+        "mp": {
+            "id": "68c5212b598546b226615b60",
+            "name": "SH Vijay Pal Singh Tomar",
+            "constituency": "Sitting Rajya Sabha",
+            "state": "Uttar Pradesh",
+            "house": "Rajya Sabha",
+            "allocatedAmount": 73563957.11,
+            "totalExpenditure": 72318907,
+            "utilizationPercentage": 98.30752700247177,
+            "completedWorksCount": 22,
+            "recommendedWorksCount": 92,
+            "completedWorksValue": 19044963,
+            "inProgressPayments": 53273944,
+            "paymentGapPercentage": 73.66530581000069,
+            "completionRate": 19.298245614035086,
+            "pendingWorks": 70,
+            "unspentAmount": 1245050.1099999994,
+            "totalRecommendedAmount": 54317600,
+            "name_hi": "SH Vijay Pal Singh Tomar",
+            "constituency_hi": "Sitting Rajya Sabha",
+            "state_hi": "Uttar Pradesh"
+        },
+        "completedWorks": {
+            "works": [
+                {
+                    "_id": "68c5212f598546b2266479d4",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "mp_id": "68c5212b598546b226616061",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 31542,
+                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
+                    "workDescription": "Black Road Construction Work : \nFrom Junior High School to Hasupur South Main Road. Approximately 500 m. Estimated cost 15 lakhs.",
+                    "completedDate": "2025-07-15T00:00:00.000Z",
+                    "hasImage": true,
+                    "averageRating": null,
+                    "finalAmount": 1479139,
+                    "lsTerm": null,
+                    "createdAt": "2025-09-13T07:45:51.372Z",
+                    "status": "completed",
+                    "date": "2025-07-15T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c5212f598546b2266483ec",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "mp_id": "68c5212b598546b226616061",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 48510,
+                    "ida": "BULANDSHAHR(DISTRICT MAGISTRATE BULANDSHAHR_IDA)",
+                    "workDescription": "Building construction and\ngate beautification : Rajju Bhaiya Sainik Vidya Mandir at Khandwaya, Khurja Road. Estimated cost is approximately Rs 20 lakh.",
+                    "completedDate": "2024-06-30T00:00:00.000Z",
+                    "hasImage": true,
+                    "averageRating": null,
+                    "finalAmount": 1995556,
+                    "lsTerm": null,
+                    "createdAt": "2025-09-13T07:45:51.374Z",
+                    "status": "completed",
+                    "date": "2024-06-30T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c5212f598546b226647baf",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "mp_id": "68c5212b598546b226616061",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 40861,
+                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
+                    "workDescription": "Shed, bench in cremation ground\nand manufacturing of tiles : In the cremation ground of village Parpa. Estimated cost is around Rs 10 lakh.",
+                    "completedDate": "2024-06-10T00:00:00.000Z",
+                    "hasImage": true,
+                    "averageRating": null,
+                    "finalAmount": 979704,
+                    "lsTerm": null,
+                    "createdAt": "2025-09-13T07:45:51.372Z",
+                    "status": "completed",
+                    "date": "2024-06-10T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c5212f598546b226647c9b",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "mp_id": "68c5212b598546b226616061",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 40862,
+                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
+                    "workDescription": "building construction work : Independent India Inter College Building Construction Work. Estimated cost is around Rs 10 lakh",
+                    "completedDate": "2024-06-10T00:00:00.000Z",
+                    "hasImage": true,
+                    "averageRating": null,
+                    "finalAmount": 994627,
+                    "lsTerm": null,
+                    "createdAt": "2025-09-13T07:45:51.372Z",
+                    "status": "completed",
+                    "date": "2024-06-10T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c5212f598546b2266476cd",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "mp_id": "68c5212b598546b226616061",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 31547,
+                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
+                    "workDescription": "High mast light : • On the way in front of the meeting of late Mahavir Singh.\n• On the road in front of the wedding procession near Pramod Inspector's house.\n• On the road in front of Harendra's house.\n• S.o.d.on the way outside Kanya Inter Vidyalaya.\n• On the way outside the big Shiva temple.",
+                    "completedDate": "2024-06-06T00:00:00.000Z",
+                    "hasImage": true,
+                    "averageRating": null,
+                    "finalAmount": 699103,
+                    "lsTerm": null,
+                    "createdAt": "2025-09-13T07:45:51.371Z",
+                    "status": "completed",
+                    "date": "2024-06-06T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c5212f598546b226648514",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "mp_id": "68c5212b598546b226616061",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 48511,
+                    "ida": "BULANDSHAHR(DISTRICT MAGISTRATE BULANDSHAHR_IDA)",
+                    "workDescription": "C.C. construction work: From Harendra Tomar's house to Ajit Raghav's house. Estimated cost is approximately Rs 10 lakh.",
+                    "completedDate": "2024-06-06T00:00:00.000Z",
+                    "hasImage": true,
+                    "averageRating": null,
+                    "finalAmount": 987054,
+                    "lsTerm": null,
+                    "createdAt": "2025-09-13T07:45:51.375Z",
+                    "status": "completed",
+                    "date": "2024-06-06T00:00:00.000Z"
+                }
+            ],
+            "pagination": {
+                "page": 1,
+                "limit": 50,
+                "total": 22,
+                "totalCount": 22,
+                "pages": 1,
+                "currentPage": 1,
+                "hasNext": false,
+                "hasPrev": false
+            },
+            "summary": {
+                "totalCost": 19044963,
+                "totalWorks": 22
+            },
+            "filters": {
+                "status": "completed",
+                "category": "all"
+            }
+        },
+        "recommendedWorks": {
+            "works": [
+                {
+                    "_id": "68c52130598546b226666c3c",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 112098,
+                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
+                    "workDescription": "Yeh kaary vikas khand rajpura se hoga, kaary High Mast light, Bhagwaanpur Chittawan sthaan sw om prakash sharma master ji ke ghar ke samane tirahe per.",
+                    "recommendationDate": "2024-02-22T00:00:00.000Z",
+                    "recommendedAmount": 140000,
+                    "lsTerm": null,
+                    "hasPayments": true,
+                    "totalPaid": 139729,
+                    "paymentCount": 2,
+                    "status": "recommended",
+                    "date": "2024-02-22T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c52130598546b226666c3b",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 112062,
+                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
+                    "workDescription": "yah kaary vikaas khand rajpura se hoga. kaary RCC v Rubber mait gram ward no 32, kailaash prakaash stediyam ke baasketabaal traik par nirmaan karavaana hai, anumaanit laagat 08 laakh 20 hajaar Rupees lagabhag",
+                    "recommendationDate": "2024-02-22T00:00:00.000Z",
+                    "recommendedAmount": 820000,
+                    "lsTerm": null,
+                    "hasPayments": true,
+                    "totalPaid": 797295,
+                    "paymentCount": 2,
+                    "status": "recommended",
+                    "date": "2024-02-22T00:00:000Z"
+                },
+                {
+                    "_id": "68c52130598546b226666bda",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 110204,
+                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
+                    "workDescription": "kaary C.C. Nirman Kaary gram kau Khas, Chauiya ki Puliya se damar sadak tak lgbhag 130 meter anumanit lagat 11 lakh rupees. yeh kaary vikas khand rajpura sansthaa se hoga.",
+                    "recommendationDate": "2024-02-20T00:00:00.000Z",
+                    "recommendedAmount": 1100000,
+                    "lsTerm": null,
+                    "hasPayments": true,
+                    "totalPaid": 1087960,
+                    "paymentCount": 2,
+                    "status": "recommended",
+                    "date": "2024-02-20T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c52130598546b2266665f3",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 70659,
+                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
+                    "workDescription": "Interlocking tiles Construction work : From Kinanagar road towards Mule/Madan's house. Estimated cost Rs 10.00 lakh approx.",
+                    "recommendationDate": "2023-12-28T00:00:00.000Z",
+                    "recommendedAmount": 1000000,
+                    "lsTerm": null,
+                    "hasPayments": true,
+                    "totalPaid": 996954,
+                    "paymentCount": 2,
+                    "status": "recommended",
+                    "date": "2023-12-28T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c52130598546b2266665f4",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 70660,
+                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
+                    "workDescription": "High Mast Light : • In the women's park.\n• On the roads near the ground of Ram Krishna Inter College.\n• On the way to gym and wedding procession.\n• On the roads near the hut temple.",
+                    "recommendationDate": "2023-12-28T00:00:00.000Z",
+                    "recommendedAmount": 560000,
+                    "lsTerm": null,
+                    "hasPayments": true,
+                    "totalPaid": 558999,
+                    "paymentCount": 2,
+                    "status": "recommended",
+                    "date": "2023-12-28T00:00:00.000Z"
+                },
+                {
+                    "_id": "68c52130598546b2266665f2",
+                    "mpName": "SH Vijay Pal Singh Tomar",
+                    "house": "Rajya Sabha",
+                    "state": "Uttar Pradesh",
+                    "constituency": "Sitting Rajya Sabha",
+                    "workCategory": "Normal/Others",
+                    "workId": 70658,
+                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
+                    "workDescription": "Interlocking tiles\nConstruction work : From Mahendra Fauji's house to Sonu's house. Length 115 m. Estimated cost Rs. 07.46 lakh approx.",
+                    "recommendationDate": "2023-12-28T00:00:00.000Z",
+                    "recommendedAmount": 746000,
+                    "lsTerm": null,
+                    "hasPayments": true,
+                    "totalPaid": 739645,
+                    "paymentCount": 2,
+                    "status": "recommended",
+                    "date": "2023-12-28T00:00:00.000Z"
+                }
+            ],
+            "pagination": {
+                "page": 1,
+                "limit": 50,
+                "total": 92,
+                "totalCount": 92,
+                "pages": 2,
+                "currentPage": 1,
+                "hasNext": true,
+                "hasPrev": false
+            },
+            "summary": {
+                "totalCost": 54317600,
+                "totalWorks": 92
+            },
+            "filters": {
+                "status": "recommended",
+                "category": "all"
+            }
+        }
+    };
+
+    try {
+        console.log("Testing MP Detail PDF generation with payload...");
+        console.log("Completed works amounts:", testPayload.completedWorks.works.map(w => w.finalAmount));
+        console.log("Recommended works amounts:", testPayload.recommendedWorks.works.map(w => w.recommendedAmount));
+
+        const result = await generateMPDetailPdf(testPayload, {
+            fileName: `test_mp_detail_${testPayload.mp.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
+        });
+        console.log("PDF generation test completed successfully:", result);
+        return result;
+    } catch (error) {
+        console.error("PDF generation test failed:", error);
+        throw error;
+    }
+}
