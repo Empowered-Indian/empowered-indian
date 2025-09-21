@@ -3,7 +3,7 @@ import { Document, Page, Text, View, StyleSheet, Image, Link } from "@react-pdf/
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 import { useMPWorks } from '../hooks/useApi';
-import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles } from "./pdfUIStyles";
+import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles, colors } from "./pdfUIStyles";
 import { generateAndDownloadPdf } from "./pdfGenerator";
 
 const baseStyles = createBaseStyles(StyleSheet);
@@ -22,6 +22,8 @@ const MPDetailDocument = ({ data }) => {
     const totalExpenditure = mp.totalExpenditure || 0;
     const utilizationPercentage = mp.utilizationPercentage || 0;
     const completionRate = mp.completionRate || 0;
+    const utilizationColor = utilizationPercentage >= 80 ? colors.success : utilizationPercentage >= 50 ? colors.warning : colors.accent;
+    const completionColor = completionRate >= 80 ? colors.success : completionRate >= 50 ? colors.warning : colors.accent;
     // Get works arrays - handle both direct payload structure and nested structure
     let completedWorks = completedWorksData.works || completedWorksData.completedWorks || [];
     let recommendedWorks = recommendedWorksData.works || recommendedWorksData.recommendedWorks || [];
@@ -122,7 +124,7 @@ const MPDetailDocument = ({ data }) => {
                                     <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
                                     <Text style={styles.summaryMetricValue}>{formatINRCompact(totalExpenditure)}</Text>
                                     <Text style={styles.summaryMetricSub}>
-                                        {utilizationPercentage.toFixed(1)}% fund utilization
+                                        <Text style={{color: utilizationColor}}>{utilizationPercentage.toFixed(1)}%</Text> fund utilization
                                     </Text>
                                 </View>
                             </View>
@@ -132,7 +134,7 @@ const MPDetailDocument = ({ data }) => {
                                     <Text style={styles.summaryMetricLabel}>Total Works</Text>
                                     <Text style={styles.summaryMetricValue}>{mp.completedWorksCount + mp.recommendedWorksCount}</Text>
                                     <Text style={styles.summaryMetricSub}>
-                                        {completionRate.toFixed(1)}% completion rate
+                                        <Text style={{color: completionColor}}>{completionRate.toFixed(1)}%</Text> completion rate
                                     </Text>
                                 </View>
                                 <View style={styles.summaryMetric}>
