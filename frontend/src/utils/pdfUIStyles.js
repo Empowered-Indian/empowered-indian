@@ -104,7 +104,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
 
     // Content area
     content: {
-        padding: "24px 32px",
+        padding: "12px 32px",
     },
 
     // Summary section styles
@@ -447,7 +447,7 @@ export const createExtendedStyles = (StyleSheet) => StyleSheet.create({
 
     // Yearly breakdown styles
     yearlyBreakdown: {
-        marginTop: 16,
+        marginTop: 8,
         backgroundColor: colors.surface,
         borderRadius: 12,
         padding: 20,

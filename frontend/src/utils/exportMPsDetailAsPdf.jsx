@@ -4,6 +4,7 @@ import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 import { useMPWorks } from '../hooks/useApi';
 import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles } from "./pdfUIStyles";
+import { useLocation } from 'react-router-dom';
 
 const baseStyles = createBaseStyles(StyleSheet);
 const extendedStyles = createExtendedStyles(StyleSheet);
@@ -29,6 +30,9 @@ export async function generateMPDetailPdf(data, options = {}) {
 const MPDetailDocument = ({ data }) => {
     const timestamp = new Date().toLocaleString();
     const mp = data.mp || {};
+
+    // Get current URL for checkout link
+    const currentUrl = typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : 'empoweredindian.in';
     const completedWorksData = data.completedWorks || {};
     const recommendedWorksData = data.recommendedWorks || {};
     const allocatedAmount = mp.allocatedAmount || 0;
@@ -39,15 +43,16 @@ const MPDetailDocument = ({ data }) => {
     let completedWorks = completedWorksData.works || completedWorksData.completedWorks || [];
     let recommendedWorks = recommendedWorksData.works || recommendedWorksData.recommendedWorks || [];
 
+    // Calculate individual works counts for conditional logic
+    const completedCount = completedWorks.length;
+    const recommendedCount = recommendedWorks.length;
+
     // Sort completed works by finalAmount (highest first) and take top 5
-    completedWorks = completedWorks
-        .sort((a, b) => (b.finalAmount || 0) - (a.finalAmount || 0))
-        .slice(0, 5);
+    completedWorks = completedWorks.slice(0, 5);
 
     // Sort recommended works by recommendedAmount (highest first) and take top 5
-    recommendedWorks = recommendedWorks
-        .sort((a, b) => (b.recommendedAmount || 0) - (a.recommendedAmount || 0))
-        .slice(0, 5);
+    recommendedWorks = recommendedWorks.slice(0, 5);
+
     const categoryStats = {};
     completedWorks.forEach(work => {
         const category = work.workCategory || 'Normal/Others';
@@ -86,6 +91,7 @@ const MPDetailDocument = ({ data }) => {
 
     return (
         <Document>
+            {/* First Page - MP Overview and Completed Works */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     <View style={styles.headerGradient} />
@@ -218,7 +224,7 @@ const MPDetailDocument = ({ data }) => {
                         </View>
                     )}
 
-                    {/* Completed Works */}
+                    {/* Completed Works - Always show top 5 if available */}
                     {completedWorks.length > 0 && (
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
@@ -241,9 +247,14 @@ const MPDetailDocument = ({ data }) => {
                             ))}
                         </View>
                     )}
+                </View>
+            </Page>
 
-                    {/* Recommended Works */}
-                    {recommendedWorks.length > 0 && (
+            {/* Second Page - Recommended Works */}
+            {recommendedWorks.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.content}>
+                        {/* Recommended Works - Always show top 5 if available */}
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
@@ -263,24 +274,19 @@ const MPDetailDocument = ({ data }) => {
                                     </View>
                                 </View>
                             ))}
-                            {recommendedWorks.length === 5 && (
-                                <Text style={[styles.smallText, { textAlign: 'center', marginTop: 8 }]}>
-                                    Showing top 5 works by recommended amount
-                                </Text>
-                            )}
                         </View>
-                    )}
-                </View>
-
-                <View style={styles.footer}>
-                    <View style={styles.footerLeft}>
-                        <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-                        <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
-                            * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
-                        </Text>
                     </View>
-                </View>
-            </Page>
+
+                    <View style={styles.footer}>
+                        <View style={styles.footerLeft}>
+                            <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+                            <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
+                                * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
+                            </Text>
+                        </View>
+                    </View>
+                </Page>
+            )}
         </Document>
     );
 };
@@ -351,324 +357,3 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
 };
 
 export default ExportMPsDetailAsPdf;
-
-// Test function to verify PDF generation with the provided payload
-export async function testMPDetailPdfGeneration() {
-    const testPayload = {
-        "mp": {
-            "id": "68c5212b598546b226615b60",
-            "name": "SH Vijay Pal Singh Tomar",
-            "constituency": "Sitting Rajya Sabha",
-            "state": "Uttar Pradesh",
-            "house": "Rajya Sabha",
-            "allocatedAmount": 73563957.11,
-            "totalExpenditure": 72318907,
-            "utilizationPercentage": 98.30752700247177,
-            "completedWorksCount": 22,
-            "recommendedWorksCount": 92,
-            "completedWorksValue": 19044963,
-            "inProgressPayments": 53273944,
-            "paymentGapPercentage": 73.66530581000069,
-            "completionRate": 19.298245614035086,
-            "pendingWorks": 70,
-            "unspentAmount": 1245050.1099999994,
-            "totalRecommendedAmount": 54317600,
-            "name_hi": "SH Vijay Pal Singh Tomar",
-            "constituency_hi": "Sitting Rajya Sabha",
-            "state_hi": "Uttar Pradesh"
-        },
-        "completedWorks": {
-            "works": [
-                {
-                    "_id": "68c5212f598546b2266479d4",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "mp_id": "68c5212b598546b226616061",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 31542,
-                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
-                    "workDescription": "Black Road Construction Work : \nFrom Junior High School to Hasupur South Main Road. Approximately 500 m. Estimated cost 15 lakhs.",
-                    "completedDate": "2025-07-15T00:00:00.000Z",
-                    "hasImage": true,
-                    "averageRating": null,
-                    "finalAmount": 1479139,
-                    "lsTerm": null,
-                    "createdAt": "2025-09-13T07:45:51.372Z",
-                    "status": "completed",
-                    "date": "2025-07-15T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c5212f598546b2266483ec",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "mp_id": "68c5212b598546b226616061",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 48510,
-                    "ida": "BULANDSHAHR(DISTRICT MAGISTRATE BULANDSHAHR_IDA)",
-                    "workDescription": "Building construction and\ngate beautification : Rajju Bhaiya Sainik Vidya Mandir at Khandwaya, Khurja Road. Estimated cost is approximately Rs 20 lakh.",
-                    "completedDate": "2024-06-30T00:00:00.000Z",
-                    "hasImage": true,
-                    "averageRating": null,
-                    "finalAmount": 1995556,
-                    "lsTerm": null,
-                    "createdAt": "2025-09-13T07:45:51.374Z",
-                    "status": "completed",
-                    "date": "2024-06-30T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c5212f598546b226647baf",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "mp_id": "68c5212b598546b226616061",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 40861,
-                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
-                    "workDescription": "Shed, bench in cremation ground\nand manufacturing of tiles : In the cremation ground of village Parpa. Estimated cost is around Rs 10 lakh.",
-                    "completedDate": "2024-06-10T00:00:00.000Z",
-                    "hasImage": true,
-                    "averageRating": null,
-                    "finalAmount": 979704,
-                    "lsTerm": null,
-                    "createdAt": "2025-09-13T07:45:51.372Z",
-                    "status": "completed",
-                    "date": "2024-06-10T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c5212f598546b226647c9b",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "mp_id": "68c5212b598546b226616061",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 40862,
-                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
-                    "workDescription": "building construction work : Independent India Inter College Building Construction Work. Estimated cost is around Rs 10 lakh",
-                    "completedDate": "2024-06-10T00:00:00.000Z",
-                    "hasImage": true,
-                    "averageRating": null,
-                    "finalAmount": 994627,
-                    "lsTerm": null,
-                    "createdAt": "2025-09-13T07:45:51.372Z",
-                    "status": "completed",
-                    "date": "2024-06-10T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c5212f598546b2266476cd",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "mp_id": "68c5212b598546b226616061",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 31547,
-                    "ida": "HAPUR(DISTRICT MAGISTRATE HAPUR_IDA)",
-                    "workDescription": "High mast light : • On the way in front of the meeting of late Mahavir Singh.\n• On the road in front of the wedding procession near Pramod Inspector's house.\n• On the road in front of Harendra's house.\n• S.o.d.on the way outside Kanya Inter Vidyalaya.\n• On the way outside the big Shiva temple.",
-                    "completedDate": "2024-06-06T00:00:00.000Z",
-                    "hasImage": true,
-                    "averageRating": null,
-                    "finalAmount": 699103,
-                    "lsTerm": null,
-                    "createdAt": "2025-09-13T07:45:51.371Z",
-                    "status": "completed",
-                    "date": "2024-06-06T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c5212f598546b226648514",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "mp_id": "68c5212b598546b226616061",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 48511,
-                    "ida": "BULANDSHAHR(DISTRICT MAGISTRATE BULANDSHAHR_IDA)",
-                    "workDescription": "C.C. construction work: From Harendra Tomar's house to Ajit Raghav's house. Estimated cost is approximately Rs 10 lakh.",
-                    "completedDate": "2024-06-06T00:00:00.000Z",
-                    "hasImage": true,
-                    "averageRating": null,
-                    "finalAmount": 987054,
-                    "lsTerm": null,
-                    "createdAt": "2025-09-13T07:45:51.375Z",
-                    "status": "completed",
-                    "date": "2024-06-06T00:00:00.000Z"
-                }
-            ],
-            "pagination": {
-                "page": 1,
-                "limit": 50,
-                "total": 22,
-                "totalCount": 22,
-                "pages": 1,
-                "currentPage": 1,
-                "hasNext": false,
-                "hasPrev": false
-            },
-            "summary": {
-                "totalCost": 19044963,
-                "totalWorks": 22
-            },
-            "filters": {
-                "status": "completed",
-                "category": "all"
-            }
-        },
-        "recommendedWorks": {
-            "works": [
-                {
-                    "_id": "68c52130598546b226666c3c",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 112098,
-                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
-                    "workDescription": "Yeh kaary vikas khand rajpura se hoga, kaary High Mast light, Bhagwaanpur Chittawan sthaan sw om prakash sharma master ji ke ghar ke samane tirahe per.",
-                    "recommendationDate": "2024-02-22T00:00:00.000Z",
-                    "recommendedAmount": 140000,
-                    "lsTerm": null,
-                    "hasPayments": true,
-                    "totalPaid": 139729,
-                    "paymentCount": 2,
-                    "status": "recommended",
-                    "date": "2024-02-22T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c52130598546b226666c3b",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 112062,
-                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
-                    "workDescription": "yah kaary vikaas khand rajpura se hoga. kaary RCC v Rubber mait gram ward no 32, kailaash prakaash stediyam ke baasketabaal traik par nirmaan karavaana hai, anumaanit laagat 08 laakh 20 hajaar Rupees lagabhag",
-                    "recommendationDate": "2024-02-22T00:00:00.000Z",
-                    "recommendedAmount": 820000,
-                    "lsTerm": null,
-                    "hasPayments": true,
-                    "totalPaid": 797295,
-                    "paymentCount": 2,
-                    "status": "recommended",
-                    "date": "2024-02-22T00:00:000Z"
-                },
-                {
-                    "_id": "68c52130598546b226666bda",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 110204,
-                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
-                    "workDescription": "kaary C.C. Nirman Kaary gram kau Khas, Chauiya ki Puliya se damar sadak tak lgbhag 130 meter anumanit lagat 11 lakh rupees. yeh kaary vikas khand rajpura sansthaa se hoga.",
-                    "recommendationDate": "2024-02-20T00:00:00.000Z",
-                    "recommendedAmount": 1100000,
-                    "lsTerm": null,
-                    "hasPayments": true,
-                    "totalPaid": 1087960,
-                    "paymentCount": 2,
-                    "status": "recommended",
-                    "date": "2024-02-20T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c52130598546b2266665f3",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 70659,
-                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
-                    "workDescription": "Interlocking tiles Construction work : From Kinanagar road towards Mule/Madan's house. Estimated cost Rs 10.00 lakh approx.",
-                    "recommendationDate": "2023-12-28T00:00:00.000Z",
-                    "recommendedAmount": 1000000,
-                    "lsTerm": null,
-                    "hasPayments": true,
-                    "totalPaid": 996954,
-                    "paymentCount": 2,
-                    "status": "recommended",
-                    "date": "2023-12-28T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c52130598546b2266665f4",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 70660,
-                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
-                    "workDescription": "High Mast Light : • In the women's park.\n• On the roads near the ground of Ram Krishna Inter College.\n• On the way to gym and wedding procession.\n• On the roads near the hut temple.",
-                    "recommendationDate": "2023-12-28T00:00:00.000Z",
-                    "recommendedAmount": 560000,
-                    "lsTerm": null,
-                    "hasPayments": true,
-                    "totalPaid": 558999,
-                    "paymentCount": 2,
-                    "status": "recommended",
-                    "date": "2023-12-28T00:00:00.000Z"
-                },
-                {
-                    "_id": "68c52130598546b2266665f2",
-                    "mpName": "SH Vijay Pal Singh Tomar",
-                    "house": "Rajya Sabha",
-                    "state": "Uttar Pradesh",
-                    "constituency": "Sitting Rajya Sabha",
-                    "workCategory": "Normal/Others",
-                    "workId": 70658,
-                    "ida": "MEERUT(DISTRICT MAGISTRATE MEERUT_IDA)",
-                    "workDescription": "Interlocking tiles\nConstruction work : From Mahendra Fauji's house to Sonu's house. Length 115 m. Estimated cost Rs. 07.46 lakh approx.",
-                    "recommendationDate": "2023-12-28T00:00:00.000Z",
-                    "recommendedAmount": 746000,
-                    "lsTerm": null,
-                    "hasPayments": true,
-                    "totalPaid": 739645,
-                    "paymentCount": 2,
-                    "status": "recommended",
-                    "date": "2023-12-28T00:00:00.000Z"
-                }
-            ],
-            "pagination": {
-                "page": 1,
-                "limit": 50,
-                "total": 92,
-                "totalCount": 92,
-                "pages": 2,
-                "currentPage": 1,
-                "hasNext": true,
-                "hasPrev": false
-            },
-            "summary": {
-                "totalCost": 54317600,
-                "totalWorks": 92
-            },
-            "filters": {
-                "status": "recommended",
-                "category": "all"
-            }
-        }
-    };
-
-    try {
-        console.log("Testing MP Detail PDF generation with payload...");
-        console.log("Completed works amounts:", testPayload.completedWorks.works.map(w => w.finalAmount));
-        console.log("Recommended works amounts:", testPayload.recommendedWorks.works.map(w => w.recommendedAmount));
-
-        const result = await generateMPDetailPdf(testPayload, {
-            fileName: `test_mp_detail_${testPayload.mp.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`
-        });
-        console.log("PDF generation test completed successfully:", result);
-        return result;
-    } catch (error) {
-        console.error("PDF generation test failed:", error);
-        throw error;
-    }
-}
