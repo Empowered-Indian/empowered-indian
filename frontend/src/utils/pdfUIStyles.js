@@ -38,7 +38,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
     // Header styles
     header: {
         background: `linear-gradient(135deg, ${colors.surface} 0%, ${colors.background} 100%)`,
-        padding: "20px 32px 16px 32px",
+        padding: "16px 24px 12px 24px",
         borderBottomWidth: 1,
         borderBottomColor: colors.borderLight,
         position: "relative",
@@ -104,7 +104,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
 
     // Content area
     content: {
-        padding: "12px 32px",
+        padding: "8px 24px",
     },
 
     // Summary section styles
@@ -316,7 +316,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
         backgroundColor: colors.surface,
         borderTopWidth: 1,
         borderTopColor: colors.borderLight,
-        padding: "12px 32px",
+        padding: "3px 32px",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -629,11 +629,11 @@ export const createExtendedStyles = (StyleSheet) => StyleSheet.create({
     cardsContainer: {
         display: "flex",
         flexDirection: "column",
-        gap: 12,
+        gap: 8,
     },
     card: {
         borderRadius: 12,
-        padding: 16,
+        padding: 12,
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.borderLight,

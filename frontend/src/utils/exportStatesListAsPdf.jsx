@@ -49,7 +49,7 @@ const MyDocument = ({ data = [], meta = {} }) => {
     return chunks;
   };
 
-  const stateChunks = chunkArray(data, 10);
+  const stateChunks = chunkArray(data, 12);
 
   return (
     <Document>
