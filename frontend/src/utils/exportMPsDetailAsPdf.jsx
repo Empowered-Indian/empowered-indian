@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, Image, pdf } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Image, Link, pdf } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
 import { formatINRCompact } from "./formatters";
 import { useMPWorks } from '../hooks/useApi';
@@ -116,6 +116,12 @@ const MPDetailDocument = ({ data }) => {
                         <View style={styles.summaryHeader}>
                             <View style={styles.summaryIcon} />
                             <Text style={styles.summaryTitle}>{mp.name || 'MP Name'}</Text>
+                            <Link src={currentUrl} style={{ color: '#007AFF', textDecoration: 'underline', fontSize: 9, marginBottom: 4 }}>
+                                <Image
+                                    src="https://img.icons8.com/?size=100&id=xPX4qmtKvtBp&format=png&color=000000"
+                                    style={{ width: 12, height: 12, marginRight: 4 }}
+                                />
+                            </Link>
                         </View>
                         <Text style={[styles.smallText, { marginBottom: 8 }]}>
                             {mp.constituency || 'Constituency'} • {mp.state || 'State'} • {mp.house || 'House'}

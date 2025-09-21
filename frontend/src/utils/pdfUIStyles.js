@@ -132,6 +132,13 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
         borderRadius: 8,
         marginRight: 6,
     },
+    linkIcon: {
+        width: 12,
+        height: 12,
+        backgroundColor: colors.secondary,
+        borderRadius: 6,
+        marginRight: 4,
+    },
     summaryTitle: {
         fontSize: 16,
         fontWeight: "bold",
