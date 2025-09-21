@@ -25,7 +25,7 @@ export async function generatePdfWithOptions(data = [], options = {}) {
   return true;
 }
 
-const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
+const MyDocument = ({ data = [], meta = {} }) => {
   const timestamp = new Date().toLocaleString();
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
@@ -40,8 +40,20 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
   const minUtilization = Math.min(...data.map(s => s.utilizationPercentage || 0));
   const highUtilStates = data.filter(s => (s.utilizationPercentage || 0) >= 80).length;
 
+  // Helper function to chunk array into groups of n
+  const chunkArray = (array, chunkSize) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+
+  const stateChunks = chunkArray(data, 10);
+
   return (
     <Document>
+      {/* First Page - Summary, Insights, Chart */}
       <Page size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
         <View style={styles.header}>
           <View style={styles.headerGradient} />
@@ -163,54 +175,15 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
               })}
             </View>
           </View>
+        </View>
+      </Page>
 
-          <View style={styles.divider} />
-          {layout === "table" ? (
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.tableHeaderCell, { width: "20%" }]}>State</Text>
-                <Text style={[styles.tableHeaderCell, { width: "20%", textAlign: "right" }]}>Allocated</Text>
-                <Text style={[styles.tableHeaderCell, { width: "20%", textAlign: "right" }]}>Expenditure</Text>
-                <Text style={[styles.tableHeaderCell, { width: "15%", textAlign: "right" }]}>Utilization</Text>
-                <Text style={[styles.tableHeaderCell, { width: "15%", textAlign: "right" }]}>Works</Text>
-                <Text style={[styles.tableHeaderCell, { width: "10%", textAlign: "right" }]}>MPs</Text>
-              </View>
-
-              {data.map((s, i) => {
-                const pct = Number(s.utilizationPercentage || 0);
-                return (
-                  <View key={i} style={[styles.tableRow, i % 2 === 0 ? styles.tableRowEven : {}]}>
-                    <Text style={[styles.tableCell, { width: "20%", fontWeight: "600" }]}>{s.state}</Text>
-                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "20%" }]}>
-                      {formatINRCompact(s.totalAllocated ?? 0)}
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "20%" }]}>
-                      {formatINRCompact(s.totalExpenditure ?? 0)}
-                    </Text>
-                    <Text style={[
-                      styles.tableCell,
-                      styles.tableCellRight,
-                      {
-                        width: "15%",
-                        color: pct >= 80 ? colors.success : pct >= 50 ? colors.warning : colors.accent,
-                        fontWeight: "bold"
-                      }
-                    ]}>
-                      {pct.toFixed(1)}%
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "15%" }]}>
-                      {s.totalWorksCompleted ?? 0}
-                    </Text>
-                    <Text style={[styles.tableCell, styles.tableCellRight, { width: "10%" }]}>
-                      {s.mpCount ?? 0}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          ) : (
+      {/* State Data Pages - 10 states per page in card view */}
+      {stateChunks.map((chunk, pageIndex) => (
+        <Page key={pageIndex} size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
+          <View style={styles.content}>
             <View style={styles.cardsContainer}>
-              {data.map((s, i) => {
+              {chunk.map((s, i) => {
                 const pct = Number(s.utilizationPercentage || 0);
                 const fillStyle = utilBarStyleFor(pct, styles);
                 const utilColor = pct >= 80 ? colors.success : pct >= 50 ? colors.warning : colors.accent;
@@ -256,18 +229,20 @@ const MyDocument = ({ data = [], meta = {}, layout = "cards" }) => {
                 );
               })}
             </View>
-          )}
-        </View>
-
-        <View style={styles.footer}>
-          <View style={styles.footerLeft}>
-            <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-            <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
-              * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
-            </Text>
           </View>
-        </View>
-      </Page>
+
+          {pageIndex === stateChunks.length - 1 && (
+            <View style={styles.footer}>
+              <View style={styles.footerLeft}>
+                <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+                <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
+                  * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
+                </Text>
+              </View>
+            </View>
+          )}
+        </Page>
+      ))}
     </Document>
   );
 };

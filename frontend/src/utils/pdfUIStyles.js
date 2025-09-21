@@ -123,7 +123,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
     summaryHeader: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 6,
+        marginBottom: 12,
     },
     summaryIcon: {
         width: 16,
@@ -239,6 +239,18 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
     },
+    mpChart: {
+        marginTop: 6,
+        backgroundColor: colors.surface,
+        borderRadius: 12,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
     chartHeader: {
         flexDirection: "row",
         alignItems: "center",
@@ -287,6 +299,12 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
         top: -12,
         width: "100%",
         textAlign: "center",
+    },
+    chartBarGroup: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        width: "100%",
+        justifyContent: "space-between",
     },
 
     // Footer styles

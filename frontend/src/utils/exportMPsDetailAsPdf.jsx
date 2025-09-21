@@ -86,12 +86,8 @@ const MPDetailDocument = ({ data }) => {
         transactionCount: stats.count
     })).sort((a, b) => a._id - b._id);
 
+    const maxYearlyCount = Math.max(...yearlyData.map(y => y.transactionCount || 0));
     const maxYearlyAmount = Math.max(...yearlyData.map(y => y.totalAmount || 0));
-
-    // Top categories for insights
-    const topCategories = Object.entries(categoryStats)
-        .sort(([, a], [, b]) => b.totalCost - a.totalCost)
-        .slice(0, 3);
 
     return (
         <Document>
@@ -158,73 +154,34 @@ const MPDetailDocument = ({ data }) => {
                         </View>
                     </View>
 
-                    {/* Expenditure Chart */}
+                    {/* Yearly Trends */}
                     {yearlyData.length > 0 && (
-                        <View style={styles.chart}>
+                        <View style={styles.mpChart}>
                             <View style={styles.chartHeader}>
                                 <View style={styles.chartIcon} />
-                                <Text style={styles.chartTitle}>Yearly Expenditure Trend</Text>
+                                <Text style={styles.chartTitle}>Yearly Trends</Text>
                             </View>
                             <View style={styles.chartContainer}>
                                 {yearlyData.map((yearData, i) => {
+                                    const count = yearData.transactionCount || 0;
                                     const amount = yearData.totalAmount || 0;
-                                    const height = maxYearlyAmount > 0 ? Math.max(10, (amount / maxYearlyAmount) * 100) : 10;
+                                    const countHeight = maxYearlyCount > 0 ? Math.max(10, (count / maxYearlyCount) * 100) : 10;
+                                    const amountHeight = maxYearlyAmount > 0 ? Math.max(10, (amount / maxYearlyAmount) * 100) : 10;
                                     return (
                                         <View key={i} style={styles.chartBar}>
-                                            <View style={[styles.chartBarFill, { height }]}>
-                                                <Text style={styles.chartValue}>{formatINRCompact(amount)}</Text>
+                                            <View style={styles.chartBarGroup}>
+                                                <View style={[styles.chartBarFill, { height: countHeight, backgroundColor: '#007bff', flex: 1, marginRight: 1 }]}>
+                                                    <Text style={styles.chartValue}>{count} Works</Text>
+                                                </View>
+                                                <View style={[styles.chartBarFill, { height: amountHeight, backgroundColor: '#28a745', flex: 1, marginLeft: 1 }]}>
+                                                    <Text style={styles.chartValue}>{formatINRCompact(amount)}</Text>
+                                                </View>
                                             </View>
                                             <Text style={styles.chartLabel}>{yearData._id}</Text>
                                         </View>
                                     );
                                 })}
                             </View>
-                        </View>
-                    )}
-
-                    {/* Yearly Breakdown */}
-                    {yearlyData.length > 0 && (
-                        <View style={styles.yearlyBreakdown}>
-                            <View style={styles.yearlyHeader}>
-                                <View style={styles.yearlyIcon} />
-                                <Text style={styles.yearlyTitle}>Yearly Performance Breakdown</Text>
-                            </View>
-                            {yearlyData.map((yearData, i) => (
-                                <View key={i} style={styles.yearlyItem}>
-                                    <Text style={styles.yearlyYear}>{yearData._id}</Text>
-                                    <View>
-                                        <Text style={styles.yearlyStats}>
-                                            {yearData.transactionCount} works • {formatINRCompact(yearData.totalAmount)}
-                                        </Text>
-                                    </View>
-                                </View>
-                            ))}
-                        </View>
-                    )}
-
-                    {/* Category Breakdown */}
-                    {Object.keys(categoryStats).length > 0 && (
-                        <View style={styles.works}>
-                            <View style={styles.worksHeader}>
-                                <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Work Categories Breakdown</Text>
-                            </View>
-                            {topCategories.map(([category, stats], i) => (
-                                <View key={i} style={styles.workItem}>
-                                    <Text style={styles.workTitle}>{category}</Text>
-                                    <Text style={styles.workDescription}>
-                                        {stats.count} works • Total cost: {formatINRCompact(stats.totalCost)}
-                                    </Text>
-                                    <View style={styles.workMeta}>
-                                        <Text style={styles.workMetaItem}>
-                                            Average: {formatINRCompact(stats.totalCost / stats.count)}
-                                        </Text>
-                                        <Text style={styles.workMetaItem}>
-                                            {((stats.totalCost / allocatedAmount) * 100).toFixed(1)}% of total
-                                        </Text>
-                                    </View>
-                                </View>
-                            ))}
                         </View>
                     )}
 
@@ -251,14 +208,9 @@ const MPDetailDocument = ({ data }) => {
                             ))}
                         </View>
                     )}
-                </View>
-            </Page>
 
-            {/* Second Page - Recommended Works */}
-            {recommendedWorksSliced.length > 0 && (
-                <Page size="A4" style={styles.page}>
-                    <View style={styles.content}>
-                        {/* Recommended Works - Always show top 5 if available */}
+                    {/* Recommended Works - Always show top 5 if available */}
+                    {recommendedWorksSliced.length > 0 && (
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
@@ -279,18 +231,17 @@ const MPDetailDocument = ({ data }) => {
                                 </View>
                             ))}
                         </View>
+                    )}
+                </View>
+                <View style={styles.footer}>
+                    <View style={styles.footerLeft}>
+                        <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+                        <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
+                            * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
+                        </Text>
                     </View>
-
-                    <View style={styles.footer}>
-                        <View style={styles.footerLeft}>
-                            <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-                            <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
-                                * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
-                            </Text>
-                        </View>
-                    </View>
-                </Page>
-            )}
+                </View>
+            </Page>
         </Document>
     );
 };
