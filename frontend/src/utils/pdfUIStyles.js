@@ -155,6 +155,15 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
     },
     summaryMetric: {
         marginBottom: 8,
+        backgroundColor: colors.surface,
+        borderRadius: 6,
+        padding: 8,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
     },
     summaryMetricLabel: {
         fontSize: 8,
