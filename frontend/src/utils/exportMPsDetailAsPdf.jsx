@@ -134,15 +134,15 @@ const MPDetailDocument = ({ data }) => {
 
                             <View style={styles.summaryColumn}>
                                 <View style={styles.summaryMetric}>
-                                    <Text style={styles.summaryMetricLabel}>Works Completed</Text>
-                                    <Text style={styles.summaryMetricValue}>{mp.completedWorksCount}</Text>
+                                    <Text style={styles.summaryMetricLabel}>Total Works</Text>
+                                    <Text style={styles.summaryMetricValue}>{mp.recommendedWorksCount}</Text>
                                     <Text style={styles.summaryMetricSub}>
                                         {completionRate.toFixed(1)}% completion rate
                                     </Text>
                                 </View>
                                 <View style={styles.summaryMetric}>
-                                    <Text style={styles.summaryMetricLabel}>Works Recommended</Text>
-                                    <Text style={styles.summaryMetricValue}>{mp.recommendedWorksCount}</Text>
+                                    <Text style={styles.summaryMetricLabel}>Works Completed</Text>
+                                    <Text style={styles.summaryMetricValue}>{mp.completedWorksCount}</Text>
                                     <Text style={styles.summaryMetricSub}>{mp.pendingWorks || 0} pending works</Text>
                                 </View>
                             </View>
