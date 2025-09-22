@@ -22,8 +22,14 @@ const MPDetailDocument = ({ data }) => {
     const totalExpenditure = mp.totalExpenditure || 0;
     const utilizationPercentage = mp.utilizationPercentage || 0;
     const completionRate = mp.completionRate || 0;
+    const inProgressPayments = mp.inProgressPayments || 0;
+    const paymentGapPercentage = mp.paymentGapPercentage || 0;
+    const unspentAmount = mp.unspentAmount || 0;
+    const pendingWorks = mp.pendingWorks || 0;
+
     const utilizationColor = utilizationPercentage >= 80 ? colors.success : utilizationPercentage >= 50 ? colors.warning : colors.accent;
     const completionColor = completionRate >= 80 ? colors.success : completionRate >= 50 ? colors.warning : colors.accent;
+    const paymentGapColor = paymentGapPercentage <= 10 ? colors.success : paymentGapPercentage <= 25 ? colors.warning : colors.accent;
     // Get works arrays - handle both direct payload structure and nested structure
     let completedWorks = completedWorksData.works || completedWorksData.completedWorks || [];
     let recommendedWorks = recommendedWorksData.works || recommendedWorksData.recommendedWorks || [];
@@ -109,9 +115,17 @@ const MPDetailDocument = ({ data }) => {
                                 />
                             </Link>
                         </View>
-                        <Text style={[styles.smallText, { marginBottom: 8 }]}>
+                        <Text style={[styles.smallText, { marginBottom: 4 }]}>
                             {mp.constituency || 'Constituency'} • {mp.state || 'State'} • {mp.house !== 'Rajya Sabha' ? mp.house : ''}
                         </Text>
+                        {/* Hindi translations if available */}
+                        {(mp.name_hi || mp.constituency_hi || mp.state_hi) && (
+                            <Text style={[styles.smallText, { marginBottom: 8, fontSize: 8, color: '#666' }]}>
+                                {mp.name_hi && mp.name_hi !== mp.name ? `${mp.name_hi} • ` : ''}
+                                {mp.constituency_hi && mp.constituency_hi !== mp.constituency ? `${mp.constituency_hi} • ` : ''}
+                                {mp.state_hi && mp.state_hi !== mp.state ? mp.state_hi : ''}
+                            </Text>
+                        )}
 
                         <View style={styles.summaryGrid}>
                             <View style={styles.summaryColumn}>
@@ -124,7 +138,7 @@ const MPDetailDocument = ({ data }) => {
                                     <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
                                     <Text style={styles.summaryMetricValue}>{formatINRCompact(totalExpenditure)}</Text>
                                     <Text style={styles.summaryMetricSub}>
-                                        <Text style={{color: utilizationColor}}>{utilizationPercentage.toFixed(1)}%</Text> fund utilization
+                                        <Text style={{ color: utilizationColor }}>{utilizationPercentage.toFixed(1)}%</Text> fund utilization
                                     </Text>
                                 </View>
                             </View>
@@ -134,7 +148,7 @@ const MPDetailDocument = ({ data }) => {
                                     <Text style={styles.summaryMetricLabel}>Total Works</Text>
                                     <Text style={styles.summaryMetricValue}>{mp.completedWorksCount + mp.recommendedWorksCount}</Text>
                                     <Text style={styles.summaryMetricSub}>
-                                        <Text style={{color: completionColor}}>{completionRate.toFixed(1)}%</Text> completion rate
+                                        <Text style={{ color: completionColor }}>{completionRate.toFixed(1)}%</Text> completion rate
                                     </Text>
                                 </View>
                                 <View style={styles.summaryMetric}>
@@ -146,9 +160,47 @@ const MPDetailDocument = ({ data }) => {
                         </View>
                     </View>
 
+                    {/* Payment Analysis Section */}
+                    <View style={styles.paymentAnalysis}>
+                        <View style={styles.analysisHeader}>
+                            <View style={styles.analysisIcon} />
+                            <Text style={styles.analysisTitle}>Payment Analysis</Text>
+                        </View>
+                        <View style={styles.analysisGrid}>
+                            <View style={styles.analysisColumn}>
+                                <View style={styles.analysisMetric}>
+                                    <Text style={styles.analysisMetricLabel}>Unspent Amount</Text>
+                                    <Text style={styles.analysisMetricValue}>{formatINRCompact(unspentAmount)}</Text>
+                                    <Text style={styles.analysisMetricSub}>Remaining allocation</Text>
+                                </View>
+                                <View style={styles.analysisMetric}>
+                                    <Text style={styles.analysisMetricLabel}>In-Progress Payments</Text>
+                                    <Text style={styles.analysisMetricValue}>{formatINRCompact(inProgressPayments)}</Text>
+                                    <Text style={styles.analysisMetricSub}>Funds committed but incomplete</Text>
+                                </View>
+                            </View>
+                            <View style={styles.analysisColumn}>
+                                <View style={styles.analysisMetric}>
+                                    <Text style={styles.analysisMetricLabel}>Payment Gap</Text>
+                                    <Text style={[styles.analysisMetricValue, { color: paymentGapColor }]}>
+                                        {paymentGapPercentage.toFixed(1)}%
+                                    </Text>
+                                    <Text style={styles.analysisMetricSub}>Unaccounted spending</Text>
+                                </View>
+                                <View style={styles.analysisMetric}>
+                                    <Text style={styles.analysisMetricLabel}>Pending Works</Text>
+                                    <Text style={styles.analysisMetricValue}>
+                                        {pendingWorks > 0 ? pendingWorks : 0}
+                                    </Text>
+                                    <Text style={styles.analysisMetricSub}>Works awaiting completion</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+
                     {/* Yearly Trends */}
                     {yearlyData.length > 0 && (
-                        <View style={styles.mpChart}>
+                        <View style={styles.chart}>
                             <View style={styles.chartHeader}>
                                 <View style={styles.chartIcon} />
                                 <Text style={styles.chartTitle}>Yearly Trends</Text>
@@ -176,13 +228,17 @@ const MPDetailDocument = ({ data }) => {
                             </View>
                         </View>
                     )}
+                </View>
+            </Page>
 
-                    {/* Completed Works - Always show top 5 if available */}
-                    {completedWorksSliced.length > 0 && (
+            {/* Completed Works - Always show top 5 if available */}
+            {completedWorksSliced.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.content}>
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Top Completed Works</Text>
+                                <Text style={styles.worksTitle}>Recent Completed Works</Text>
                             </View>
                             {completedWorksSliced.map((work, i) => (
                                 <View key={i} style={styles.workItem}>
@@ -199,14 +255,28 @@ const MPDetailDocument = ({ data }) => {
                                 </View>
                             ))}
                         </View>
+                    </View>
+                    {recommendedWorksSliced.length == 0 && (
+                        <View style={styles.footer}>
+                            <View style={styles.footerLeft}>
+                                <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+                                <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
+                                    * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
+                                </Text>
+                            </View>
+                        </View>
                     )}
+                </Page>
+            )}
 
-                    {/* Recommended Works - Always show top 5 if available */}
-                    {recommendedWorksSliced.length > 0 && (
+            {/* Recommended Works - Always show top 5 if available */}
+            {recommendedWorksSliced.length > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.content}>
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
                                 <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Top Recommended Works</Text>
+                                <Text style={styles.worksTitle}>Top Recommended / IN Progress Works</Text>
                             </View>
                             {recommendedWorksSliced.map((work, i) => (
                                 <View key={i} style={styles.workItem}>
@@ -223,17 +293,19 @@ const MPDetailDocument = ({ data }) => {
                                 </View>
                             ))}
                         </View>
-                    )}
-                </View>
-                <View style={styles.footer}>
-                    <View style={styles.footerLeft}>
-                        <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
-                        <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
-                            * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
-                        </Text>
                     </View>
-                </View>
-            </Page>
+                    {completedWorksSliced.length != 0 && (
+                        <View style={styles.footer}>
+                            <View style={styles.footerLeft}>
+                                <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+                                <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
+                                    * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
+                                </Text>
+                            </View>
+                        </View>
+                    )}
+                </Page>
+            )}
         </Document>
     );
 };

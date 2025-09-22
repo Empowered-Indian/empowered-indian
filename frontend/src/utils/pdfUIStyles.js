@@ -242,7 +242,7 @@ export const createBaseStyles = (StyleSheet) => StyleSheet.create({
 
     // Chart section styles
     chart: {
-        marginTop: 16,
+        marginTop: 24,
         backgroundColor: colors.surface,
         borderRadius: 12,
         padding: 20,
@@ -745,5 +745,75 @@ export const createExtendedStyles = (StyleSheet) => StyleSheet.create({
         color: colors.primary,
         fontWeight: "bold",
         marginRight: 4,
+    },
+
+    // Payment Analysis section styles
+    paymentAnalysis: {
+        marginTop: 12,
+        backgroundColor: colors.surface,
+        borderRadius: 12,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    analysisHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 12,
+    },
+    analysisIcon: {
+        width: 18,
+        height: 18,
+        backgroundColor: colors.warning,
+        borderRadius: 9,
+        marginRight: 8,
+    },
+    analysisTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: colors.textPrimary,
+        letterSpacing: -0.3,
+    },
+    analysisGrid: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    analysisColumn: {
+        flex: 1,
+        paddingRight: 12,
+    },
+    analysisMetric: {
+        marginBottom: 8,
+        backgroundColor: colors.surface,
+        borderRadius: 6,
+        padding: 8,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        borderWidth: 1,
+        borderColor: colors.borderLight,
+    },
+    analysisMetricLabel: {
+        fontSize: 8,
+        color: colors.textMuted,
+        fontWeight: "600",
+        textTransform: "uppercase",
+        letterSpacing: 0.3,
+        marginBottom: 2,
+    },
+    analysisMetricValue: {
+        fontSize: 12,
+        fontWeight: "bold",
+        color: colors.textPrimary,
+    },
+    analysisMetricSub: {
+        fontSize: 9,
+        color: colors.textSecondary,
+        marginTop: 1,
     },
 });
