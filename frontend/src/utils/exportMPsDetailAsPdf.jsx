@@ -5,6 +5,7 @@ import { formatINRCompact } from "./formatters";
 import { useMPWorks } from '../hooks/useApi';
 import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles, colors } from "./pdfUIStyles";
 import { generateAndDownloadPdf } from "./pdfGenerator";
+import { PaymentIcon, ChartIcon, CompletedWorkIcon, RecommendedWorkIcon, MPIcon } from '../assets/svgIcon';
 
 const baseStyles = createBaseStyles(StyleSheet);
 const extendedStyles = createExtendedStyles(StyleSheet);
@@ -106,7 +107,7 @@ const MPDetailDocument = ({ data }) => {
                     {/* MP Info Header */}
                     <View style={styles.summary}>
                         <View style={styles.summaryHeader}>
-                            <View style={styles.summaryIcon} />
+                            <MPIcon />
                             <Text style={styles.summaryTitle}>{mp.name || 'MP Name'}</Text>
                             <Link src={currentUrl} style={{ color: '#007AFF', textDecoration: 'underline', fontSize: 9, marginBottom: 4 }}>
                                 <Image
@@ -163,7 +164,7 @@ const MPDetailDocument = ({ data }) => {
                     {/* Payment Analysis Section */}
                     <View style={styles.paymentAnalysis}>
                         <View style={styles.analysisHeader}>
-                            <View style={styles.analysisIcon} />
+                            <PaymentIcon />
                             <Text style={styles.analysisTitle}>Payment Analysis</Text>
                         </View>
                         <View style={styles.analysisGrid}>
@@ -202,7 +203,7 @@ const MPDetailDocument = ({ data }) => {
                     {yearlyData.length > 0 && (
                         <View style={styles.chart}>
                             <View style={styles.chartHeader}>
-                                <View style={styles.chartIcon} />
+                                <ChartIcon />
                                 <Text style={styles.chartTitle}>Yearly Trends</Text>
                             </View>
                             <View style={styles.chartContainer}>
@@ -237,7 +238,7 @@ const MPDetailDocument = ({ data }) => {
                     <View style={styles.content}>
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
-                                <View style={styles.worksIcon} />
+                                <CompletedWorkIcon />
                                 <Text style={styles.worksTitle}>Recent Completed Works</Text>
                             </View>
                             {completedWorksSliced.map((work, i) => (
@@ -275,8 +276,8 @@ const MPDetailDocument = ({ data }) => {
                     <View style={styles.content}>
                         <View style={styles.works}>
                             <View style={styles.worksHeader}>
-                                <View style={styles.worksIcon} />
-                                <Text style={styles.worksTitle}>Top Recommended / IN Progress Works</Text>
+                                <RecommendedWorkIcon />
+                                <Text style={styles.worksTitle}>Top Recommended / In-Progress Works</Text>
                             </View>
                             {recommendedWorksSliced.map((work, i) => (
                                 <View key={i} style={styles.workItem}>
