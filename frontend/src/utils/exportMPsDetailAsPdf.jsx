@@ -295,7 +295,7 @@ const MPDetailDocument = ({ data }) => {
                             ))}
                         </View>
                     </View>
-                    {completedWorksSliced.length != 0 && (
+                    {completedWorksSliced.length !== 0 && (
                         <View style={styles.footer}>
                             <View style={styles.footerLeft}>
                                 <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
