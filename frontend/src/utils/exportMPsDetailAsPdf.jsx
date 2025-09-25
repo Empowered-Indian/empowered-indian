@@ -336,7 +336,7 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
         recommendedWorks: recommendedWorks?.data?.data ? recommendedWorks?.data?.data : recommendedWorks?.data
     }
 
-    console.log("ExportMPsDetailAsPdf mpData:", data);
+    // Removed console.log for production
 
     if (!data) {
         return (
