@@ -4,8 +4,8 @@ const path = require('path');
 
 class MPLADSApiClient {
     constructor(sessionCookies = null) {
-        this.baseUrl = 'https://mplads.sbi/rest/PreLoginDashboardData/getTilesReportData';
-        this.loginUrl = 'https://mplads.sbi';
+        this.baseUrl = 'https://mplads.mospi.gov.in/rest/PreLoginDashboardData/getTilesReportData';
+        this.loginUrl = 'https://mplads.mospi.gov.in';
         this.sessionCookies = sessionCookies;
         this.csrfToken = '';
         this.sessionFile = path.join(__dirname, '../data/session.json');
@@ -17,7 +17,7 @@ class MPLADSApiClient {
             'Accept-Language': 'en-US,en;q=0.9',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json; charset=UTF-8',
-            'Origin': 'https://mplads.sbi',
+            'Origin': 'https://mplads.mospi.gov.in',
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'same-origin',
@@ -100,7 +100,7 @@ class MPLADSApiClient {
                 console.log('🔑 Initializing MPLADS session...');
                 
                 const options = {
-                    hostname: 'mplads.sbi',
+                    hostname: 'mplads.mospi.gov.in',
                     port: 443,
                     path: '/',
                     method: 'GET',
@@ -242,7 +242,7 @@ class MPLADSApiClient {
                 const postData = 'combo=0%2C0%2C0%2C2&key=Total%20Works%20Completed';
                 
                 const options = {
-                    hostname: 'mplads.sbi',
+                    hostname: 'mplads.mospi.gov.in',
                     port: 443,
                     path: '/rest/PreLoginDashboardData/getTilesReportData',
                     method: 'POST',
@@ -252,7 +252,7 @@ class MPLADSApiClient {
                         'Connection': 'keep-alive',
                         'Content-Type': 'application/json; charset=UTF-8',
                         'Content-Length': Buffer.byteLength(postData),
-                        'Origin': 'https://mplads.sbi',
+                        'Origin': 'https://mplads.mospi.gov.in',
                         'Sec-Fetch-Dest': 'empty',
                         'Sec-Fetch-Mode': 'cors',
                         'Sec-Fetch-Site': 'same-origin',
@@ -366,7 +366,7 @@ class MPLADSApiClient {
                 const postData = `combo=${houseCombo}&key=${keyParam}`;
                 
                 const options = {
-                    hostname: 'mplads.sbi',
+                    hostname: 'mplads.mospi.gov.in',
                     port: 443,
                     path: '/rest/PreLoginDashboardData/getTilesReportData',
                     method: 'POST',
@@ -376,7 +376,7 @@ class MPLADSApiClient {
                         'Connection': 'keep-alive',
                         'Content-Type': 'application/json; charset=UTF-8',
                         'Content-Length': Buffer.byteLength(postData),
-                        'Origin': 'https://mplads.sbi',
+                        'Origin': 'https://mplads.mospi.gov.in',
                         'Sec-Fetch-Dest': 'empty',
                         'Sec-Fetch-Mode': 'cors',
                         'Sec-Fetch-Site': 'same-origin',
