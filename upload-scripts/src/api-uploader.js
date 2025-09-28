@@ -948,7 +948,7 @@ async function syncMPLADSDataFromAPI(options = {}) {
         minPoolSize: parseInt(process.env.DB_MIN_POOL_SIZE) || 5,
         maxIdleTimeMS: parseInt(process.env.DB_MAX_IDLE_TIME_MS) || 30000,
         serverSelectionTimeoutMS: parseInt(process.env.DB_SERVER_SELECTION_TIMEOUT_MS) || 10000,
-        socketTimeoutMS: parseInt(process.env.DB_SOCKET_TIMEOUT_MS) || 45000,
+        socketTimeoutMS: parseInt(process.env.DB_SOCKET_TIMEOUT_MS) || 120000,
         connectTimeoutMS: parseInt(process.env.DB_CONNECT_TIMEOUT_MS) || 10000,
         retryWrites: true,
         w: 'majority',

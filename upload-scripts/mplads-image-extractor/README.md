@@ -47,7 +47,7 @@ R2_BUCKET_NAME=mplads-images
 R2_PUBLIC_DOMAIN=images.empoweredindian.in
 
 # MPLADS API Configuration
-MPLADS_BASE_URL=https://mplads.sbi
+MPLADS_BASE_URL=https://mplads.mospi.gov.in
 MPLADS_SESSION_COOKIE=JSESSIONID=...; ROUTEID=...; # Update with fresh cookies
 
 # Processing Settings
@@ -268,7 +268,7 @@ The extractor automatically skips works that already have `imageData.hasImages =
 
 ### Session Cookie Update
 
-1. Visit https://mplads.sbi in browser
+1. Visit https://mplads.mospi.gov.in in browser
 2. Open Developer Tools → Network tab
 3. Make any API request
 4. Copy all cookies from request headers

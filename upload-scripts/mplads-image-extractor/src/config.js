@@ -31,7 +31,7 @@ export const config = {
       'Accept-Language': 'en-US,en;q=0.9',
       'Connection': 'keep-alive',
       'Content-Type': 'application/json; charset=UTF-8',
-      'Origin': 'https://mplads.sbi',
+      'Origin': 'https://mplads.mospi.gov.in',
       'Sec-Fetch-Dest': 'empty',
       'Sec-Fetch-Mode': 'cors',
       'Sec-Fetch-Site': 'same-origin',
