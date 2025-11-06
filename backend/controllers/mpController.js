@@ -56,9 +56,39 @@ const getMPDetails = async (req, res, next) => {
       {
         $group: {
           _id: null,
-          totalExpenditure: { $sum: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } },
+          totalExpenditure: {
+            $sum: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          },
           totalEntries: { $sum: 1 },
-          avgExpenditure: { $avg: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } },
+          avgExpenditure: {
+            $avg: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          },
           categories: { $addToSet: '$category' }
         }
       }
@@ -71,7 +101,22 @@ const getMPDetails = async (req, res, next) => {
       {
         $group: {
           _id: { $ifNull: ['$year', { $year: { $ifNull: ['$expenditureDate', '$date'] } }] },
-          totalAmount: { $sum: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } },
+          totalAmount: {
+            $sum: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          },
           transactionCount: { $sum: 1 }
         }
       },
@@ -86,9 +131,39 @@ const getMPDetails = async (req, res, next) => {
       {
         $group: {
           _id: { $ifNull: ['$category', '$expenditureCategory'] },
-          totalAmount: { $sum: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } },
+          totalAmount: {
+            $sum: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          },
           transactionCount: { $sum: 1 },
-          avgAmount: { $avg: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } }
+          avgAmount: {
+            $avg: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          }
         }
       },
       { $sort: { totalAmount: -1 } },
@@ -140,8 +215,8 @@ const getMPDetails = async (req, res, next) => {
               }
               
               const percentage = (totalExpenditure / allocatedAmount) * 100;
-              // Cap at 100% for display purposes, but allow over-spending to be tracked
-              return Math.min(percentage, 999.99); // Cap at 999.99% to avoid display issues
+              // Cap at 100% for display purposes
+              return Math.min(percentage, 100);
             })(),
           completedWorksCount: mpSummary ? mpSummary.completedWorksCount : completedWorksCount,
           recommendedWorksCount: mpSummary ? mpSummary.recommendedWorksCount : recommendedWorksCount,
@@ -240,7 +315,7 @@ const getMPWorks = async (req, res, next) => {
       })
       .sort({ completedDate: -1 })
       .skip(status === 'completed' ? skip : 0)
-      .limit(status === 'completed' ? parseInt(limit) : Math.floor(parseInt(limit) / 2))
+      .limit(status === 'completed' ? parseInt(limit, 10) : Math.ceil(parseInt(limit, 10) / 2))
       .lean();
 
       works = works.concat(completedWorks.map(work => ({
@@ -356,12 +431,12 @@ const getMPWorks = async (req, res, next) => {
       if (status === 'recommended') {
         recommendedWorksAggregation.push(
           { $skip: skip },
-          { $limit: parseInt(limit) }
+          { $limit: parseInt(limit, 10) }
         );
       } else {
-        // For 'all' status, limit recommended half-page (completed gets the other half)
+        // For 'all' status, limit recommended half-page (completed gets the other half with ceil)
         recommendedWorksAggregation.push(
-          { $limit: Math.floor(parseInt(limit) / 2) }
+          { $limit: Math.floor(parseInt(limit, 10) / 2) }
         );
       }
 
@@ -481,14 +556,14 @@ const getMPWorks = async (req, res, next) => {
       data: {
         works,
         pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
+          page: parseInt(page, 10),
+          limit: parseInt(limit, 10),
           total: totalCount,
           totalCount: totalCount,
-          pages: Math.ceil(totalCount / limit),
-          currentPage: parseInt(page),
-          hasNext: parseInt(page) < Math.ceil(totalCount / limit),
-          hasPrev: parseInt(page) > 1
+          pages: Math.ceil(totalCount / parseInt(limit, 10)),
+          currentPage: parseInt(page, 10),
+          hasNext: parseInt(page, 10) < Math.ceil(totalCount / parseInt(limit, 10)),
+          hasPrev: parseInt(page, 10) > 1
         },
         summary: {
           totalCost: totalCost,
@@ -586,7 +661,7 @@ const searchMPs = async (req, res, next) => {
       .select('_id mpName constituency state house allocatedAmount')
       .sort({ mpName: 1 })
       .skip(skip)
-      .limit(parseInt(limit))
+      .limit(parseInt(limit, 10))
       .lean();
 
     // Build a de-duplication key based on entity identity rather than document _id
@@ -605,7 +680,7 @@ const searchMPs = async (req, res, next) => {
     );
 
     // If we did not reach the limit with Summary, fetch from MP collection
-    const remaining = Math.max(parseInt(limit) - summaryDocs.length, 0);
+    const remaining = Math.max(parseInt(limit, 10) - summaryDocs.length, 0);
     let mpDocs = [];
     if (remaining > 0) {
       mpDocs = await MP.find(mpQuery)
@@ -650,22 +725,47 @@ const searchMPs = async (req, res, next) => {
       return true;
     });
 
-    // Compute an approximate total (use Summary count primarily, then add MP count)
-    const [summaryCount, mpCount] = await Promise.all([
+    // Compute total count avoiding duplicates
+    // Get all Summary entities first to build deduplication set
+    const [summaryCount, allSummaryEntities, mpCount] = await Promise.all([
       Summary.countDocuments(summaryQuery),
+      Summary.find(summaryQuery).select('mpName constituency state').lean(),
       MP.countDocuments(mpQuery)
     ]);
-    const totalCount = summaryCount + mpCount;
+
+    // Build deduplication set from all Summary entities
+    const allSummaryKeys = new Set(
+      allSummaryEntities.map(d => buildEntityKey(d.mpName, d.constituency, d.state))
+    );
+
+    // Count MPs that don't exist in Summary
+    const uniqueMPCount = await MP.countDocuments({
+      ...mpQuery,
+      $expr: {
+        $not: {
+          $in: [
+            { $toLower: { $concat: [
+              { $ifNull: ['$name', ''] }, '|',
+              { $ifNull: ['$constituency', ''] }, '|',
+              { $ifNull: ['$state', ''] }
+            ]}},
+            Array.from(allSummaryKeys)
+          ]
+        }
+      }
+    });
+
+    const totalCount = summaryCount + uniqueMPCount;
 
     res.json({
       success: true,
       data: {
         mps: merged,
         pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
+          page: parseInt(page, 10),
+          limit: parseInt(limit, 10),
           total: totalCount,
-          pages: Math.ceil(totalCount / limit)
+          pages: Math.ceil(totalCount / parseInt(limit, 10))
         },
         query: q
       }
@@ -757,7 +857,12 @@ const getConstituencyDetails = async (req, res, next) => {
           works: {
             completed: completedWorks,
             recommended: recommendedWorks,
-            completionRate: (completedWorks + recommendedWorks) > 0 ? (completedWorks / (completedWorks + recommendedWorks) * 100) : 0
+            completionRate: (() => {
+              const total = completedWorks + recommendedWorks;
+              if (total === 0) return 0;
+              const rate = (completedWorks / total) * 100;
+              return Number.isFinite(rate) ? rate : 0;
+            })()
           }
         }
       }
@@ -793,9 +898,39 @@ const getSectorWiseData = async (req, res, next) => {
       {
         $group: {
           _id: { $ifNull: ['$category', '$expenditureCategory'] },
-          totalAmount: { $sum: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } },
+          totalAmount: {
+            $sum: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          },
           transactionCount: { $sum: 1 },
-          avgAmount: { $avg: { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } } }
+          avgAmount: {
+            $avg: {
+              $cond: [
+                { $or: [
+                  { $eq: [{ $type: '$expenditureAmount' }, 'double'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'int'] },
+                  { $eq: [{ $type: '$expenditureAmount' }, 'long'] },
+                  { $eq: [{ $type: '$amount' }, 'double'] },
+                  { $eq: [{ $type: '$amount' }, 'int'] },
+                  { $eq: [{ $type: '$amount' }, 'long'] }
+                ]},
+                { $toDouble: { $ifNull: ['$expenditureAmount', '$amount'] } },
+                0
+              ]
+            }
+          }
         }
       },
       { $sort: { totalAmount: -1 } },

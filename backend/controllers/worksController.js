@@ -123,7 +123,22 @@ const getCompletedWorks = async (req, res, next) => {
           category_hi: { $ifNull: ['$workCategory', '$category'] },
           cost: { $toDouble: { $ifNull: ['$finalAmount', '$cost'] } },
           completion_date: { $ifNull: ['$completedDate', '$completion_date'] },
-          completion_year: { $year: { $ifNull: ['$completedDate', { $toDate: '$completion_date' }] } },
+          completion_year: {
+            $cond: [
+              { $ne: ['$completedDate', null] },
+              { $year: '$completedDate' },
+              {
+                $cond: [
+                  { $and: [
+                    { $ne: ['$completion_date', null] },
+                    { $eq: [{ $type: '$completion_date' }, 'date'] }
+                  ]},
+                  { $year: '$completion_date' },
+                  null
+                ]
+              }
+            ]
+          },
           location: { $ifNull: ['$ida', '$location'] },
           location_hi: { $ifNull: ['$ida', '$location'] },
           district: { $ifNull: ['$constituency', '$district'] },
@@ -177,7 +192,8 @@ const getCompletedWorks = async (req, res, next) => {
           totalWorks: { $sum: 1 },
           uniqueCategories: { $addToSet: '$category' },
           uniqueDistricts: { $addToSet: '$constituency' },
-          totalBeneficiaries: { $sum: '$beneficiaries' }
+          totalBeneficiaries: { $sum: '$beneficiaries' },
+          avgBeneficiaries: { $avg: '$beneficiaries' }
         }
       }
     ];
@@ -949,7 +965,7 @@ const getConstituencies = async (req, res, next) => {
         // Combine counts and amounts if constituency already exists
         const existing = constituencyMap.get(key);
         existing.projectCount += c.projectCount;
-        existing.totalAmount = Math.round((existing.totalAmount + c.totalAmount) * 100) / 100;
+        existing.totalAmount += c.totalAmount; // Accumulate without rounding
       } else {
         // Add new constituency
         constituencyMap.set(key, {
@@ -961,10 +977,13 @@ const getConstituencies = async (req, res, next) => {
       }
     });
 
-    // Convert map to sorted array
-    const constituencies = Array.from(constituencyMap.values()).sort((a, b) => 
-      a.constituency.localeCompare(b.constituency)
-    );
+    // Convert map to sorted array and round totalAmount at output
+    const constituencies = Array.from(constituencyMap.values())
+      .map(c => ({
+        ...c,
+        totalAmount: Math.round(c.totalAmount * 100) / 100
+      }))
+      .sort((a, b) => a.constituency.localeCompare(b.constituency));
 
     // Get states list from both collections and combine
     const [completedStates, recommendedStates] = await Promise.all([
@@ -1099,7 +1118,22 @@ const getCompletedWorkDetails = async (req, res, next) => {
           category_hi: { $ifNull: ['$workCategory', '$category'] },
           cost: { $toDouble: { $ifNull: ['$finalAmount', '$cost'] } },
           completion_date: { $ifNull: ['$completedDate', '$completion_date'] },
-          completion_year: { $year: { $ifNull: ['$completedDate', { $toDate: '$completion_date' }] } },
+          completion_year: {
+            $cond: [
+              { $ne: ['$completedDate', null] },
+              { $year: '$completedDate' },
+              {
+                $cond: [
+                  { $and: [
+                    { $ne: ['$completion_date', null] },
+                    { $eq: [{ $type: '$completion_date' }, 'date'] }
+                  ]},
+                  { $year: '$completion_date' },
+                  null
+                ]
+              }
+            ]
+          },
           location: { $ifNull: ['$ida', '$location'] },
           location_hi: { $ifNull: ['$ida', '$location'] },
           district: { $ifNull: ['$constituency', '$district'] },
@@ -1301,8 +1335,11 @@ const getWorkPayments = async (req, res, next) => {
       });
     }
 
-    // Calculate payment summary
-    const totalPaid = payments.reduce((sum, payment) => sum + (payment.expenditureAmount || 0), 0);
+    // Calculate payment summary with proper validation
+    const totalPaid = payments.reduce((sum, payment) => {
+      const amount = parseFloat(payment.expenditureAmount) || 0;
+      return sum + (Number.isFinite(amount) ? amount : 0);
+    }, 0);
     const successfulPayments = payments.filter(p => p.paymentStatus === 'Payment Success');
     const pendingPayments = payments.filter(p => p.paymentStatus !== 'Payment Success');
     

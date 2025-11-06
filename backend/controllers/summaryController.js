@@ -69,14 +69,26 @@ const getOverview = async (req, res) => {
             $cond: [
               { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
               0,
-              { $multiply: [{ $divide: ['$totalExpenditure', '$totalAllocated'] }, 100] }
+              {
+                $cond: [
+                  { $or: [{ $eq: ['$totalExpenditure', null] }, { $eq: ['$totalExpenditure', 0] }] },
+                  0,
+                  { $min: [{ $multiply: [{ $divide: [{ $ifNull: ['$totalExpenditure', 0] }, '$totalAllocated'] }, 100] }, 100] }
+                ]
+              }
             ]
           },
           paymentGap: {
             $cond: [
               { $or: [{ $eq: ['$totalExpenditure', 0] }, { $eq: ['$totalExpenditure', null] }] },
               0,
-              { $multiply: [{ $divide: ['$totalInProgressPayments', '$totalExpenditure'] }, 100] }
+              {
+                $cond: [
+                  { $or: [{ $eq: ['$totalInProgressPayments', null] }, { $eq: ['$totalInProgressPayments', 0] }] },
+                  0,
+                  { $min: [{ $multiply: [{ $divide: [{ $ifNull: ['$totalInProgressPayments', 0] }, '$totalExpenditure'] }, 100] }, 100] }
+                ]
+              }
             ]
           },
           completionRate: {
@@ -183,7 +195,13 @@ const getStateSummary = async (req, res) => {
               $cond: {
                 if: { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
                 then: 0,
-                else: { $multiply: [{ $divide: ['$totalExpenditure', '$totalAllocated'] }, 100] }
+                else: {
+                  $cond: {
+                    if: { $or: [{ $eq: ['$totalExpenditure', null] }, { $eq: ['$totalExpenditure', 0] }] },
+                    then: 0,
+                    else: { $min: [{ $multiply: [{ $divide: [{ $ifNull: ['$totalExpenditure', 0] }, '$totalAllocated'] }, 100] }, 100] }
+                  }
+                }
               }
             },
             state: '$_id'

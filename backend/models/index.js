@@ -40,7 +40,6 @@ const expenditureSchema = new mongoose.Schema({
 expenditureSchema.index({ mpName: 1, house: 1, lsTerm: 1 });
 expenditureSchema.index({ state: 1, house: 1, lsTerm: 1 });
 expenditureSchema.index({ expenditureDate: -1 });
-expenditureSchema.index({ workId: 1 });
 
 // Works Completed Schema
 const worksCompletedSchema = new mongoose.Schema({
@@ -61,7 +60,6 @@ const worksCompletedSchema = new mongoose.Schema({
 worksCompletedSchema.index({ mpName: 1, house: 1, lsTerm: 1 });
 worksCompletedSchema.index({ state: 1, house: 1, lsTerm: 1 });
 worksCompletedSchema.index({ completedDate: -1 });
-worksCompletedSchema.index({ workId: 1 });
 
 // Works Recommended Schema
 const worksRecommendedSchema = new mongoose.Schema({
@@ -81,7 +79,6 @@ const worksRecommendedSchema = new mongoose.Schema({
 worksRecommendedSchema.index({ mpName: 1, house: 1, lsTerm: 1 });
 worksRecommendedSchema.index({ state: 1, house: 1, lsTerm: 1 });
 worksRecommendedSchema.index({ recommendationDate: -1 });
-worksRecommendedSchema.index({ workId: 1 });
 
 // Summary Schema
 const summarySchema = new mongoose.Schema({

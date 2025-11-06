@@ -252,7 +252,9 @@ const StatePerformanceChart = ({ data, isLoading, error, title = 'Top Performing
     );
 
   const topState = seriesData.top[0];
-  const avgUtilization = (seriesData.top.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / seriesData.top.length) || 0;
+  const avgUtilization = seriesData.top.length > 0
+    ? seriesData.top.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / seriesData.top.length
+    : 0;
   // Responsive height calculation that works with parent containers
   const getEffectiveHeight = () => {
     // If height is 'auto', use responsive defaults
