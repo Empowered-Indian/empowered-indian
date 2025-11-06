@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
+import { IndianRupee, Landmark, Map, FileStack, BarChart3, Construction, Search, TrendingUp, Users } from 'lucide-react'
 import './Home.css'
 import MailingListForm from './MPLADS/components/Common/MailingListForm'
 import SiteFooter from './common/SiteFooter'
@@ -77,28 +78,28 @@ function Home() {
 
             <div className="hero-stats">
               <div className="stats-item">
-                <div className="stats-icon">₹</div>
+                <div className="stats-icon"><IndianRupee size={32} /></div>
                 <div className="stats-number">
                   <span className="counter" data-target="5000">5000</span>+ Cr
                 </div>
                 <div className="stats-label">Funds Tracked</div>
               </div>
               <div className="stats-item">
-                <div className="stats-icon">🏛️</div>
+                <div className="stats-icon"><Landmark size={32} /></div>
                 <div className="stats-number">
                   <span className="counter" data-target="543">543</span>
                 </div>
                 <div className="stats-label">MPs Monitored</div>
               </div>
               <div className="stats-item" role="group" aria-label="States/UTs covered">
-                <div className="stats-icon">🗺️</div>
+                <div className="stats-icon"><Map size={32} /></div>
                 <div className="stats-number">
                   <span className="counter" data-target="38">38</span>
                 </div>
                 <div className="stats-label">States/UTs Covered</div>
               </div>
               <div className="stats-item" role="group" aria-label="Projects tracked">
-                <div className="stats-icon">📑</div>
+                <div className="stats-icon"><FileStack size={32} /></div>
                 <div className="stats-number">
                   <span className="counter" data-target="10000">10000</span>+
                 </div>
@@ -117,7 +118,7 @@ function Home() {
               </div>
               <div className="status-indicators">
                 <div className="status-card available">
-                  <div className="home-status-icon">📊</div>
+                  <div className="home-status-icon"><BarChart3 size={48} /></div>
                   <h3>MPLADS Dashboard</h3>
                   <p className="status-description">
                     Track MP fund utilization, project progress, and expenditure patterns across constituencies.
@@ -128,7 +129,7 @@ function Home() {
                 </div>
 
                 <div className="status-card wip">
-                  <div className="home-status-icon">🚧</div>
+                  <div className="home-status-icon"><Construction size={48} /></div>
                   <h3>MLALADS Dashboard</h3>
                   <p className="status-description">
                     MLA Local Area Development fund tracking - coming soon to provide state-level transparency.
@@ -149,19 +150,19 @@ function Home() {
           </p>
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon">📊</div>
+              <div className="feature-icon"><BarChart3 size={40} /></div>
               <h3>Real-time Analytics</h3>
               <p>Track fund utilization, project status, and expenditure patterns with interactive charts and visualizations.</p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">🔍</div>
+              <div className="feature-icon"><Search size={40} /></div>
               <h3>Advanced Search</h3>
               <p>Find specific MPs, constituencies, or projects with powerful search and filtering capabilities.</p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon">📈</div>
+              <div className="feature-icon"><TrendingUp size={40} /></div>
               <h3>Performance Insights</h3>
               <p>Understand spending patterns, project completion rates, and fund utilization efficiency.</p>
             </div>
@@ -179,17 +180,17 @@ function Home() {
             </p>
             <div className="mission-values">
               <div className="value-item">
-                <div className="value-icon">🔍</div>
+                <div className="value-icon"><Search size={36} /></div>
                 <h4>Transparency</h4>
                 <p>Making government spending visible and trackable</p>
               </div>
               <div className="value-item">
-                <div className="value-icon">📊</div>
+                <div className="value-icon"><BarChart3 size={36} /></div>
                 <h4>Accountability</h4>
                 <p>Holding representatives accountable for fund utilization</p>
               </div>
               <div className="value-item">
-                <div className="value-icon">👥</div>
+                <div className="value-icon"><Users size={36} /></div>
                 <h4>Accessibility</h4>
                 <p>Democratizing access to government data</p>
               </div>
