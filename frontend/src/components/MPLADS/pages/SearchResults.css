@@ -64,7 +64,6 @@
 
 .search-content {
   width: 100%;
-  padding: 0 1rem;
 }
 
 .search-layout {
@@ -121,6 +120,11 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* No max-height restriction - should fill available page space */
+.search-results {
+  flex: 1;
 }
 
 .results-list {
