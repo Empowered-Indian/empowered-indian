@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
 import './CollapsibleSection.css';
 
 const CollapsibleSection = ({ 
@@ -55,8 +56,9 @@ const CollapsibleSection = ({
         
         <div className="collapsible-controls">
           {headerActions && <div className="collapsible-actions">{headerActions}</div>}
-          <button 
-            className="collapsible-toggle" 
+          <Button
+            variant="ghost"
+            className="collapsible-toggle gap-2"
             aria-label={isOpen ? 'Collapse section' : 'Expand section'}
             onClick={(e) => {
               e.stopPropagation();
@@ -64,7 +66,7 @@ const CollapsibleSection = ({
             }}
           >
             {isOpen ? <FiChevronUp /> : <FiChevronDown />}
-          </button>
+          </Button>
         </div>
       </div>
       

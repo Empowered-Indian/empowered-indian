@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { FiInfo } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
 import './InfoTooltip.css';
 
 const InfoTooltip = ({ 
@@ -257,9 +258,10 @@ const InfoTooltip = ({
 
   return (
     <div className={`tooltip-wrapper ${className}`}>
-      <button
+      <Button
         ref={triggerRef}
-        className={`tooltip-trigger ${size} ${isMobile ? 'mobile' : ''}`}
+        variant="ghost"
+        className={`tooltip-trigger ${size} ${isMobile ? 'mobile' : ''} gap-2`}
         onMouseEnter={!isMobile ? handleShow : undefined}
         onMouseLeave={!isMobile ? handleMouseLeaveTrigger : undefined}
         onClick={!isMobile ? handleClick : undefined}
@@ -269,7 +271,7 @@ const InfoTooltip = ({
         type="button"
       >
         {icon}
-      </button>
+      </Button>
       
       {isVisible && (
         needsPortal ? (

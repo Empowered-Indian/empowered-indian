@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
-import { 
-  FiFilter, 
-  FiSearch, 
-  FiMapPin, 
-  FiCalendar, 
+import {
+  FiFilter,
+  FiSearch,
+  FiMapPin,
+  FiCalendar,
   FiCreditCard
 } from 'react-icons/fi';
 import { useCompletedWorks, useRecommendedWorks, useWorkCategories, useMPWorks } from '../../../../hooks/useApi';
@@ -12,6 +12,7 @@ import RangeSlider from '../Common/Slider/RangeSlider';
 import PaymentDetailsModal from '../Common/PaymentDetailsModal';
 import { formatINRCompact } from '../../../../utils/formatters';
 import { useDebounce } from '../../../../hooks/useDebounce';
+import { Button } from '@/components/ui/button';
 import './ProjectListing.css';
 // Removed unused useFilters import (no longer needed in this component)
 
@@ -245,8 +246,9 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
       {/* Header with tabs and summary */}
       <div className="project-listing-header">
         <div className="project-tabs">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             className={`tab-btn ${projectType === 'completed' ? 'active' : ''}`}
             onClick={() => {
               setProjectType('completed');
@@ -256,9 +258,10 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
             }}
           >
             Completed Works
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             className={`tab-btn ${projectType === 'recommended' ? 'active' : ''}`}
             onClick={() => {
               setProjectType('recommended');
@@ -266,7 +269,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
             }}
           >
             Recommended Works
-          </button>
+          </Button>
         </div>
 
         <div className="project-summary">
@@ -288,14 +291,15 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
       {/* Filters */}
       <div className="project-filters">
         <div className="filters-header">
-          <button
+          <Button
             type="button"
-            className="filters-toggle"
+            variant="outline"
+            className="filters-toggle gap-2"
             onClick={() => setShowFilters(!showFilters)}
           >
             <FiFilter />
             Filters
-          </button>
+          </Button>
           
           <div className="search-box">
             <FiSearch />
@@ -361,9 +365,9 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
               </div>
             )}
 
-            <button type="button" className="clear-filters-btn" onClick={clearFilters}>
+            <Button type="button" variant="ghost" className="clear-filters-btn" onClick={clearFilters}>
               Clear All
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -424,8 +428,9 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
                   
                   <div className="project-actions">
                     {projectType === 'completed' && (project.workId || project.work_id) && (
-                      <button 
-                        className="payment-details-btn"
+                      <Button
+                        variant="outline"
+                        className="payment-details-btn gap-2"
                         onClick={() => setSelectedPaymentWork({
                           workId: project.workId || project.work_id,
                           description: project.workDescription || project.work_description || project.description
@@ -434,14 +439,15 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
                       >
                         <FiCreditCard />
                         Payments
-                      </button>
+                      </Button>
                     )}
-                    
+
                     {projectType === 'recommended' && (
                       <div className="recommended-actions">
                         {project.hasPayments && (
-                          <button 
-                            className="payment-details-btn with-payments"
+                          <Button
+                            variant="outline"
+                            className="payment-details-btn with-payments gap-2"
                             onClick={() => setSelectedPaymentWork({
                               workId: project.workId,
                               description: project.work_description || project.workDescription,
@@ -452,9 +458,9 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
                           >
                             <FiCreditCard />
                             ₹{formatINRCompact(project.totalPaid)} Paid
-                          </button>
+                          </Button>
                         )}
-                        
+
                         {project.status && (
                           <span className={`status-badge status-${project.status?.toLowerCase().replace(/\s+/g, '-')}`}>
                             {project.status}
@@ -480,45 +486,49 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
           </div>
 
           <div className="pagination-controls">
-            <button
+            <Button
               type="button"
+              variant="outline"
               disabled={currentPage <= 1}
               onClick={() => handlePageChange(1)}
               title="First page"
             >
               ««
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="button"
+              variant="outline"
               disabled={currentPage <= 1}
               onClick={() => handlePageChange(currentPage - 1)}
               title="Previous page"
             >
               ‹
-            </button>
+            </Button>
 
             <span className="page-info">
               Page {currentPage} of {serverPagination.totalPages || serverPagination.pages || 1}
             </span>
 
-            <button
+            <Button
               type="button"
+              variant="outline"
               disabled={currentPage >= (serverPagination.totalPages || serverPagination.pages || 1)}
               onClick={() => handlePageChange(currentPage + 1)}
               title="Next page"
             >
               ›
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="button"
+              variant="outline"
               disabled={currentPage >= (serverPagination.totalPages || serverPagination.pages || 1)}
               onClick={() => handlePageChange(serverPagination.totalPages || serverPagination.pages || 1)}
               title="Last page"
             >
               »»
-            </button>
+            </Button>
           </div>
         </div>
       )}

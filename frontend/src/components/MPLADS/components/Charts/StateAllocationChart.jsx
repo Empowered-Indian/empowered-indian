@@ -1,5 +1,6 @@
 import ReactECharts from 'echarts-for-react';
 import { useState, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
 
 const StateAllocationChart = ({ data, title = 'State-wise Allocation vs Expenditure' }) => {
   const [selectedState, setSelectedState] = useState(null);
@@ -271,65 +272,52 @@ const StateAllocationChart = ({ data, title = 'State-wise Allocation vs Expendit
       {/* State Filter Controls */}
       <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
-          <button 
+          <Button
+            variant={showStateSelector ? "default" : "outline"}
             onClick={() => setShowStateSelector(!showStateSelector)}
             style={{
               padding: '6px 12px',
-              backgroundColor: showStateSelector ? '#007bff' : '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
               fontSize: '12px'
             }}
           >
             {showStateSelector ? 'Hide' : 'Select'} States
-          </button>
+          </Button>
           
-          <button 
+          <Button
+            variant="default"
             onClick={() => handleQuickSelect('top10')}
             style={{
               padding: '6px 12px',
               backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
               fontSize: '12px'
             }}
           >
             Top 10
-          </button>
+          </Button>
           
-          <button 
+          <Button
+            variant="outline"
             onClick={() => handleQuickSelect('bottom10')}
             style={{
               padding: '6px 12px',
               backgroundColor: '#ffc107',
               color: 'black',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
               fontSize: '12px'
             }}
           >
             Bottom 10
-          </button>
+          </Button>
           
-          <button 
+          <Button
+            variant="destructive"
             onClick={handleReset}
             style={{
               padding: '6px 12px',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
               fontSize: '12px'
             }}
           >
             Reset ({selectedStates.length === 0 ? 'All' : selectedStates.length})
-          </button>
+          </Button>
 
           {selectedStates.length > 0 && (
             <span style={{ fontSize: '12px', color: '#666', marginLeft: '10px' }}>
@@ -341,34 +329,27 @@ const StateAllocationChart = ({ data, title = 'State-wise Allocation vs Expendit
         {showStateSelector && (
           <div>
             <div style={{ marginBottom: '8px', display: 'flex', gap: '8px' }}>
-              <button 
+              <Button
+                variant="default"
                 onClick={handleSelectAll}
                 style={{
                   padding: '4px 8px',
                   backgroundColor: '#17a2b8',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '3px',
-                  cursor: 'pointer',
                   fontSize: '11px'
                 }}
               >
                 Select All
-              </button>
-              <button 
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => setSelectedStates([])}
                 style={{
                   padding: '4px 8px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '3px',
-                  cursor: 'pointer',
                   fontSize: '11px'
                 }}
               >
                 Clear All
-              </button>
+              </Button>
             </div>
             
             <div style={{ 

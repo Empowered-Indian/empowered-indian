@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FiUser, FiLock, FiEye, FiEyeOff, FiLogIn, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../hooks/useAuth';
+import { Button } from '@/components/ui/button';
 import './Login.css';
 
 const Login = () => {
@@ -175,14 +176,15 @@ const Login = () => {
                 aria-invalid={!!validationErrors.password}
                 aria-describedby={validationErrors.password ? 'password-error' : undefined}
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <FiEyeOff /> : <FiEye />}
-              </button>
+              </Button>
             </div>
             {validationErrors.password && (
               <span id="password-error" className="error-message">
@@ -192,9 +194,10 @@ const Login = () => {
             )}
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="login-button"
+            variant="default"
+            className="login-button gap-2 bg-blue-600 text-white hover:bg-blue-700"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -208,7 +211,7 @@ const Login = () => {
                 Sign In
               </>
             )}
-          </button>
+          </Button>
         </form>
 
         <div className="login-footer">

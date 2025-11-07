@@ -632,24 +632,6 @@
   color: var(--text-secondary);
 }
 
-.start-comparing-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.start-comparing-btn:hover {
-  background: #2563eb;
-}
 
 /* Mobile-First Design Enhancements */
 

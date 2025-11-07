@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FiX, FiCalendar, FiCreditCard, FiCheckCircle, FiClock, FiInfo } from 'react-icons/fi';
 import { worksAPI } from '../../../../services/api';
 import { formatINRCompact } from '../../../../utils/formatters';
+import { Button } from '@/components/ui/button';
 import './PaymentDetailsModal.css';
 
 const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClose }) => {
@@ -47,9 +48,9 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
         <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
           <div className="payment-modal-header">
             <h3>Payment Details</h3>
-            <button className="close-btn" onClick={onClose}>
+            <Button variant="ghost" className="close-btn gap-2" onClick={onClose}>
               <FiX />
-            </button>
+            </Button>
           </div>
           <div className="payment-modal-body">
             <div className="loading-state">
@@ -68,9 +69,9 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
         <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
           <div className="payment-modal-header">
             <h3>Payment Details</h3>
-            <button className="close-btn" onClick={onClose}>
+            <Button variant="ghost" className="close-btn gap-2" onClick={onClose}>
               <FiX />
-            </button>
+            </Button>
           </div>
           <div className="payment-modal-body">
             <div className="error-state">
@@ -88,9 +89,9 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
       <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
         <div className="payment-modal-header">
           <h3>Payment Details</h3>
-          <button className="close-btn" onClick={onClose}>
+          <Button variant="ghost" className="close-btn gap-2" onClick={onClose}>
             <FiX />
-          </button>
+          </Button>
         </div>
         
         <div className="payment-modal-body">

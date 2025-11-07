@@ -68,39 +68,7 @@
   flex-wrap: wrap;
 }
 
-.btn-primary,
-.btn-secondary {
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  border: none;
-  cursor: pointer;
-  display: inline-block;
-}
-
-.btn-primary {
-  background: var(--primary-600, #2563eb);
-  color: white;
-}
-
-.btn-primary:hover {
-  background: var(--primary-700, #1d4ed8);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-}
-
-.btn-secondary:hover {
-  background: #e2e8f0;
-  transform: translateY(-1px);
-}
+/* Button styles removed - using centralized button styles */
 
 @media (max-width: 640px) {
   .verification-container {
@@ -118,11 +86,5 @@
   
   .verification-actions {
     flex-direction: column;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    text-align: center;
   }
 }

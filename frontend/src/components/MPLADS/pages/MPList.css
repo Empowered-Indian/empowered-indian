@@ -219,40 +219,6 @@
   overflow: hidden;
 }
 
-.view-btn {
-  padding: 8px 16px;
-  border: none;
-  background: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.view-btn:hover {
-  background: #f3f4f6;
-}
-
-.view-btn.active {
-  background: #f3f4f6;
-  color: #1f2937;
-  border: 1px solid #9ca3af;
-}
-
-.download-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 /* Performance Insights */
 .performance-insights {
   margin-bottom: 32px;
@@ -445,29 +411,6 @@
   padding: 24px;
 }
 
-.page-btn {
-  padding: 8px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: white;
-  font-size: 14px;
-  font-weight: 500;
-  color: #1f2937; /* ensure text is visible against white */
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: none; /* override global button shadow */
-}
-
-.page-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .page-info {
   display: flex;
   flex-direction: column;
@@ -495,23 +438,6 @@
 
 .no-mps svg {
   color: #d1d5db;
-}
-
-.clear-filters-btn {
-  padding: 10px 20px;
-  background: #f9fafb;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.clear-filters-btn:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
 }
 
 /* Loading and Error States */

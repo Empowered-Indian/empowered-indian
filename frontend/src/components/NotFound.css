@@ -62,22 +62,9 @@
   font-weight: 500;
 }
 
-.not-found-button {
-  display: inline-block;
+/* Button styles removed - using centralized button styles */
+.not-found-actions {
   margin-top: 1.5rem;
-  padding: 0.75rem 2rem;
-  background: #2d3748;
-  color: white;
-  text-decoration: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-}
-
-.not-found-button:hover {
-  transform: translateY(-2px);
-  background: #1a202c;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 @media (max-width: 640px) {

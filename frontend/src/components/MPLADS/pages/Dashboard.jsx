@@ -19,6 +19,7 @@ import './Dashboard.css';
 import { formatINRCompact } from '../../../utils/formatters';
 import { useFilters } from '../../../contexts/FilterContext';
 import { getPeriodLabel } from '../../../utils/lsTerm';
+import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -271,27 +272,27 @@ const Dashboard = () => {
         <div className="info-card">
           <h2>Quick Actions</h2>
           <div className="quick-actions">
-            <button className="action-btn" onClick={() => navigate('/mplads/states')}>
+            <Button className="action-btn bg-blue-600 text-white hover:bg-blue-700" onClick={() => navigate('/mplads/states')} variant="default">
               View All States
-            </button>
-            <button className="action-btn" onClick={() => navigate('/mplads/search')}>
+            </Button>
+            <Button className="action-btn bg-blue-600 text-white hover:bg-blue-700" onClick={() => navigate('/mplads/search')} variant="default">
               Search MPs
-            </button>
+            </Button>
             <div className="action-btn-wrapper">
-              <button className="action-btn" disabled aria-describedby="top-performers-disabled-tooltip">
+              <Button className="action-btn" disabled aria-describedby="top-performers-disabled-tooltip" variant="outline">
                 View Top Performers
-              </button>
-              <InfoTooltip 
+              </Button>
+              <InfoTooltip
                 content="Top Performers feature is being worked on with very high priority and will be live soon!"
                 position="top"
                 size="small"
               />
             </div>
             <div className="action-btn-wrapper">
-              <button className="action-btn" disabled aria-describedby="report-disabled-tooltip">
+              <Button className="action-btn" disabled aria-describedby="report-disabled-tooltip" variant="outline">
                 Download Report
-              </button>
-              <InfoTooltip 
+              </Button>
+              <InfoTooltip
                 content="Report generation is coming soon. You'll be able to download comprehensive MPLADS reports in PDF format."
                 position="top"
                 size="small"

@@ -10,6 +10,7 @@ import './StateDetail.css';
 import { formatINRCompact } from '../../../utils/formatters';
 import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
 import { useFilters } from '../../../contexts/FilterContext';
+import { Button } from '@/components/ui/button';
 
 const StateDetail = () => {
   const { stateId } = useParams();
@@ -226,14 +227,15 @@ const StateDetail = () => {
         {/* Mobile Collapsible Summary Card */}
         {isMobile ? (
           <div className="mobile-summary-card">
-            <button
-              className="summary-card-header"
+            <Button
+              className="summary-card-header gap-2"
               onClick={() => toggleCard('summary')}
               aria-expanded={expandedCards.has('summary')}
+              variant="ghost"
             >
               <h3 id="summary-heading">Key Statistics</h3>
               {expandedCards.has('summary') ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
-            </button>
+            </Button>
             {expandedCards.has('summary') && (
               <div className="state-summary-stats mobile-summary-expanded" role="region" aria-labelledby="summary-heading">
                 <div className="summary-stat">
@@ -305,28 +307,31 @@ const StateDetail = () => {
         )}
       </div>
 
-      <div className="state-tabs" 
+      <div className="state-tabs"
            onTouchStart={handleTouchStart}
            onTouchMove={handleTouchMove}
            onTouchEnd={handleTouchEnd}>
-        <button 
+        <Button
           className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
+          variant="ghost"
         >
           Overview
-        </button>
-        <button 
+        </Button>
+        <Button
           className={`tab-btn ${activeTab === 'mps' ? 'active' : ''}`}
           onClick={() => setActiveTab('mps')}
+          variant="ghost"
         >
           {isMobile ? 'MPs' : 'MPs Performance'}
-        </button>
-        <button 
+        </Button>
+        <Button
           className={`tab-btn ${activeTab === 'projects' ? 'active' : ''}`}
           onClick={() => setActiveTab('projects')}
+          variant="ghost"
         >
           Projects
-        </button>
+        </Button>
       </div>
 
       <div className="state-content">
@@ -336,15 +341,16 @@ const StateDetail = () => {
               /* Mobile Card-Based Layout */
               <div className="mobile-overview">
                 <div className="mobile-card">
-                  <button
-                    className="card-header"
+                  <Button
+                    className="card-header gap-2"
                     onClick={() => toggleCard('utilization')}
                     aria-expanded={expandedCards.has('utilization')}
                     aria-controls="utilization-panel"
+                    variant="ghost"
                   >
                     <h3 id="utilization-heading">Fund Utilization</h3>
                     {expandedCards.has('utilization') ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
-                  </button>
+                  </Button>
                   {expandedCards.has('utilization') && (
                     <div id="utilization-panel" className="card-content" role="region" aria-labelledby="utilization-heading">
                       <FundUtilizationGauge 
@@ -356,15 +362,16 @@ const StateDetail = () => {
                 </div>
 
                 <div className="mobile-card">
-                  <button
-                    className="card-header"
+                  <Button
+                    className="card-header gap-2"
                     onClick={() => toggleCard('personalities')}
                     aria-expanded={expandedCards.has('personalities')}
                     aria-controls="personalities-panel"
+                    variant="ghost"
                   >
                     <h3 id="personalities-heading">MP Performance Profiles</h3>
                     {expandedCards.has('personalities') ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
-                  </button>
+                  </Button>
                   {expandedCards.has('personalities') && (
                     <div id="personalities-panel" className="card-content" role="region" aria-labelledby="personalities-heading">
                       <MPPersonalityDistribution 
@@ -376,15 +383,16 @@ const StateDetail = () => {
                 </div>
 
                 <div className="mobile-card">
-                  <button
-                    className="card-header"
+                  <Button
+                    className="card-header gap-2"
                     onClick={() => toggleCard('financial')}
                     aria-expanded={expandedCards.has('financial')}
                     aria-controls="financial-panel"
+                    variant="ghost"
                   >
                     <h3 id="financial-heading">Financial Breakdown</h3>
                     {expandedCards.has('financial') ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
-                  </button>
+                  </Button>
                   {expandedCards.has('financial') && (
                     <div id="financial-panel" className="card-content" role="region" aria-labelledby="financial-heading">
                       <div className="mobile-breakdown-grid">

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { FiX, FiMapPin, FiCalendar, FiDollarSign, FiUser, FiFileText, FiStar, FiImage, FiClock, FiCheck, FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
 import { API_BASE_URL } from '../../../../utils/constants/api';
 import { useResponsive } from '../../../../hooks/useMediaQuery';
+import { Button } from '@/components/ui/button';
 import './ProjectDetailModal.css';
 
 const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' }) => {
@@ -126,18 +127,18 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
         <div className={`modal-header ${responsive.isMobile ? 'mobile-header' : ''}`}>
           {responsive.isMobile ? (
             <>
-              <button className="back-button" onClick={handleClose}>
+              <Button variant="ghost" className="back-button gap-2" onClick={handleClose}>
                 <FiArrowLeft />
                 <span>Back</span>
-              </button>
+              </Button>
               <h2>Project Details</h2>
             </>
           ) : (
             <>
               <h2>Project Details</h2>
-              <button className="close-button" onClick={handleClose}>
+              <Button variant="ghost" className="close-button" onClick={handleClose}>
                 <FiX />
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -152,9 +153,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
             <div className="error-state">
               <FiAlertCircle size={48} />
               <p>{error}</p>
-              <button className="retry-button" onClick={fetchWorkDetails}>
+              <Button variant="default" className="retry-button bg-blue-600 text-white hover:bg-blue-700" onClick={fetchWorkDetails}>
                 Try Again
-              </button>
+              </Button>
             </div>
           ) : workData ? (
             <div className="project-details">

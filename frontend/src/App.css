@@ -309,214 +309,7 @@ a:focus-visible {
   border-radius: var(--radius-sm);
 }
 
-/* Modern Button System */
-.btn {
-  font-family: var(--font-primary);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  border-radius: var(--radius-lg);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: var(--transition-all);
-  text-decoration: none;
-  white-space: nowrap;
-  user-select: none;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Button sizes */
-.btn-sm {
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--text-xs);
-  border-radius: var(--radius-md);
-}
-
-.btn-md {
-  padding: var(--spacing-3) var(--spacing-4);
-  font-size: var(--text-sm);
-  border-radius: var(--radius-lg);
-}
-
-.btn-lg {
-  padding: var(--spacing-4) var(--spacing-6);
-  font-size: var(--text-base);
-  border-radius: var(--radius-xl);
-}
-
-.btn-xl {
-  padding: var(--spacing-5) var(--spacing-8);
-  font-size: var(--text-lg);
-  border-radius: var(--radius-xl);
-}
-
-/* Primary Button */
-.btn-primary {
-  background: var(--bg-gradient-civic);
-  color: var(--text-inverse);
-  border-color: var(--primary-600);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background: var(--bg-card);
-  color: var(--primary-color);
-  border-color: var(--border-color);
-  box-shadow: var(--shadow-xs);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--primary-50);
-  border-color: var(--primary-300);
-  color:var(--primary-color);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-/* Ghost Button */
-.btn-ghost {
-  background: transparent;
-  color: var(--text-secondary);
-  border-color: transparent;
-}
-
-.btn-ghost:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-/* Success Button */
-.btn-success {
-  background: linear-gradient(135deg, var(--civic-green-500) 0%, var(--civic-green-700) 100%);
-  color: var(--text-inverse);
-  border-color: var(--civic-green-600);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-success:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--civic-green-600) 0%, var(--civic-green-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Warning Button */
-.btn-warning {
-  background: linear-gradient(135deg, var(--civic-gold-500) 0%, var(--civic-gold-700) 100%);
-  color: var(--text-inverse);
-  border-color: var(--civic-gold-600);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-warning:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--civic-gold-600) 0%, var(--civic-gold-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Danger Button */
-.btn-danger {
-  background: linear-gradient(135deg, var(--civic-red-500) 0%, var(--civic-red-700) 100%);
-  color: var(--text-inverse);
-  border-color: var(--civic-red-600);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--civic-red-600) 0%, var(--civic-red-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Button states */
-.btn:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-/* Loading button */
-.btn-loading {
-  position: relative;
-  color: transparent !important;
-}
-
-.btn-loading::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 2px solid transparent;
-  border-top: 2px solid currentColor;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  color: inherit;
-}
-
-/* Legacy button support */
-button {
-  font-family: var(--font-primary);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  padding: var(--spacing-3) var(--spacing-4);
-  border-radius: var(--radius-lg);
-  border: 1px solid transparent;
-  background: var(--bg-gradient-civic);
-  color: var(--text-inverse);
-  cursor: pointer;
-  transition: var(--transition-all);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  box-shadow: var(--shadow-sm);
-}
-
-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-  color : white;
-}
-
-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-button:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
+/* Modern Button System removed - using centralized button styles */
 
 /* Enhanced Form Elements */
 input, select, textarea {
@@ -818,10 +611,6 @@ input:disabled, select:disabled, textarea:disabled {
     border-radius: var(--radius-xl);
   }
   
-  .btn-xl {
-    padding: var(--spacing-4) var(--spacing-6);
-    font-size: var(--text-base);
-  }
 }
 
 @media (max-width: 480px) {
@@ -837,11 +626,6 @@ input:disabled, select:disabled, textarea:disabled {
     padding: var(--spacing-3);
     border-radius: var(--radius-md);
   }
-  
-  .btn-lg, .btn-xl {
-    padding: var(--spacing-3) var(--spacing-4);
-    font-size: var(--text-sm);
-  }
 }
 
 /* Accessibility improvements */
@@ -853,14 +637,6 @@ input:disabled, select:disabled, textarea:disabled {
   }
   
   .card:hover {
-    transform: none;
-  }
-  
-  .btn:hover:not(:disabled) {
-    transform: none;
-  }
-  
-  button:hover:not(:disabled) {
     transform: none;
   }
 }
@@ -881,10 +657,6 @@ input:disabled, select:disabled, textarea:disabled {
   }
   
   .card {
-    border-width: 2px;
-  }
-  
-  .btn {
     border-width: 2px;
   }
 }

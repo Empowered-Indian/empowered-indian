@@ -19,28 +19,6 @@
   gap: 0.5rem;
 }
 
-.project-tabs .tab-btn {
-  padding: 0.75rem 1.5rem;
-  border: 2px solid #e5e7eb;
-  background: white;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  color: #6b7280;
-}
-
-.project-tabs .tab-btn:hover {
-  border-color: #3b82f6;
-  color: #fff;
-}
-
-.project-tabs .tab-btn.active {
-  background: #3b82f6;
-  border-color: #3b82f6;
-  color: white;
-}
-
 .project-summary {
   display: flex;
   gap: 2rem;
@@ -79,25 +57,6 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-}
-
-.filters-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  color: #374151;
-  transition: all 0.2s ease;
-}
-
-.filters-toggle:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
 }
 
 .search-box {
@@ -196,27 +155,6 @@
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.clear-filters-btn {
-  padding: 0 14px;
-  height: 36px;            /* align with inputs/selects */
-  line-height: 36px;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-  align-self: center;      /* vertically center relative to row */
-  white-space: nowrap;
-  margin-left: auto;       /* push to the right when space allows */
-}
-
-.clear-filters-btn:hover {
-  background: #dc2626;
 }
 
 /* Projects Grid */
@@ -384,47 +322,6 @@
   gap: 0.75rem;
 }
 
-.payment-details-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.payment-details-btn:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-}
-
-.payment-details-btn:active {
-  transform: translateY(0);
-}
-
-.payment-details-btn svg {
-  font-size: 0.875rem;
-}
-
-/* Payment button for recommended works with payments */
-.payment-details-btn.with-payments {
-  background: #f59e0b;
-  color: white;
-  border: 1px solid #d97706;
-}
-
-.payment-details-btn.with-payments:hover {
-  background: #d97706;
-  border-color: #b45309;
-}
-
 .recommended-actions {
   display: flex;
   align-items: center;
@@ -450,30 +347,6 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.pagination-controls button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid #d1d5db;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #374151;
-  transition: all 0.2s ease;
-}
-
-.pagination-controls button:hover:not(:disabled) {
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
-
-.pagination-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .page-info {
@@ -574,12 +447,6 @@
     margin-bottom: 1rem;    /* Increase spacing on mobile */
   }
 
-  .clear-filters-btn {
-    margin-left: 0;    /* reset auto push on small screens */
-    align-self: stretch;
-    text-align: center;
-  }
-
   .projects-grid {
     grid-template-columns: 1fr;
   }
@@ -594,11 +461,6 @@
 @media (max-width: 480px) {
   .project-tabs {
     width: 100%;
-  }
-
-  .project-tabs .tab-btn {
-    flex: 1;
-    text-align: center;
   }
 
   .project-header {

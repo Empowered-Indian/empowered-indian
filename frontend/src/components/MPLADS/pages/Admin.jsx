@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  FiMessageSquare, 
-  FiAlertTriangle, 
-  FiCheck, 
-  FiClock, 
-  FiX, 
+import {
+  FiMessageSquare,
+  FiAlertTriangle,
+  FiCheck,
+  FiClock,
+  FiX,
   FiPlay,
   FiRefreshCw,
   FiFilter,
@@ -19,6 +19,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { API_BASE_URL } from '../../../utils/constants/api';
 import './Admin.css';
 import { getSubscribers } from '../../../services/api/mailingList';
+import { Button } from '@/components/ui/button';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -334,28 +335,30 @@ const Admin = () => {
 
     return (
       <div className="pagination">
-        <button
+        <Button
           onClick={() => onPageChange(pagination.currentPage - 1)}
           disabled={!pagination.hasPrevPage}
-          className="pagination-button"
+          className="pagination-button gap-2"
+          variant="outline"
         >
           <FiChevronLeft />
           Previous
-        </button>
-        
+        </Button>
+
         <span className="pagination-info">
-          Page {pagination.currentPage} of {pagination.totalPages} 
+          Page {pagination.currentPage} of {pagination.totalPages}
           ({pagination.totalItems} total)
         </span>
-        
-        <button
+
+        <Button
           onClick={() => onPageChange(pagination.currentPage + 1)}
           disabled={!pagination.hasNextPage}
-          className="pagination-button"
+          className="pagination-button gap-2"
+          variant="outline"
         >
           Next
           <FiChevronRight />
-        </button>
+        </Button>
       </div>
     );
   };
@@ -373,35 +376,38 @@ const Admin = () => {
               <span className="user-name">{user?.name || user?.email}</span>
               <span className="user-role">{user?.role}</span>
             </div>
-            <button onClick={handleLogout} className="logout-button">
+            <Button onClick={handleLogout} className="logout-button gap-2" variant="ghost">
               <FiLogOut />
               Logout
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       <div className="admin-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'feedback' ? 'active' : ''}`}
+        <Button
+          className={`tab-button gap-2 ${activeTab === 'feedback' ? 'active' : ''}`}
           onClick={() => setActiveTab('feedback')}
+          variant="ghost"
         >
           <FiMessageSquare />
           Feedback ({feedbackPagination.totalItems || 0})
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'data-issues' ? 'active' : ''}`}
+        </Button>
+        <Button
+          className={`tab-button gap-2 ${activeTab === 'data-issues' ? 'active' : ''}`}
           onClick={() => setActiveTab('data-issues')}
+          variant="ghost"
         >
           <FiAlertTriangle />
           Data Issues ({issuesPagination.totalItems || 0})
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'subscribers' ? 'active' : ''}`}
+        </Button>
+        <Button
+          className={`tab-button gap-2 ${activeTab === 'subscribers' ? 'active' : ''}`}
           onClick={() => setActiveTab('subscribers')}
+          variant="ghost"
         >
           Subscribers ({subsPagination.totalItems || 0})
-        </button>
+        </Button>
       </div>
 
       <div className="admin-content">
@@ -409,14 +415,15 @@ const Admin = () => {
           <div className="feedback-section">
             <div className="section-header">
               <h3>Feedback Submissions</h3>
-              <button 
+              <Button
                 onClick={() => fetchFeedback()}
-                className="refresh-button"
+                className="refresh-button gap-2"
                 disabled={loading}
+                variant="outline"
               >
                 <FiRefreshCw className={loading ? 'spinning' : ''} />
                 Refresh
-              </button>
+              </Button>
             </div>
 
             {/* Feedback Filters */}
@@ -499,35 +506,39 @@ const Admin = () => {
                       </div>
 
                       <div className="submission-actions">
-                        <button
+                        <Button
                           onClick={() => updateFeedbackStatus(item._id, 'in_progress')}
                           disabled={item.status === 'in_progress'}
                           className="action-button progress"
+                          variant="default"
                         >
                           Mark In Progress
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => updateFeedbackStatus(item._id, 'resolved')}
                           disabled={item.status === 'resolved'}
                           className="action-button resolved"
+                          variant="default"
                         >
                           Mark Resolved
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => updateFeedbackStatus(item._id, 'closed')}
                           disabled={item.status === 'closed'}
                           className="action-button closed"
+                          variant="outline"
                         >
                           Close
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => deleteFeedback(item._id)}
-                          className="action-button delete"
+                          className="action-button delete gap-2"
                           title="Delete feedback"
+                          variant="destructive"
                         >
                           <FiTrash2 />
                           Delete
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -545,14 +556,15 @@ const Admin = () => {
           <div className="data-issues-section">
             <div className="section-header">
               <h3>Data Issue Reports</h3>
-              <button 
+              <Button
                 onClick={() => fetchDataIssues()}
-                className="refresh-button"
+                className="refresh-button gap-2"
                 disabled={loading}
+                variant="outline"
               >
                 <FiRefreshCw className={loading ? 'spinning' : ''} />
                 Refresh
-              </button>
+              </Button>
             </div>
 
             {/* Data Issues Filters */}
@@ -621,35 +633,39 @@ const Admin = () => {
                       </div>
 
                       <div className="submission-actions">
-                        <button
+                        <Button
                           onClick={() => updateDataIssueStatus(item._id, 'investigating')}
                           disabled={item.status === 'investigating'}
                           className="action-button investigating"
+                          variant="default"
                         >
                           Mark Investigating
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => updateDataIssueStatus(item._id, 'fixed')}
                           disabled={item.status === 'fixed'}
                           className="action-button fixed"
+                          variant="default"
                         >
                           Mark Fixed
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => updateDataIssueStatus(item._id, 'invalid')}
                           disabled={item.status === 'invalid'}
                           className="action-button invalid"
+                          variant="outline"
                         >
                           Mark Invalid
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => deleteDataIssue(item._id)}
-                          className="action-button delete"
+                          className="action-button delete gap-2"
                           title="Delete data issue"
+                          variant="destructive"
                         >
                           <FiTrash2 />
                           Delete
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -667,14 +683,15 @@ const Admin = () => {
           <div className="subscribers-section">
             <div className="section-header">
               <h3>Mailing List Subscribers</h3>
-              <button 
+              <Button
                 onClick={() => fetchSubscribers()}
-                className="refresh-button"
+                className="refresh-button gap-2"
                 disabled={loading}
+                variant="outline"
               >
                 <FiRefreshCw className={loading ? 'spinning' : ''} />
                 Refresh
-              </button>
+              </Button>
             </div>
 
             <div className="filters">

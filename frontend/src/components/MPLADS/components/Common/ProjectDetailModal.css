@@ -40,22 +40,6 @@
   color: #111827;
 }
 
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #6b7280;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.close-button:hover {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
 /* Modal Content */
 .modal-content {
   padding: 0;
@@ -81,17 +65,6 @@
   padding: 60px 24px;
   gap: 16px;
   color: #ef4444;
-}
-
-.retry-button {
-  padding: 8px 16px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 /* Project Details */

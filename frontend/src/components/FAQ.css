@@ -80,28 +80,7 @@
   flex-wrap: wrap;
 }
 
-.control-button {
-  background: var(--primary-600);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-style: normal;
-}
-
-.control-button:hover {
-  background: var(--primary-700);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.control-button:active {
-  transform: translateY(0);
-}
+/* Control button styles removed - using centralized button styles */
 
 /* Collapsible Section Styles */
 .collapsible-section {
@@ -132,6 +111,8 @@
   align-items: center;
   transition: all 0.2s ease;
   border-radius: 12px 12px 0 0;
+  font-family: inherit;
+  text-align: left;
 }
 
 .section-header:hover {

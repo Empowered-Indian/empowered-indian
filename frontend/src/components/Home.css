@@ -181,49 +181,13 @@
   justify-self: center;
 }
 
-/* CTA buttons */
+/* CTA buttons removed - using centralized button styles */
 .hero-actions {
   margin-top: 32px;
   display: flex;
   gap: 16px;
   justify-content: flex-start;
   flex-wrap: wrap;
-}
-
-.hero-cta {
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-weight: 400;
-  font-size: 17px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.hero-cta.primary {
-  color: #fff;
-  background: var(--accent-1);
-  box-shadow: 0 4px 14px rgba(0, 113, 227, 0.3);
-}
-
-.hero-cta.primary:hover {
-  background: #0051a8;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
-}
-
-.hero-cta.secondary {
-  color: var(--accent-1);
-  background: transparent;
-  border: 1px solid var(--accent-1);
-}
-
-.hero-cta.secondary:hover {
-  background: rgba(0, 113, 227, 0.05);
 }
 
 /* Features section - Apple style */
@@ -448,34 +412,7 @@
   margin-top: 8px;
 }
 
-.status-card.available .status-cta-button {
-  background: var(--accent-1);
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 25px;
-  text-decoration: none;
-  display: inline-block;
-  margin-top: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  border: 2px solid var(--accent-1);
-}
-
-.status-card.available .status-cta-button:hover {
-  background: #fff;
-  color: var(--accent-1);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.3);
-}
-
-.status-card.wip .status-cta-button.disabled {
-  background: #f3f4f6;
-  color: var(--muted);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-}
+/* Status card button styles removed - using centralized button styles */
 
 /* mission values layout */
 .mission-values {
@@ -593,11 +530,6 @@
     gap: 12px;
   }
 
-  .hero-cta {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
-  }
 
   .features,
   .status-section {
@@ -748,12 +680,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
-a,
-button {
+a {
   outline-offset: 3px;
 }
 
-button:focus,
 a:focus,
 input:focus {
   box-shadow: 0 0 0 4px rgba(43, 110, 246, 0.10);

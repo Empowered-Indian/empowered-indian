@@ -7,6 +7,7 @@ import SkeletonLoader from '../components/Common/SkeletonLoader';
 import ErrorDisplay from '../components/Common/ErrorDisplay';
 import ResultsFeedback from '../components/Common/ResultsFeedback';
 import { showInfoToast } from '../../../utils/errorHandling.jsx';
+import { Button } from '@/components/ui/button';
 import './MPList.css';
 import { formatINRCompact } from '../../../utils/formatters';
 import { sanitizeInput } from '../../../utils/inputSanitization';
@@ -472,26 +473,28 @@ const MPList = () => {
           </div>
 
           <div className="view-controls">
-            <button 
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
               className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
             >
               Grid
-            </button>
-            <button 
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
               className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
               onClick={() => setViewMode('list')}
             >
               List
-            </button>
+            </Button>
           </div>
 
           <div className="tooltip-wrapper">
-            <button className="download-btn" disabled aria-describedby="export-disabled-tooltip">
+            <Button variant="outline" className="download-btn gap-2" disabled aria-describedby="export-disabled-tooltip">
               <FiDownload />
               Export
-            </button>
-            <InfoTooltip 
+            </Button>
+            <InfoTooltip
               content="Export functionality coming soon. This feature will allow you to download MP data in various formats."
               position="left"
               size="small"
@@ -511,19 +514,19 @@ const MPList = () => {
               {filterRange !== 'all' && (
                 <span className="filter-tag">
                   {filterRange === 'high' ? 'High Performers' : filterRange === 'medium' ? 'Average Performers' : 'Needs Improvement'}
-                  <button onClick={() => handleFilterChange('range', 'all')}>×</button>
+                  <Button variant="ghost" onClick={() => handleFilterChange('range', 'all')}>×</Button>
                 </span>
               )}
               {uiHouse !== 'all' && (
                 <span className="filter-tag">
                   {uiHouse}
-                  <button onClick={() => handleFilterChange('house', 'all')}>×</button>
+                  <Button variant="ghost" onClick={() => handleFilterChange('house', 'all')}>×</Button>
                 </span>
               )}
               {searchQuery && (
                 <span className="filter-tag">
                   Search: "{searchQuery}"
-                  <button onClick={() => handleSearch('')}>×</button>
+                  <Button variant="ghost" onClick={() => handleSearch('')}>×</Button>
                 </span>
               )}
             </div>
@@ -574,13 +577,14 @@ const MPList = () => {
                   <span>Showing {formatNumber(filteredMPs.length)} of {formatNumber(totalMPs)} MPs</span>
                 </div>
                 {hasMore && (
-                  <button 
+                  <Button
+                    variant="outline"
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={isLoading}
                     className="page-btn"
                   >
                     {isLoading ? 'Loading…' : 'Load more'}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

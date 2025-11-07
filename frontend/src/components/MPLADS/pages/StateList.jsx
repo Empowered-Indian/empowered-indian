@@ -12,6 +12,7 @@ import { getPeriodLabel } from '../../../utils/lsTerm';
 import { sanitizeInput } from '../../../utils/inputSanitization';
 import StateCardList from '../components/States/StateCardList';
 import ExportStatesListAsPdf from '../../../utils/exportStatesListAsPdf';
+import { Button } from '@/components/ui/button';
 
 const StateList = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -332,20 +333,22 @@ const StateList = () => {
             </div>
           ) : (<></>)}
 
-          <div className="view-controls"> 
+          <div className="view-controls">
             <div>
-              <button
+              <Button
                 className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
                 onClick={() => setViewMode('grid')}
+                variant="outline"
               >
                 Grid
-              </button>
-              <button
+              </Button>
+              <Button
                 className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
                 onClick={() => setViewMode('list')}
+                variant="outline"
               >
                 List
-              </button>
+              </Button>
             </div>
             <div style={{ marginLeft: '10px' }}>
               {filteredStates.length > 0 && (
@@ -364,13 +367,14 @@ const StateList = () => {
           {filterRange !== 'all' && (
             <div className="active-filter">
               <span className="filter-label">Showing: {filterRange === 'high' ? 'High Performers' : filterRange === 'medium' ? 'Average Performers' : 'Needs Improvement'}</span>
-              <button
+              <Button
                 className="clear-filter"
                 onClick={() => setFilterRange('all')}
                 title="Clear filter"
+                variant="ghost"
               >
                 ×
-              </button>
+              </Button>
             </div>
           )}
         </div>

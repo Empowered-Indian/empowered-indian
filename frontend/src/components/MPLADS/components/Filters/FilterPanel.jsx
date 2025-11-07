@@ -6,6 +6,7 @@ import { useFilterData } from '../../../../hooks/useFilterData';
 import { sanitizeInput } from '../../../../utils/inputSanitization';
 import { RangeSlider } from '../Common/Slider';
 import ActiveFilters from './ActiveFilters';
+import { Button } from '@/components/ui/button';
 import './FilterPanel.css';
 import { mpladsAPI } from '../../../../services/api/mplads';
 import { formatTermOrdinal, normalizeTerms } from '../../../../utils/lsTerm';
@@ -344,23 +345,25 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
             )}
           </div>
           <div className="filter-actions">
-            <button 
-              className="filter-reset-btn"
+            <Button
+              variant="ghost"
+              className="filter-reset-btn gap-2"
               onClick={resetFilters}
               disabled={activeFilterCount === 0}
               title="Reset all filters"
             >
               <FiRotateCcw />
               <span className="filter-btn-text">Reset All</span>
-            </button>
+            </Button>
             {onClose && (
-              <button 
-                className="filter-close-btn" 
+              <Button
+                variant="ghost"
+                className="filter-close-btn"
                 onClick={handleClose}
                 title="Close filters panel"
               >
                 <FiX />
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -375,14 +378,15 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
         <div className="filter-sections">
           {/* Location Filters */}
           <div className="filter-section">
-            <button 
-              className={`filter-section-header ${expandedSections.location ? 'expanded' : ''}`}
+            <Button
+              variant="ghost"
+              className={`filter-section-header gap-2 ${expandedSections.location ? 'expanded' : ''}`}
               onClick={() => toggleSection('location')}
               aria-expanded={expandedSections.location}
             >
               <span>Location</span>
               {expandedSections.location ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
+            </Button>
           {expandedSections.location && (
             <div className="filter-section-content">
               <div className="filter-group">
@@ -421,14 +425,15 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
 
           {/* MP Filters */}
           <div className="filter-section">
-            <button 
-              className={`filter-section-header ${expandedSections.mp ? 'expanded' : ''}`}
+            <Button
+              variant="ghost"
+              className={`filter-section-header gap-2 ${expandedSections.mp ? 'expanded' : ''}`}
               onClick={() => toggleSection('mp')}
               aria-expanded={expandedSections.mp}
             >
               <span>Member of Parliament</span>
               {expandedSections.mp ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
+            </Button>
           {expandedSections.mp && (
             <div className="filter-section-content">
               <div className="filter-group">
@@ -481,14 +486,15 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
 
           {/* Financial Filters */}
           <div className="filter-section">
-            <button 
-              className={`filter-section-header ${expandedSections.financial ? 'expanded' : ''}`}
+            <Button
+              variant="ghost"
+              className={`filter-section-header gap-2 ${expandedSections.financial ? 'expanded' : ''}`}
               onClick={() => toggleSection('financial')}
               aria-expanded={expandedSections.financial}
             >
               <span>Financial</span>
               {expandedSections.financial ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
+            </Button>
           {expandedSections.financial && (
             <div className="filter-section-content">
               <div className="filter-group">
@@ -541,14 +547,15 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
 
           {/* Works Filters */}
           <div className="filter-section">
-            <button 
-              className={`filter-section-header ${expandedSections.works ? 'expanded' : ''}`}
+            <Button
+              variant="ghost"
+              className={`filter-section-header gap-2 ${expandedSections.works ? 'expanded' : ''}`}
               onClick={() => toggleSection('works')}
               aria-expanded={expandedSections.works}
             >
               <span>Works & Projects</span>
               {expandedSections.works ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
+            </Button>
           {expandedSections.works && (
             <div className="filter-section-content">
               <div className="filter-group">
@@ -583,14 +590,15 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
 
           {/* Date Filters */}
           <div className="filter-section">
-            <button 
-              className={`filter-section-header ${expandedSections.date ? 'expanded' : ''}`}
+            <Button
+              variant="ghost"
+              className={`filter-section-header gap-2 ${expandedSections.date ? 'expanded' : ''}`}
               onClick={() => toggleSection('date')}
               aria-expanded={expandedSections.date}
             >
               <span>Date Range</span>
               {expandedSections.date ? <FiChevronUp /> : <FiChevronDown />}
-            </button>
+            </Button>
           {expandedSections.date && (
             <div className="filter-section-content">
               <div className="filter-group">

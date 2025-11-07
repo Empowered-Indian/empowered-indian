@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Document, Page, Text, View, StyleSheet, Image, Link } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
+import { Button } from '@/components/ui/button';
 import { formatINRCompact } from "./formatters";
 import { useMPWorks } from '../hooks/useApi';
 import { createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles, colors } from "./pdfUIStyles";
@@ -340,12 +341,13 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
 
     if (!data) {
         return (
-            <button
+            <Button
+                variant="outline"
                 disabled
-                style={getDisabledButtonStyles()}
+                className="gap-2"
             >
                 <FiDownload /> No data to export
-            </button>
+            </Button>
         );
     }
 
@@ -365,14 +367,15 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
     };
 
     return (
-        <button
+        <Button
+            variant="default"
             onClick={handleClick}
             disabled={loading}
-            style={getExportButtonStyles(loading)}
+            className="gap-2"
         >
             <FiDownload />
             {loading ? "Generating PDF..." : error ? "Export Failed" : "Download Report"}
-        </button>
+        </Button>
     );
 };
 

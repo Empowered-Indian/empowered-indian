@@ -6,6 +6,7 @@ import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
 import { useFilters } from '../../../contexts/FilterContext';
 import SearchBar from '../components/Search/SearchBar';
 import FilterPanel from '../components/Filters/FilterPanel';
+import { Button } from '@/components/ui/button';
 import './SearchResults.css';
 
 const SearchResults = () => {
@@ -58,8 +59,9 @@ const SearchResults = () => {
           <h1>Search Results</h1>
           <div className="search-controls">
             <SearchBar />
-            <button 
-              className={`filter-toggle ${showFilters ? 'active' : ''}`}
+            <Button
+              variant={showFilters ? 'default' : 'outline'}
+              className={`filter-toggle gap-2 ${showFilters ? 'active' : ''}`}
               onClick={() => setShowFilters(!showFilters)}
             >
               <FiFilter />
@@ -67,7 +69,7 @@ const SearchResults = () => {
               {activeFilterCount > 0 && (
                 <span className="filter-badge">{activeFilterCount}</span>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -158,21 +160,23 @@ const SearchResults = () => {
 
             {(pagination.totalPages || pagination.pages) > 1 && (
               <div className="pagination">
-                <button 
+                <Button
+                  variant="outline"
                   disabled={!pagination.hasPrev && (pagination.currentPage || pagination.page) <= 1}
                   className="pagination-btn"
                 >
                   Previous
-                </button>
+                </Button>
                 <span className="pagination-info">
                   Page {pagination.currentPage || pagination.page} of {pagination.totalPages || pagination.pages}
                 </span>
-                <button 
+                <Button
+                  variant="outline"
                   disabled={!pagination.hasNext && (pagination.currentPage || pagination.page) >= (pagination.totalPages || pagination.pages)}
                   className="pagination-btn"
                 >
                   Next
-                </button>
+                </Button>
               </div>
             )}
           </main>

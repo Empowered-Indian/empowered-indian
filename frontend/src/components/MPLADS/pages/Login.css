@@ -93,54 +93,6 @@
   padding-right: 3rem;
 }
 
-.password-toggle {
-  position: absolute;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: #6b7280;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: color 0.2s ease;
-}
-
-.password-toggle:hover {
-  color: #374151;
-}
-
-.login-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 0.5rem;
-}
-
-.login-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-}
-
-.login-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.login-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
 .loading-spinner {
   width: 16px;
   height: 16px;
@@ -197,16 +149,9 @@
     padding: 0.75rem;
     font-size: 0.875rem;
   }
-
-  .login-button {
-    padding: 0.875rem;
-    font-size: 0.875rem;
-  }
 }
 
 /* Focus visible for accessibility */
-.login-button:focus-visible,
-.password-toggle:focus-visible,
 .form-group input:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;

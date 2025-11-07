@@ -11,6 +11,7 @@ import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling.j
 import { getIdFromSlug, isBareObjectId, buildMPSlugHuman, buildMPSlugCandidates, normalizeMPSlug } from '../../../utils/slug';
 import { summaryAPI } from '../../../services/api';
 import { useFilters } from '../../../contexts/FilterContext';
+import { Button } from '@/components/ui/button';
 import './MPDetail.css';
 import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf.jsx';
 
@@ -313,8 +314,9 @@ const MPDetail = () => {
             </div>
           </div>
           <div className="mp-header-actions">
-            <button
-              className="action-btn"
+            <Button
+              variant="outline"
+              className="action-btn gap-2"
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(window.location.origin + location.pathname);
@@ -327,7 +329,7 @@ const MPDetail = () => {
             >
               <FiCopy />
               <span>Copy Link</span>
-            </button>
+            </Button>
             <Link
               to="/mplads/compare"
               className="action-btn secondary"
@@ -421,24 +423,27 @@ const MPDetail = () => {
       </div>
 
       <div className="mp-tabs">
-        <button 
+        <Button
+          variant="ghost"
           className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           Overview
-        </button>
-        <button 
+        </Button>
+        <Button
+          variant="ghost"
           className={`tab-btn ${activeTab === 'projects' ? 'active' : ''}`}
           onClick={() => setActiveTab('projects')}
         >
           Projects
-        </button>
-        <button 
+        </Button>
+        <Button
+          variant="ghost"
           className={`tab-btn ${activeTab === 'financial' ? 'active' : ''}`}
           onClick={() => setActiveTab('financial')}
         >
           Financial Details
-        </button>
+        </Button>
       </div>
 
       <div className="mp-content">

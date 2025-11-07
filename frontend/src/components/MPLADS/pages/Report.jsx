@@ -3,6 +3,7 @@ import { FiAlertTriangle, FiMessageSquare, FiSend, FiCheck, FiX } from 'react-ic
 import toast from 'react-hot-toast';
 import { sanitizeInput, sanitizeEmail } from '../../../utils/inputSanitization';
 import { API_BASE_URL } from '../../../utils/constants/api';
+import { Button } from '@/components/ui/button';
 import './Report.css';
 
 const Report = () => {
@@ -131,20 +132,22 @@ const Report = () => {
       </div>
 
       <div className="report-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'feedback' ? 'active' : ''}`}
+        <Button
+          variant={activeTab === 'feedback' ? 'default' : 'ghost'}
+          className={`tab-button gap-2 ${activeTab === 'feedback' ? 'active' : ''}`}
           onClick={() => setActiveTab('feedback')}
         >
           <FiMessageSquare />
           General Feedback
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'data-issue' ? 'active' : ''}`}
+        </Button>
+        <Button
+          variant={activeTab === 'data-issue' ? 'default' : 'ghost'}
+          className={`tab-button gap-2 ${activeTab === 'data-issue' ? 'active' : ''}`}
           onClick={() => setActiveTab('data-issue')}
         >
           <FiAlertTriangle />
           Report Data Issue
-        </button>
+        </Button>
       </div>
 
       <div className="report-content">
@@ -243,9 +246,10 @@ const Report = () => {
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              className="submit-button"
+            <Button
+              type="submit"
+              variant="default"
+              className="submit-button gap-2"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -259,7 +263,7 @@ const Report = () => {
                   Submit Feedback
                 </>
               )}
-            </button>
+            </Button>
           </form>
         )}
 
@@ -372,9 +376,10 @@ const Report = () => {
               />
             </div>
 
-            <button 
-              type="submit" 
-              className="submit-button"
+            <Button
+              type="submit"
+              variant="default"
+              className="submit-button gap-2"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -388,7 +393,7 @@ const Report = () => {
                   Report Issue
                 </>
               )}
-            </button>
+            </Button>
           </form>
         )}
       </div>

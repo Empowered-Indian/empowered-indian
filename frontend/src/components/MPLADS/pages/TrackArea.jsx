@@ -5,6 +5,7 @@ import { worksAPI } from '../../../services/api/works';
 import { CACHE_TIMES } from '../../../utils/constants/api';
 import ProjectListing from '../components/Projects/ProjectListing';
 import './TrackArea.css';
+import { Button } from '@/components/ui/button';
 
 const TrackArea = () => {
   const [selectedConstituency, setSelectedConstituency] = useState('');
@@ -92,9 +93,9 @@ const TrackArea = () => {
 
 
         <div className="form-actions">
-          <button type="button" onClick={handleReset} className="btn-secondary">
+          <Button type="button" onClick={handleReset} className="btn-secondary" variant="outline">
             Reset Filters
-          </button>
+          </Button>
         </div>
       </div>
 

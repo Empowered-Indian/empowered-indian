@@ -1,5 +1,6 @@
 import { FiAlertCircle, FiRefreshCw, FiHome } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import './ErrorDisplay.css';
 
 const ErrorDisplay = ({
@@ -66,24 +67,27 @@ const ErrorDisplay = ({
 
       <div className="error-action">
         {onRetry && (
-          <button
+          <Button
             onClick={onRetry}
             aria-label="Retry loading data"
+            variant="default"
+            className="gap-2 bg-blue-600 text-white hover:bg-blue-700"
           >
             <FiRefreshCw />
             Try Again
-          </button>
+          </Button>
         )}
 
         {showHomeButton && (
-          <button
-            className='dashboard-button'
+          <Button
             onClick={() => navigate('/mplads')}
             aria-label="Go to homepage"
+            variant="outline"
+            className="gap-2"
           >
             <FiHome />
             Go to Dashboard
-          </button>
+          </Button>
         )}
         {customActions}
       </div>

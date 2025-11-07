@@ -1,5 +1,6 @@
 import { FiSearch, FiFilter, FiRefreshCw, FiX } from 'react-icons/fi';
 import { FilterLoadingState } from './LoadingState';
+import { Button } from '@/components/ui/button';
 import './ResultsFeedback.css';
 
 const ResultsFeedback = ({
@@ -78,36 +79,39 @@ const ResultsFeedback = ({
 
         <div className="results-empty-actions">
           {hasSearch && onClearSearch && (
-            <button 
-              className="results-action-btn results-action-secondary"
+            <Button
+              variant="outline"
+              className="results-action-btn results-action-secondary gap-2"
               onClick={onClearSearch}
               aria-label="Clear search"
             >
               <FiX />
               Clear Search
-            </button>
+            </Button>
           )}
           
           {hasFilters && onClearFilters && (
-            <button 
-              className="results-action-btn results-action-secondary"
+            <Button
+              variant="outline"
+              className="results-action-btn results-action-secondary gap-2"
               onClick={onClearFilters}
               aria-label="Clear all filters"
             >
               <FiFilter />
               Clear Filters
-            </button>
+            </Button>
           )}
           
           {onRetry && (
-            <button 
-              className="results-action-btn results-action-primary"
+            <Button
+              variant="default"
+              className="results-action-btn results-action-primary gap-2"
               onClick={onRetry}
               aria-label="Retry loading"
             >
               <FiRefreshCw />
               Try Again
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -144,25 +148,27 @@ const ResultsFeedback = ({
         {(hasSearch || hasFilters) && (
           <div className="results-summary-actions">
             {hasSearch && onClearSearch && (
-              <button 
-                className="results-clear-btn"
+              <Button
+                variant="ghost"
+                className="results-clear-btn gap-2"
                 onClick={onClearSearch}
                 aria-label="Clear search"
                 title="Clear search"
               >
                 <FiX />
-              </button>
+              </Button>
             )}
             
             {hasFilters && onClearFilters && (
-              <button 
+              <Button
+                variant="ghost"
                 className="results-clear-btn"
                 onClick={onClearFilters}
                 aria-label="Clear filters"
                 title="Clear all filters"
               >
                 Clear Filters
-              </button>
+              </Button>
             )}
           </div>
         )}

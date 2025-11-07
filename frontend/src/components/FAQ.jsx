@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
+import { Button } from '@/components/ui/button'
 import './FAQ.css'
 import SiteFooter from './common/SiteFooter'
 
@@ -35,8 +36,9 @@ function FAQ() {
     
     return (
       <section className={`faq-section collapsible-section ${isExpanded ? 'expanded' : 'collapsed'}`}>
-        <button 
-          className="section-header"
+        <Button
+          variant="ghost"
+          className="section-header gap-2"
           onClick={() => toggleSection(id)}
           aria-expanded={isExpanded}
           aria-controls={`section-${id}`}
@@ -45,7 +47,7 @@ function FAQ() {
           <span className="toggle-icon">
             {isExpanded ? <FiChevronDown /> : <FiChevronRight />}
           </span>
-        </button>
+        </Button>
         <div 
           id={`section-${id}`}
           className="section-content"
@@ -69,22 +71,24 @@ function FAQ() {
           <div className="faq-intro">
             <p>Click on any section below to expand and view detailed information.</p>
             <div className="faq-controls">
-              <button 
+              <Button
+                variant="outline"
                 className="control-button"
-                onClick={() => setExpandedSections(prev => 
+                onClick={() => setExpandedSections(prev =>
                   Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: true }), {})
                 )}
               >
                 Expand All
-              </button>
-              <button 
+              </Button>
+              <Button
+                variant="outline"
                 className="control-button"
-                onClick={() => setExpandedSections(prev => 
+                onClick={() => setExpandedSections(prev =>
                   Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {})
                 )}
               >
                 Collapse All
-              </button>
+              </Button>
             </div>
           </div>
 
