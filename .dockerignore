@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build outputs
+dist
+build
+*.log
+
+# Documentation
+*.md
+!README.md
+LICENSE
+CODE_OF_CONDUCT.md
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.github
+nul
