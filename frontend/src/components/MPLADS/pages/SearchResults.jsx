@@ -12,6 +12,7 @@ const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const { filters, getApiParams, getActiveFilterCount } = useFilters();
+  const [pageNo, setPageNo] = useState(1);
   
   // Get search query from URL
   const urlQuery = searchParams.get('q') || '';
@@ -20,7 +21,7 @@ const SearchResults = () => {
   const { data, isLoading, error } = useMPSummary({
     ...getApiParams(),
     search: urlQuery || filters.searchQuery,
-    page: 1,
+    page: pageNo,
     limit: 20
   });
 
@@ -35,6 +36,16 @@ const SearchResults = () => {
       maximumFractionDigits: 0,
     }).format(amount || 0);
   };
+
+  const changePage = (pageChangeDirection = 'next') => {
+
+    if (pageChangeDirection === 'next') {
+      setPageNo(pageNo => pageNo + 1);
+    } else {
+      setPageNo(pageNo => pageNo - 1);
+    }
+
+  }
 
   const getUtilizationColor = (percentage) => {
     if (percentage >= 90) return 'high';
@@ -161,6 +172,7 @@ const SearchResults = () => {
                 <button 
                   disabled={!pagination.hasPrev && (pagination.currentPage || pagination.page) <= 1}
                   className="pagination-btn"
+                  onClick={() => changePage('previous')}
                 >
                   Previous
                 </button>
@@ -170,6 +182,7 @@ const SearchResults = () => {
                 <button 
                   disabled={!pagination.hasNext && (pagination.currentPage || pagination.page) >= (pagination.totalPages || pagination.pages)}
                   className="pagination-btn"
+                  onClick={() => changePage('next')}
                 >
                   Next
                 </button>
