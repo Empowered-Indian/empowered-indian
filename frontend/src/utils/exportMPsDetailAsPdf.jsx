@@ -368,10 +368,10 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
 
     return (
         <Button
-            variant="default"
+            variant="outline"
             onClick={handleClick}
             disabled={loading}
-            className="gap-2"
+            className="action-btn gap-2"
         >
             <FiDownload />
             {loading ? "Generating PDF..." : error ? "Export Failed" : "Download Report"}

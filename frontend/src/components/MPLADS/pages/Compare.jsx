@@ -6,6 +6,8 @@ import { sanitizeInput } from '../../../utils/inputSanitization';
 import SearchBar from '../components/Search/SearchBar';
 import ComparisonBarChart from '../components/Charts/ComparisonBarChart';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import './Compare.css';
 
 const Compare = () => {
@@ -350,7 +352,7 @@ const Compare = () => {
                     {selectedMPs.length >= 2 && 'You can add more or start comparing'}
                   </span>
                 </div>
-                <input
+                <Input
                   type="text"
                   placeholder="Search by MP name, constituency, or state..."
                   value={searchQuery}
@@ -427,39 +429,39 @@ const Compare = () => {
         <div className="comparison-results">
           <div className="comparison-summary">
             <div className="summary-cards">
-              <div className="summary-card">
+              <Card className="summary-card">
                 <div className="card-icon">
                   <FiUsers />
                 </div>
-                <div className="card-content">
+                <CardContent className="card-content">
                   <div className="card-title">MPs Selected</div>
                   <div className="card-value">{selectedMPs.length}</div>
-                </div>
-              </div>
-              
-              <div className="summary-card">
+                </CardContent>
+              </Card>
+
+              <Card className="summary-card">
                 <div className="card-icon">
                   <FiTrendingUp />
                 </div>
-                <div className="card-content">
+                <CardContent className="card-content">
                   <div className="card-title">Average Utilization</div>
                   <div className="card-value">{getAverageUtilization().toFixed(1)}%</div>
-                </div>
-              </div>
-              
-              <div className="summary-card">
+                </CardContent>
+              </Card>
+
+              <Card className="summary-card">
                 <div className="card-icon">
                   <FiBarChart2 />
                 </div>
-                <div className="card-content">
+                <CardContent className="card-content">
                   <div className="card-title">vs National Average</div>
                   <div className={`card-value ${
                     getAverageUtilization() > getNationalAverage() ? 'positive' : 'negative'
                   }`}>
                     {(getAverageUtilization() - getNationalAverage()).toFixed(1)}%
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
@@ -613,47 +615,59 @@ const Compare = () => {
           <div className="comparison-insights">
             <h3>Key Insights</h3>
             <div className="insights-grid">
-              <div className="insight-card">
-                <h4>Highest Utilization</h4>
-                {(() => {
-                  const highest = selectedMPs.reduce((max, mp) => 
-                    (mp.utilizationPercentage || 0) > (max.utilizationPercentage || 0) ? mp : max
-                  );
-                  return (
-                    <div>
-                      <div className="insight-mp">{highest.mpName}</div>
-                      <div className="insight-value">{highest.utilizationPercentage?.toFixed(1) || 0}%</div>
-                      <div className="insight-context">Highest fund utilization rate</div>
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              <div className="insight-card">
-                <h4>Most Works Completed</h4>
-                {(() => {
-                  const mostWorks = selectedMPs.reduce((max, mp) => 
-                    (mp.completedWorksCount || 0) > (max.completedWorksCount || 0) ? mp : max
-                  );
-                  return (
-                    <div>
-                      <div className="insight-mp">{mostWorks.mpName}</div>
-                      <div className="insight-value">{mostWorks.completedWorksCount || 0} works</div>
-                      <div className="insight-context">Highest number of development projects delivered</div>
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              <div className="insight-card">
-                <h4>Above National Average</h4>
-                <div className="insight-value">
-                  {selectedMPs.filter(mp => 
-                    (mp.utilizationPercentage || 0) > getNationalAverage()
-                  ).length} of {selectedMPs.length}
-                </div>
-                <div className="insight-context">MPs performing better than national average ({getNationalAverage()}%)</div>
-              </div>
+              <Card className="insight-card">
+                <CardHeader>
+                  <CardTitle>Highest Utilization</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const highest = selectedMPs.reduce((max, mp) =>
+                      (mp.utilizationPercentage || 0) > (max.utilizationPercentage || 0) ? mp : max
+                    );
+                    return (
+                      <div>
+                        <div className="insight-mp">{highest.mpName}</div>
+                        <div className="insight-value">{highest.utilizationPercentage?.toFixed(1) || 0}%</div>
+                        <div className="insight-context">Highest fund utilization rate</div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              <Card className="insight-card">
+                <CardHeader>
+                  <CardTitle>Most Works Completed</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const mostWorks = selectedMPs.reduce((max, mp) =>
+                      (mp.completedWorksCount || 0) > (max.completedWorksCount || 0) ? mp : max
+                    );
+                    return (
+                      <div>
+                        <div className="insight-mp">{mostWorks.mpName}</div>
+                        <div className="insight-value">{mostWorks.completedWorksCount || 0} works</div>
+                        <div className="insight-context">Highest number of development projects delivered</div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              <Card className="insight-card">
+                <CardHeader>
+                  <CardTitle>Above National Average</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="insight-value">
+                    {selectedMPs.filter(mp =>
+                      (mp.utilizationPercentage || 0) > getNationalAverage()
+                    ).length} of {selectedMPs.length}
+                  </div>
+                  <div className="insight-context">MPs performing better than national average ({getNationalAverage()}%)</div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

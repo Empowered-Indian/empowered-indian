@@ -5,7 +5,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
-  z-index: var(--z-sticky);
+  z-index: 10; /* Lower z-index to prevent overlapping modals */
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -178,7 +178,7 @@
   padding: 0.75rem 0;
   position: sticky;
   top: 64px;
-  z-index: 999;
+  z-index: 9; /* Lower than navigation, but still sticky */
 }
 
 @media (max-width: 768px) {
@@ -267,7 +267,7 @@
     gap: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    z-index: 1001;
+    z-index: 20; /* Lower than modals but higher than sticky nav */
     box-sizing: border-box;
   }
 

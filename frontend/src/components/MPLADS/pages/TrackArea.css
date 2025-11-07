@@ -7,6 +7,9 @@
 }
 
 .header-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 1rem;
   color: #6b7280;
 }
@@ -158,6 +161,9 @@
 }
 
 .placeholder-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #6b7280;
   margin-bottom: 24px;
 }

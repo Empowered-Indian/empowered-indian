@@ -13,6 +13,7 @@ import PaymentDetailsModal from '../Common/PaymentDetailsModal';
 import { formatINRCompact } from '../../../../utils/formatters';
 import { useDebounce } from '../../../../hooks/useDebounce';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import './ProjectListing.css';
 // Removed unused useFilters import (no longer needed in this component)
 
@@ -388,17 +389,17 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
         ) : (
           <div className="projects-grid">
             {paginatedProjects.map((project, index) => (
-              <div key={project._id || project.workId || String(index)} className="project-card">
-                <div className="project-header">
-                  <h4 className="project-title">
+              <Card key={project._id || project.workId || String(index)} className="project-card">
+                <CardHeader className="project-header">
+                  <CardTitle className="project-title">
                     {project.workDescription || project.work_description || project.description}
-                  </h4>
+                  </CardTitle>
                   <span className="project-category">
                     {project.workCategory || project.category || 'Normal/Others'}
                   </span>
-                </div>
+                </CardHeader>
 
-                <div className="project-details">
+                <CardContent className="project-details">
                   <div className="detail-item">
                     <span className="rupee-icon">₹</span>
                     <span>
@@ -417,15 +418,14 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
                       {formatDate(project.completedDate || project.recommendationDate || project.date || project.completion_date || project.recommended_date)}
                     </span>
                   </div>
+                </CardContent>
 
-                </div>
-
-                <div className="project-footer">
+                <CardFooter className="project-footer">
                   <div className="mp-info">
                     <strong>{mpName || project.mp_details?.name || project.mpName}</strong>
                     <span>{project.mp_details?.constituency || project.constituency}</span>
                   </div>
-                  
+
                   <div className="project-actions">
                     {projectType === 'completed' && (project.workId || project.work_id) && (
                       <Button
@@ -469,8 +469,8 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
+                </CardFooter>
+              </Card>
             ))}
           </div>
         )}

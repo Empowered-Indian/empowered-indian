@@ -48,7 +48,7 @@
 .project-filters {
   background: #f8fafc;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1.25rem;
   margin-bottom: 1.5rem;
 }
 
@@ -94,10 +94,10 @@
   /* Use flex so controls align nicely in one row when there is space */
   display: flex;
   flex-wrap: wrap;
-  align-items: center; /* vertically align inputs and button */
-  gap: 12px;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  align-items: flex-end; /* align to bottom for better visual alignment */
+  gap: 20px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -133,8 +133,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 0.5rem;    /* Add spacing above slider */
-  margin-bottom: 0.75rem; /* Add spacing below slider */
 }
 
 .cost-range-group .range-slider {

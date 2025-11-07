@@ -9,6 +9,7 @@ import { sanitizeInput, sanitizeForSubmission } from '../../../../utils/inputSan
 import './SearchBar.css';
 import { buildMPSlugHuman, normalizeMPSlug } from '../../../../utils/slug';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 // A lean and robust search bar built from scratch.
 // - No suggestions dropdown
@@ -137,7 +138,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
       <span className="ni-search__icon" aria-hidden="true">
         <FiSearch />
       </span>
-      <input
+      <Input
         ref={inputRef}
         type="text"
         className="ni-search__input"

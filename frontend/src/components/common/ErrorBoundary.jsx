@@ -179,7 +179,7 @@ class ErrorBoundary extends React.Component {
               <Button
                 variant="default"
                 onClick={this.handleReset}
-                className="error-action-primary gap-2"
+                className="error-action-primary gap-2 bg-blue-600 text-white hover:bg-blue-700"
                 title="Refresh the page and try again"
               >
                 <FiRefreshCw />
@@ -188,7 +188,7 @@ class ErrorBoundary extends React.Component {
               <Button
                 variant="outline"
                 onClick={this.handleGoHome}
-                className="error-action-secondary gap-2"
+                className="error-action-secondary gap-2 border-gray-300 text-gray-700 hover:bg-gray-100"
                 title="Go back to the home page"
               >
                 <FiHome />

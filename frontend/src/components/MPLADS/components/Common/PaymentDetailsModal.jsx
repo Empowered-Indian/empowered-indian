@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
-import { FiX, FiCalendar, FiCreditCard, FiCheckCircle, FiClock, FiInfo } from 'react-icons/fi';
+import { FiCalendar, FiCreditCard, FiCheckCircle, FiClock, FiInfo } from 'react-icons/fi';
 import { worksAPI } from '../../../../services/api';
 import { formatINRCompact } from '../../../../utils/formatters';
-import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import './PaymentDetailsModal.css';
 
 const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClose }) => {
@@ -44,56 +50,50 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
 
   if (loading) {
     return (
-      <div className="payment-modal-overlay" onClick={onClose}>
-        <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
-          <div className="payment-modal-header">
-            <h3>Payment Details</h3>
-            <Button variant="ghost" className="close-btn gap-2" onClick={onClose}>
-              <FiX />
-            </Button>
-          </div>
+      <Dialog open={true} onOpenChange={onClose}>
+        <DialogContent className="max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Payment Details</DialogTitle>
+          </DialogHeader>
           <div className="payment-modal-body">
             <div className="loading-state">
               <div className="spinner"></div>
               <p>Loading payment details...</p>
             </div>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   if (error || !paymentData) {
     return (
-      <div className="payment-modal-overlay" onClick={onClose}>
-        <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
-          <div className="payment-modal-header">
-            <h3>Payment Details</h3>
-            <Button variant="ghost" className="close-btn gap-2" onClick={onClose}>
-              <FiX />
-            </Button>
-          </div>
+      <Dialog open={true} onOpenChange={onClose}>
+        <DialogContent className="max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Payment Details</DialogTitle>
+          </DialogHeader>
           <div className="payment-modal-body">
             <div className="error-state">
               <FiInfo />
               <p>{error || 'No payment data available for this work'}</p>
             </div>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   return (
-    <div className="payment-modal-overlay" onClick={onClose}>
-      <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="payment-modal-header">
-          <h3>Payment Details</h3>
-          <Button variant="ghost" className="close-btn gap-2" onClick={onClose}>
-            <FiX />
-          </Button>
-        </div>
-        
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-[800px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Payment Details</DialogTitle>
+          <DialogDescription className="sr-only">
+            Detailed payment information for {workDescription || paymentData.workDetails.description}
+          </DialogDescription>
+        </DialogHeader>
+
         <div className="payment-modal-body">
           {/* Work Info */}
           <div className="work-info">
@@ -191,8 +191,8 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

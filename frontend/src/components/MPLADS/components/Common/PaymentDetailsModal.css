@@ -1,64 +1,4 @@
-.payment-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal-backdrop);
-  padding: 20px;
-}
-
-.payment-modal {
-  background: white;
-  border-radius: 12px;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-.payment-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: var(--z-modal);
-}
-
-.payment-modal-header h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #6b7280;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.close-btn:hover {
-  color: #374151;
-  background: #f3f4f6;
-}
+/* shadcn Dialog handles overlay and modal container styles */
 
 .payment-modal-body {
   padding: 24px;
@@ -319,18 +259,6 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .payment-modal-overlay {
-    padding: 10px;
-  }
-
-  .payment-modal {
-    max-height: 95vh;
-  }
-
-  .payment-modal-header {
-    padding: 16px;
-  }
-
   .payment-modal-body {
     padding: 16px;
   }

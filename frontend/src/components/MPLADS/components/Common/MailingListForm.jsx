@@ -4,6 +4,7 @@ import { FiMail, FiCheckCircle, FiInfo, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { subscribeToMailingList } from '../../../../services/api/mailingList';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import './MailingListForm.css';
 
 const MailingListForm = () => {
@@ -53,7 +54,7 @@ const MailingListForm = () => {
     <form className="mailing-form" onSubmit={handleSubmit}>
       <div className="mailing-input-group">
         <FiMail className="mail-icon" />
-        <input
+        <Input
           style={{ width: '100%' }}
           type="email"
           placeholder="Enter your email"

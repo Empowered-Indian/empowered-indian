@@ -133,14 +133,14 @@
 .metric-card {
   background: var(--bg-gradient-card);
   border-radius: var(--radius-2xl);
-  padding: var(--spacing-6);
+  padding: var(--spacing-3);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-card);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   /* Allow text blocks to shrink instead of forcing overflow */
   min-width: 0;
 }
@@ -155,6 +155,7 @@
   background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 1;
 }
 
 .metric-card:hover::before {
@@ -174,13 +175,13 @@
 }
 
 .metric-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-xl);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   flex-shrink: 0;
   transition: all 0.3s ease;
   box-shadow: var(--shadow-sm);
@@ -242,12 +243,12 @@
 }
 
 .metric-title {
-  font-size: 0.875rem;
+  font-size: 0.688rem;
   font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin: 0 0 var(--spacing-2) 0;
+  margin: 0 0 0.25rem 0;
 }
 
 /* Preserve proper capitalization for MPs title */
@@ -256,26 +257,26 @@
 }
 
 .metric-value {
-  font-size: 2rem;
+  font-size: 1.375rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin: var(--spacing-3) 0 var(--spacing-1) 0;
+  margin: 0.25rem 0 0.25rem 0;
   line-height: 1.1;
   font-family: var(--font-mono);
   letter-spacing: -0.02em;
 }
 
 .metric-description {
-  font-size: 0.813rem;
+  font-size: 0.688rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.25;
   margin: 0;
 }
 
 .metric-period {
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   color: var(--text-tertiary);
-  margin: 0.25rem 0 0 0;
+  margin: 0.0625rem 0 0 0;
   font-weight: 500;
   opacity: 0.8;
 }

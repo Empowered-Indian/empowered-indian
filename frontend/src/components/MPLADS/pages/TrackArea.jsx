@@ -6,6 +6,8 @@ import { CACHE_TIMES } from '../../../utils/constants/api';
 import ProjectListing from '../components/Projects/ProjectListing';
 import './TrackArea.css';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 const TrackArea = () => {
   const [selectedConstituency, setSelectedConstituency] = useState('');
@@ -45,28 +47,30 @@ const TrackArea = () => {
       <div className="search-form">
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="state">State (Optional)</label>
-            <select
-              id="state"
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
+            <Label htmlFor="state">State (Optional)</Label>
+            <Select
+              value={selectedState || "all-states"}
+              onValueChange={(value) => setSelectedState(value === "all-states" ? "" : value)}
             >
-              <option value="">All States</option>
-              {states.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="state">
+                <SelectValue placeholder="All States" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all-states">All States</SelectItem>
+                {states.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="constituency">Constituency *</label>
-            <select
-              id="constituency"
+            <Label htmlFor="constituency">Constituency *</Label>
+            <Select
               value={selectedKey}
-              onChange={(e) => {
-                const value = e.target.value;
+              onValueChange={(value) => {
                 if (!value) {
                   setSelectedConstituency('');
                   return;
@@ -78,16 +82,20 @@ const TrackArea = () => {
               }}
               required
             >
-              <option value="">Select Constituency</option>
-              {constituencies.map((item) => (
-                <option
-                  key={`${item.constituency}-${item.state}`}
-                  value={makeOptionKey(item.constituency, item.state)}
-                >
-                  {item.constituency} ({item.state})
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="constituency">
+                <SelectValue placeholder="Select Constituency" />
+              </SelectTrigger>
+              <SelectContent>
+                {constituencies.map((item) => (
+                  <SelectItem
+                    key={`${item.constituency}-${item.state}`}
+                    value={makeOptionKey(item.constituency, item.state)}
+                  >
+                    {item.constituency} ({item.state})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -103,7 +111,9 @@ const TrackArea = () => {
       {!selectedConstituency && (
         <div className="placeholder-section">
           <div className="placeholder-content">
-            <FiSearch size={64} className="placeholder-icon" />
+            <div className="placeholder-icon">
+              <FiSearch size={64} />
+            </div>
             <h3>Select Your Constituency</h3>
             <p>Choose your constituency from the dropdown above to discover all MPLADS projects in your area.</p>
             <div className="features-list">

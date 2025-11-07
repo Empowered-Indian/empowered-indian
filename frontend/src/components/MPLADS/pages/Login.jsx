@@ -4,6 +4,8 @@ import { FiUser, FiLock, FiEye, FiEyeOff, FiLogIn, FiAlertCircle } from 'react-i
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import './Login.css';
 
 const Login = () => {
@@ -132,11 +134,11 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="email">
+            <Label htmlFor="email" className="flex items-center gap-2">
               <FiUser />
               Email Address
-            </label>
-            <input
+            </Label>
+            <Input
               type="email"
               id="email"
               name="email"
@@ -145,7 +147,7 @@ const Login = () => {
               placeholder="Enter your email"
               required
               autoComplete="email"
-              className={validationErrors.email ? 'error' : ''}
+              className={validationErrors.email ? 'border-red-500' : ''}
               aria-invalid={!!validationErrors.email}
               aria-describedby={validationErrors.email ? 'email-error' : undefined}
             />
@@ -158,12 +160,12 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">
+            <Label htmlFor="password" className="flex items-center gap-2">
               <FiLock />
               Password
-            </label>
+            </Label>
             <div className="password-input">
-              <input
+              <Input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
@@ -172,7 +174,7 @@ const Login = () => {
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
-                className={validationErrors.password ? 'error' : ''}
+                className={validationErrors.password ? 'border-red-500' : ''}
                 aria-invalid={!!validationErrors.password}
                 aria-describedby={validationErrors.password ? 'password-error' : undefined}
               />

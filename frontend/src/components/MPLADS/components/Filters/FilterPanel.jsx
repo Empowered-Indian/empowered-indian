@@ -7,6 +7,9 @@ import { sanitizeInput } from '../../../../utils/inputSanitization';
 import { RangeSlider } from '../Common/Slider';
 import ActiveFilters from './ActiveFilters';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import './FilterPanel.css';
 import { mpladsAPI } from '../../../../services/api/mplads';
 import { formatTermOrdinal, normalizeTerms } from '../../../../utils/lsTerm';
@@ -390,19 +393,22 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
           {expandedSections.location && (
             <div className="filter-section-content">
               <div className="filter-group">
-                <label>State</label>
-                <select 
-                  value={filters.state} 
-                  onChange={(e) => updateFilter('state', e.target.value)}
+                <Label>State</Label>
+                <Select
+                  value={filters.state || "all-states"}
+                  onValueChange={(value) => updateFilter('state', value === "all-states" ? "" : value)}
                   disabled={loading.states}
                 >
-                  <option value="">
-                    {loading.states ? 'Loading states...' : 'All States'}
-                  </option>
-                  {states.map(state => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder={loading.states ? 'Loading states...' : 'All States'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all-states">All States</SelectItem>
+                    {states.map(state => (
+                      <SelectItem key={state} value={state}>{state}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {error.states && (
                   <div className="filter-error">
                     <FiAlertCircle size={14} />
@@ -411,8 +417,8 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
                 )}
               </div>
               <div className="filter-group">
-                <label>Constituency</label>
-                <input 
+                <Label>Constituency</Label>
+                <Input
                   type="text"
                   placeholder="Enter constituency name"
                   value={filters.constituency}
@@ -437,23 +443,25 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
           {expandedSections.mp && (
             <div className="filter-section-content">
               <div className="filter-group">
-                <label>House</label>
-                <select 
+                <Label>House</Label>
+                <Select
                   value={filters.house}
-                  onChange={(e) => {
-                    const val = e.target.value;
+                  onValueChange={(val) => {
                     updateFilter('house', val);
                     if (val === 'Both Houses') updateFilter('lsTerm', 18);
                   }}
                   disabled={loading.houses}
                 >
-                  <option value="Both Houses">
-                    {loading.houses ? 'Loading...' : 'Both Houses'}
-                  </option>
-                  {houses.map(house => (
-                    <option key={house} value={house}>{house}</option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder={loading.houses ? 'Loading...' : 'Both Houses'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Both Houses">Both Houses</SelectItem>
+                    {houses.map(house => (
+                      <SelectItem key={house} value={house}>{house}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {error.houses && (
                   <div className="filter-error">
                     <FiAlertCircle size={14} />
@@ -463,16 +471,21 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
               </div>
 
               <div className="filter-group">
-                <label>Lok Sabha Term</label>
-                <select
+                <Label>Lok Sabha Term</Label>
+                <Select
                   value={String(filters.lsTerm || 18)}
-                  onChange={(e) => updateFilter('lsTerm', Number(e.target.value))}
+                  onValueChange={(value) => updateFilter('lsTerm', Number(value))}
                   disabled={termsLoading || filters.house === 'Rajya Sabha' || filters.house === 'Both Houses'}
                 >
-                {terms.map((t) => (
-                  <option key={String(t)} value={String(t)}>{formatTermOrdinal(t)}</option>
-                ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select term" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {terms.map((t) => (
+                      <SelectItem key={String(t)} value={String(t)}>{formatTermOrdinal(t)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {termsError && (
                   <div className="filter-error">
                     <FiAlertCircle size={14} />
@@ -559,30 +572,40 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
           {expandedSections.works && (
             <div className="filter-section-content">
               <div className="filter-group">
-                <label>Work Status</label>
-                <select 
-                  value={filters.workStatus} 
-                  onChange={(e) => updateFilter('workStatus', e.target.value)}
+                <Label>Work Status</Label>
+                <Select
+                  value={filters.workStatus || "all-status"}
+                  onValueChange={(value) => updateFilter('workStatus', value === "all-status" ? "" : value)}
                 >
-                  <option value="">All Status</option>
-                  {workStatuses.map(status => (
-                    <option key={status} value={status.toLowerCase().replace(' ', '-')}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all-status">All Status</SelectItem>
+                    {workStatuses.map(status => (
+                      <SelectItem key={status} value={status.toLowerCase().replace(' ', '-')}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="filter-group">
-                <label>Sector</label>
-                <select 
-                  value={filters.sector} 
-                  onChange={(e) => updateFilter('sector', e.target.value)}
+                <Label>Sector</Label>
+                <Select
+                  value={filters.sector || "all-sectors"}
+                  onValueChange={(value) => updateFilter('sector', value === "all-sectors" ? "" : value)}
                 >
-                  <option value="">All Sectors</option>
-                  {sectors.map(sector => (
-                    <option key={sector} value={sector}>{sector}</option>
-                  ))}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Sectors" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all-sectors">All Sectors</SelectItem>
+                    {sectors.map(sector => (
+                      <SelectItem key={sector} value={sector}>{sector}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}
@@ -602,21 +625,23 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
           {expandedSections.date && (
             <div className="filter-section-content">
               <div className="filter-group">
-                <label>Year Range</label>
+                <Label>Year Range</Label>
                 <div className="range-inputs">
                   <div className="input-wrapper">
-                    <select 
-                      value={filters.yearFrom} 
-                      onChange={(e) => handleYearChange('yearFrom', e.target.value)}
-                      className={validationErrors.yearFrom || validationErrors.yearRange ? 'error' : ''}
-                      aria-invalid={!!(validationErrors.yearFrom || validationErrors.yearRange)}
-                      aria-describedby={validationErrors.yearFrom ? 'yearFrom-error' : undefined}
+                    <Select
+                      value={filters.yearFrom || "year-from"}
+                      onValueChange={(value) => handleYearChange('yearFrom', value === "year-from" ? "" : value)}
                     >
-                      <option value="">From</option>
-                      {years.map(year => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
+                      <SelectTrigger className={validationErrors.yearFrom || validationErrors.yearRange ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="From" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="year-from">From</SelectItem>
+                        {years.map(year => (
+                          <SelectItem key={year} value={String(year)}>{year}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {validationErrors.yearFrom && (
                       <span id="yearFrom-error" className="error-message">
                         <FiAlertCircle />
@@ -626,18 +651,20 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
                   </div>
                   <span className="range-separator">to</span>
                   <div className="input-wrapper">
-                    <select 
-                      value={filters.yearTo} 
-                      onChange={(e) => handleYearChange('yearTo', e.target.value)}
-                      className={validationErrors.yearTo || validationErrors.yearRange ? 'error' : ''}
-                      aria-invalid={!!(validationErrors.yearTo || validationErrors.yearRange)}
-                      aria-describedby={validationErrors.yearTo ? 'yearTo-error' : undefined}
+                    <Select
+                      value={filters.yearTo || "year-to"}
+                      onValueChange={(value) => handleYearChange('yearTo', value === "year-to" ? "" : value)}
                     >
-                      <option value="">To</option>
-                      {years.map(year => (
-                        <option key={year} value={year}>{year}</option>
-                      ))}
-                    </select>
+                      <SelectTrigger className={validationErrors.yearTo || validationErrors.yearRange ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="To" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="year-to">To</SelectItem>
+                        {years.map(year => (
+                          <SelectItem key={year} value={String(year)}>{year}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {validationErrors.yearTo && (
                       <span id="yearTo-error" className="error-message">
                         <FiAlertCircle />
