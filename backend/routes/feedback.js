@@ -39,7 +39,7 @@ const validateFeedback = [
         .withMessage('Invalid category')
         .escape(),
     body('contactEmail')
-        .optional()
+        .optional({ values: 'falsy' })
         .isEmail()
         .normalizeEmail()
         .withMessage('Invalid email format'),
@@ -61,7 +61,7 @@ const validateDataIssue = [
         .withMessage('Description must be between 10-1000 characters')
         .escape(),
     body('contactEmail')
-        .optional()
+        .optional({ values: 'falsy' })
         .isEmail()
         .normalizeEmail()
         .withMessage('Invalid email format'),

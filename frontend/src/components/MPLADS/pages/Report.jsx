@@ -200,13 +200,19 @@ const Report = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="feedback-description">Description *</label>
+              <label htmlFor="feedback-description">
+                Description *
+                <span className="char-count">
+                  {feedbackForm.description.length}/1000
+                </span>
+              </label>
               <textarea
                 id="feedback-description"
                 value={feedbackForm.description}
-                onChange={(e) => setFeedbackForm({ ...feedbackForm, description: sanitizeInput(e.target.value) })}
+                onChange={(e) => setFeedbackForm({ ...feedbackForm, description: sanitizeInput(e.target.value, { maxLength: 1000 }) })}
                 placeholder="Please provide detailed information about your feedback"
                 rows={6}
+                maxLength={1000}
                 required
               />
             </div>
@@ -279,13 +285,19 @@ const Report = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="issue-description">Issue Description *</label>
+              <label htmlFor="issue-description">
+                Issue Description *
+                <span className="char-count">
+                  {dataIssueForm.description.length}/1000
+                </span>
+              </label>
               <textarea
                 id="issue-description"
                 value={dataIssueForm.description}
-                onChange={(e) => setDataIssueForm({ ...dataIssueForm, description: sanitizeInput(e.target.value) })}
+                onChange={(e) => setDataIssueForm({ ...dataIssueForm, description: sanitizeInput(e.target.value, { maxLength: 1000 }) })}
                 placeholder="Describe the data issue in detail"
                 rows={5}
+                maxLength={1000}
                 required
               />
             </div>

@@ -110,14 +110,14 @@ const schemas = {
     title: Joi.string().trim().min(5).max(100).pattern(/^[a-zA-Z0-9\s\-\.\_\,\!\?]+$/).required(),
     description: Joi.string().trim().min(10).max(1000).required(),
     category: Joi.string().valid('mp', 'work', 'expenditure', 'general').required(),
-    contactEmail: Joi.string().email().optional(),
+    contactEmail: Joi.string().email().allow('', null).optional(),
     priority: Joi.string().valid('low', 'medium', 'high').optional()
   }),
 
   dataIssue: Joi.object({
     issueType: Joi.string().valid('incorrect_data', 'missing_data', 'outdated_data').required(),
     description: Joi.string().trim().min(10).max(1000).required(),
-    contactEmail: Joi.string().email().optional(),
+    contactEmail: Joi.string().email().allow('', null).optional(),
     relatedData: Joi.object({
       mp_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
       work_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),

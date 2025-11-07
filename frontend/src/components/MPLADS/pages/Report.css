@@ -94,11 +94,19 @@
 }
 
 .form-group label {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 6px;
   font-size: 14px;
   font-weight: 500;
   color: #374151;
+}
+
+.char-count {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
 }
 
 .form-group input,
