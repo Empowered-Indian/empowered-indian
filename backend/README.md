@@ -10,6 +10,31 @@ Stack
 - Sentry for error monitoring
 
 Getting Started
+
+### Option 1: Docker Setup (Recommended)
+
+1. **Start MongoDB using Docker Compose** (from project root)
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Install dependencies and start**
+   ```bash
+   cd backend
+   cp .env.example .env
+   npm install
+   npm run dev
+   ```
+
+   The default `.env.example` is already configured for Docker MongoDB.
+
+3. **Access Mongo Express** (optional database UI)
+   - URL: http://localhost:8081
+   - Username: `admin`
+   - Password: `admin`
+
+### Option 2: MongoDB Atlas or Local Install
+
 - Requirements: Node.js 18+, MongoDB Atlas or local MongoDB
 - Install: `npm install`
 - Dev: `npm run dev` (default: http://localhost:5000)
@@ -18,6 +43,9 @@ Getting Started
 Environment Variables
 Copy `.env.example` to `.env` and set values:
 - `MONGODB_URI` — Connection string (DO NOT COMMIT)
+  - For Docker: `mongodb://admin:adminpassword@localhost:27017/mplads?authSource=admin` (default)
+  - For Atlas: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/database_name`
+  - For local: `mongodb://localhost:27017/mplads`
 - `DATABASE_NAME` — Database name
 - `JWT_SECRET` and `JWT_EXPIRES_IN` — Auth token settings
 - `CORS_ORIGINS` — Comma-separated list of allowed origins
