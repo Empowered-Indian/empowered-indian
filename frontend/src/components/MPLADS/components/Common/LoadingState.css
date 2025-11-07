@@ -187,34 +187,6 @@
   font-size: var(--text-base);
 }
 
-.loading-retry-btn {
-  background: var(--bg-gradient-civic);
-  color: var(--text-inverse);
-  border: none;
-  padding: var(--spacing-3) var(--spacing-6);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  font-family: var(--font-primary);
-  cursor: pointer;
-  transition: var(--transition-all);
-  box-shadow: var(--shadow-sm);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.loading-retry-btn:hover {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.loading-retry-btn:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
 /* Loading States for Specific Components */
 .loading-table {
   width: 100%;
@@ -250,22 +222,6 @@
   border-radius: inherit;
 }
 
-/* Enhanced Pulse animation for skeleton elements */
-.loading-pulse {
-  animation: pulse 2s ease-in-out infinite;
-  background: linear-gradient(90deg, var(--slate-200) 25%, var(--slate-100) 50%, var(--slate-200) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
 
 /* Enhanced Mobile optimizations */
 @media (max-width: 768px) {
@@ -286,24 +242,19 @@
     padding: var(--spacing-6);
     max-width: 100%;
   }
-  
+
   .loading-timeout-icon {
     font-size: var(--text-4xl);
   }
-  
+
   .loading-timeout-content h3 {
     font-size: var(--text-xl);
   }
-  
-  .loading-retry-btn {
-    width: 100%;
-    max-width: 240px;
-  }
-  
+
   .loading-spinner-large {
     font-size: var(--text-4xl);
   }
-  
+
   .loading-progress {
     width: 120px;
   }
@@ -321,7 +272,7 @@
   .loading-timeout-content h3 {
     font-size: var(--text-lg);
   }
-  
+
   .loading-spinner-large {
     font-size: var(--text-3xl);
   }
@@ -334,26 +285,26 @@
   .loading-spinner-inline {
     animation: none;
   }
-  
+
   .loading-spinner::after,
   .loading-spinner-minimal::after,
   .loading-spinner-inline::after {
     content: '●';
     animation: pulse 1s ease-in-out infinite;
   }
-  
+
   .loading-progress-bar,
   .loading-progress-bar::after {
     transition: none;
     animation: none;
   }
-  
-  .loading-pulse {
-    animation: none;
-    background: var(--slate-200);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
   }
-  
-  .loading-retry-btn:hover {
-    transform: none;
+  50% {
+    opacity: 0.6;
   }
 }
