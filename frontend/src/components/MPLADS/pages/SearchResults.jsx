@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
 import { useMPSummary } from '../../../hooks/useApi';
@@ -13,20 +13,32 @@ const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const { filters, getApiParams, getActiveFilterCount } = useFilters();
-  
+  const [pageNo, setPageNo] = useState(1);
+
   // Get search query from URL
   const urlQuery = searchParams.get('q') || '';
-  
+
+  const apiParams = useMemo(() => getApiParams(), [getApiParams]);
+  const filterKey = useMemo(() => JSON.stringify(apiParams), [apiParams]);
+
+  useEffect(() => {
+    setPageNo(1);
+  }, [urlQuery, filterKey]);
+
   // Use the MP summary API with filters
   const { data, isLoading, error } = useMPSummary({
-    ...getApiParams(),
+    ...apiParams,
     search: urlQuery || filters.searchQuery,
-    page: 1,
+    page: pageNo,
     limit: 20
   });
 
   const results = Array.isArray(data?.data?.mps) ? data.data.mps : (data?.data || []);
   const pagination = data?.data?.pagination || data?.pagination || {};
+  const totalPages = pagination.totalPages || pagination.pages || 1;
+  const currentPage = pagination.currentPage || pagination.page || pageNo;
+  const canGoPrev = (pagination.hasPrev ?? currentPage > 1) && currentPage > 1;
+  const canGoNext = (pagination.hasNext ?? currentPage < totalPages) && currentPage < totalPages;
   const activeFilterCount = getActiveFilterCount();
 
   const formatCurrency = (amount) => {
@@ -36,6 +48,14 @@ const SearchResults = () => {
       maximumFractionDigits: 0,
     }).format(amount || 0);
   };
+
+  const changePage = (pageChangeDirection = 'next') => {
+    if (pageChangeDirection === 'next') {
+      setPageNo(pageNo => pageNo + 1);
+    } else {
+      setPageNo(pageNo => pageNo - 1);
+    }
+  }
 
   const getUtilizationColor = (percentage) => {
     if (percentage >= 90) return 'high';
@@ -85,7 +105,7 @@ const SearchResults = () => {
           <main className="search-results">
             <div className="results-header">
               <h2>
-                {isLoading ? 'Searching...' : 
+                {isLoading ? 'Searching...' :
                  results.length > 0 ? `Found ${pagination.totalCount || pagination.total || results.length} results` :
                  'No results found'}
               </h2>
@@ -108,8 +128,8 @@ const SearchResults = () => {
             ) : results.length > 0 ? (
               <div className="results-list">
                 {results.map((mp) => (
-                  <Link 
-                    key={mp._id || mp.id} 
+                  <Link
+                    key={mp._id || mp.id}
                     to={`/mplads/mps/${encodeURIComponent(normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp._id || mp.id)))}`}
                     className="result-card"
                   >
@@ -123,24 +143,24 @@ const SearchResults = () => {
                           <span className="meta-item">
                             <FiMapPin />
                             {formatConstituencyName(mp.constituency, mp.house, mp.state)}
-                            {mp.constituency !== "Sitting Rajya Sabha" && mp.constituency !== "Nominated Rajya Sabha" && `, ${mp.state}`}
                           </span>
-                          <span className="meta-divider">•</span>
-                          <span className="meta-item">{mp.house}</span>
+                          <span className="meta-item">
+                            {mp.house}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="result-stats">
-                      <div className="stat-item">
+                      <div className="stat">
                         <span className="stat-label">Allocated</span>
                         <span className="stat-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
                       </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Utilized</span>
+                      <div className="stat">
+                        <span className="stat-label">Expenditure</span>
                         <span className="stat-value">{formatCurrency(mp.totalExpenditure)}</span>
                       </div>
-                      <div className="stat-item">
+                      <div className="stat">
                         <span className="stat-label">Utilization</span>
                         <span className={`stat-value utilization-${getUtilizationColor(mp.utilizationPercentage)}`}>
                           <FiTrendingUp />
@@ -158,22 +178,24 @@ const SearchResults = () => {
               </div>
             )}
 
-            {(pagination.totalPages || pagination.pages) > 1 && (
+            {totalPages > 1 && (
               <div className="pagination">
                 <Button
                   variant="outline"
-                  disabled={!pagination.hasPrev && (pagination.currentPage || pagination.page) <= 1}
+                  disabled={!canGoPrev}
                   className="pagination-btn"
+                  onClick={() => setPageNo(prev => Math.max(1, prev - 1))}
                 >
                   Previous
                 </Button>
                 <span className="pagination-info">
-                  Page {pagination.currentPage || pagination.page} of {pagination.totalPages || pagination.pages}
+                  Page {currentPage} of {totalPages}
                 </span>
                 <Button
                   variant="outline"
-                  disabled={!pagination.hasNext && (pagination.currentPage || pagination.page) >= (pagination.totalPages || pagination.pages)}
+                  disabled={!canGoNext}
                   className="pagination-btn"
+                  onClick={() => setPageNo(prev => Math.min(totalPages, prev + 1))}
                 >
                   Next
                 </Button>
