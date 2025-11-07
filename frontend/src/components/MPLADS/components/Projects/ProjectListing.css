@@ -492,6 +492,15 @@
   color: #6b7280;
 }
 
+.project-listing-inline-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
 .loading-spinner {
   width: 2rem;
   height: 2rem;
@@ -500,6 +509,12 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
+}
+
+.project-listing-inline-loading .loading-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-bottom: 0;
 }
 
 @keyframes spin {
