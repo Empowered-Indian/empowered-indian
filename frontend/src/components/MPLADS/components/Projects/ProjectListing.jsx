@@ -11,6 +11,7 @@ import { sanitizeInput } from '../../../../utils/inputSanitization';
 import RangeSlider from '../Common/Slider/RangeSlider';
 import PaymentDetailsModal from '../Common/PaymentDetailsModal';
 import { formatINRCompact } from '../../../../utils/formatters';
+import { useDebounce } from '../../../../hooks/useDebounce';
 import './ProjectListing.css';
 // Removed unused useFilters import (no longer needed in this component)
 
@@ -27,6 +28,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
   });
   const [showFilters, setShowFilters] = useState(showFiltersDefault);
   const [selectedPaymentWork, setSelectedPaymentWork] = useState(null);
+  const debouncedSearch = useDebounce(localFilters.search, 300);
 
   // Reset filters when constituency changes to prevent persistent filter state
   useEffect(() => {
@@ -48,7 +50,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
     // If constituency present, restrict to Lok Sabha projects explicitly
     ...(constituency ? { house: 'Lok Sabha' } : {}),
     // Remove sort parameter to use default backend sorting
-    search: localFilters.search,
+    search: debouncedSearch,
     year: localFilters.year,
     min_cost: localFilters.cost_range[0] > 0 ? localFilters.cost_range[0] : undefined,
     max_cost: localFilters.cost_range[1] < 50000000 ? localFilters.cost_range[1] : undefined,
@@ -66,6 +68,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
   const { 
     data: mpWorksData, 
     isLoading: mpWorksLoading, 
+    isFetching: mpWorksFetching,
     error: mpWorksError 
   } = useMPWorks(
     mpId ? mpId : undefined,
@@ -75,6 +78,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
   const { 
     data: completedData, 
     isLoading: completedLoading, 
+    isFetching: completedFetching,
     error: completedError 
   } = useCompletedWorks(
     !mpId && projectType === 'completed' ? worksParams : undefined
@@ -83,6 +87,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
   const { 
     data: recommendedData, 
     isLoading: recommendedLoading, 
+    isFetching: recommendedFetching,
     error: recommendedError 
   } = useRecommendedWorks(
     !mpId && projectType === 'recommended' ? worksParams : undefined
@@ -102,7 +107,10 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
   // Current data based on selected type
   const currentData = mpId ? mpWorksData : (projectType === 'completed' ? completedData : recommendedData);
   const isLoading = mpId ? mpWorksLoading : (projectType === 'completed' ? completedLoading : recommendedLoading);
+  const isFetching = mpId ? mpWorksFetching : (projectType === 'completed' ? completedFetching : recommendedFetching);
   const error = mpId ? mpWorksError : (projectType === 'completed' ? completedError : recommendedError);
+  const showInitialLoading = isLoading && !currentData;
+  const showInlineSpinner = isFetching && !showInitialLoading;
 
   const rawProjects = currentData?.data?.works || currentData?.data?.completedWorks || currentData?.data?.recommendedWorks || [];
   
@@ -215,7 +223,7 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (isLoading) {
+  if (showInitialLoading) {
     return (
       <div className="project-listing-loading">
         <div className="loading-spinner"></div>
@@ -359,6 +367,13 @@ const ProjectListing = ({ stateName, constituency, mpId, mpName, showFiltersDefa
           </div>
         )}
       </div>
+
+      {showInlineSpinner && (
+        <div className="project-listing-inline-loading" role="status" aria-live="polite">
+          <div className="loading-spinner" aria-hidden="true"></div>
+          <span>Updating results…</span>
+        </div>
+      )}
 
       {/* Projects List */}
       <div className="projects-container">

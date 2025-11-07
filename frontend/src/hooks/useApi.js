@@ -112,6 +112,8 @@ export const useMPWorks = (mpId, params) => {
     queryFn: () => mpladsAPI.getMPWorks(mpId, merged),
     staleTime: CACHE_TIMES.WORKS,
     enabled: !!mpId,
+    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 };
 
@@ -184,6 +186,8 @@ export const useCompletedWorks = (params) => {
     queryKey: ['works', 'completed', merged],
     queryFn: () => worksAPI.getCompletedWorks(merged),
     staleTime: CACHE_TIMES.WORKS,
+    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 };
 
@@ -201,6 +205,8 @@ export const useRecommendedWorks = (params) => {
     queryKey: ['works', 'recommended', merged],
     queryFn: () => worksAPI.getRecommendedWorks(merged),
     staleTime: CACHE_TIMES.WORKS,
+    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 };
 

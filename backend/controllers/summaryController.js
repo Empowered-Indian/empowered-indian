@@ -302,16 +302,17 @@ const getMPSummary = async (req, res) => {
     
     // Build query
     const lsSel = getLsTermSelection(req);
-    const query = { type: 'mp_summary' };
+    const baseConditions = [{ type: 'mp_summary' }];
+    const searchTerm = typeof search === 'string' ? search.trim() : '';
     
-    if (search) {
+    if (searchTerm) {
       // Escape regex special characters to prevent ReDoS attacks
-      const escapedQuery = escapeRegex(search.trim());
+      const escapedQuery = escapeRegex(searchTerm);
       const searchRegex = { $regex: escapedQuery, $options: 'i' };
       
       // Create flexible name search conditions for names like "modi narendra" vs "narendra modi"
       const buildNameSearchConditions = (fieldName) => {
-        const words = search.trim().split(/\s+/);
+        const words = searchTerm.split(/\s+/);
         const conditions = [];
         
         // Original query pattern
@@ -335,23 +336,35 @@ const getMPSummary = async (req, res) => {
         return conditions;
       };
 
-      query.$or = [
-        ...buildNameSearchConditions('mpName'),
-        { constituency: searchRegex },
-        { state: searchRegex }
-      ];
+      baseConditions.push({
+        $or: [
+          ...buildNameSearchConditions('mpName'),
+          { constituency: searchRegex },
+          { state: searchRegex }
+        ]
+      });
     }
     
-    if (state) query.state = state;
-    if (house) {
-      query.house = house;
-      if (house === 'Lok Sabha') {
-        Object.assign(query, lsSel === 'both' ? { lsTerm: { $in: [17, 18] } } : { lsTerm: parseInt(lsSel, 10) });
-      }
-    } else {
-      // No house: mix RS (no term) and LS with selection
-      query.$or = buildMixedHouseOrFilter(lsSel);
+    if (state) {
+      baseConditions.push({ state });
     }
+
+    const houseFilter = (() => {
+      if (house === 'Lok Sabha') {
+        const termFilter = lsSel === 'both'
+          ? { lsTerm: { $in: [17, 18] } }
+          : { lsTerm: parseInt(lsSel, 10) };
+        return { house: 'Lok Sabha', ...termFilter };
+      }
+      if (house === 'Rajya Sabha') {
+        return { house: 'Rajya Sabha' };
+      }
+      // Treat explicit "Both Houses" the same as default (undefined)
+      return { $or: buildMixedHouseOrFilter(lsSel) };
+    })();
+    baseConditions.push(houseFilter);
+
+    const query = baseConditions.length === 1 ? baseConditions[0] : { $and: baseConditions };
     
     // Get total count
     const totalCount = await Summary.countDocuments(query);
