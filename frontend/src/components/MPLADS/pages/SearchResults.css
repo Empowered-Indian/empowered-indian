@@ -122,6 +122,11 @@
   }
 }
 
+/* No max-height restriction - should fill available page space */
+.search-results {
+  flex: 1;
+}
+
 .results-list {
   display: flex;
   flex-direction: column;
