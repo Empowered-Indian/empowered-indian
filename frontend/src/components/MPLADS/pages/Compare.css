@@ -353,7 +353,6 @@
 }
 
 .search-results {
-  max-height: 400px;
   overflow-y: auto;
   padding: 16px;
 }
