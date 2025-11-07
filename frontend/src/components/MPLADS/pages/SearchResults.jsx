@@ -1,16 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
-import { useMPSummary } from '../../../hooks/useApi';
-import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
-import { useFilters } from '../../../contexts/FilterContext';
-import SearchBar from '../components/Search/SearchBar';
-import FilterPanel from '../components/Filters/FilterPanel';
-import './SearchResults.css';
+  const [pageNo, setPageNo] = useState(1);
+  const apiParams = useMemo(() => getApiParams(), [getApiParams]);
+  const filterKey = useMemo(() => JSON.stringify(apiParams), [apiParams]);
 
-const SearchResults = () => {
-  const [searchParams] = useSearchParams();
-  const [showFilters, setShowFilters] = useState(false);
+  useEffect(() => {
+    setPageNo(1);
+  }, [urlQuery, filterKey]);
+
+  // Use the MP summary API with filters
+  const { data, isLoading, error } = useMPSummary({
+    ...apiParams,
+    search: urlQuery || filters.searchQuery,
+    page: pageNo,
+    limit: 20
+  });
+
+  const results = Array.isArray(data?.data?.mps) ? data.data.mps : (data?.data || []);
+  const pagination = data?.data?.pagination || data?.pagination || {};
+  const totalPages = pagination.totalPages || pagination.pages || 1;
+  const currentPage = pagination.currentPage || pagination.page || pageNo;
+  const canGoPrev = (pagination.hasPrev ?? currentPage > 1) && currentPage > 1;
+  const canGoNext = (pagination.hasNext ?? currentPage < totalPages) && currentPage < totalPages;
   const { filters, getApiParams, getActiveFilterCount } = useFilters();
   const [pageNo, setPageNo] = useState(1);
   
@@ -131,25 +143,27 @@ const SearchResults = () => {
                         <div className="result-meta">
                           <span className="meta-item">
                             <FiMapPin />
-                            {formatConstituencyName(mp.constituency, mp.house, mp.state)}
-                            {mp.constituency !== "Sitting Rajya Sabha" && mp.constituency !== "Nominated Rajya Sabha" && `, ${mp.state}`}
-                          </span>
-                          <span className="meta-divider">•</span>
-                          <span className="meta-item">{mp.house}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="result-stats">
-                      <div className="stat-item">
-                        <span className="stat-label">Allocated</span>
-                        <span className="stat-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Utilized</span>
-                        <span className="stat-value">{formatCurrency(mp.totalExpenditure)}</span>
-                      </div>
-                      <div className="stat-item">
+            {(totalPages > 1) && (
+              <div className="pagination">
+                <button
+                  disabled={!canGoPrev}
+                  className="pagination-btn"
+                  onClick={() => setPageNo(prev => Math.max(1, prev - 1))}
+                >
+                  Previous
+                </button>
+                <span className="pagination-info">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  disabled={!canGoNext}
+                  className="pagination-btn"
+                  onClick={() => setPageNo(prev => Math.min(totalPages, prev + 1))}
+                >
+                  Next
+                </button>
+              </div>
+            )}
                         <span className="stat-label">Utilization</span>
                         <span className={`stat-value utilization-${getUtilizationColor(mp.utilizationPercentage)}`}>
                           <FiTrendingUp />
