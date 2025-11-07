@@ -25,6 +25,7 @@ const MPDetail = () => {
   const [resolvedIdFromSlug, setResolvedIdFromSlug] = useState(null);
   const [resolvingSlug, setResolvingSlug] = useState(false);
   const [ambiguousMatches, setAmbiguousMatches] = useState(null);
+  const [cacheInvalidated, setCacheInvalidated] = useState(false);
 
   // Determine if route param contains an ID
   const idInParam = getIdFromSlug(mpId);
@@ -33,7 +34,7 @@ const MPDetail = () => {
 
   // Fetch MP details
   const { data: mpData, isLoading: mpLoading, error: mpError } = useMPDetails(effectiveId);
-  
+
   // Fetch MP works
   const { data: worksData, isLoading: worksLoading } = useMPWorks(effectiveId, {
     limit: 100
@@ -41,6 +42,33 @@ const MPDetail = () => {
 
   const mp = mpData?.data?.mp || mpData?.data || {};
   const works = worksData?.data?.works || worksData?.data || [];
+
+  // Reset cache invalidation flag when navigating to different MP
+  useEffect(() => {
+    setCacheInvalidated(false);
+  }, [mpId]);
+
+  // Handle stale cache: if we get 404 with a cached ID, invalidate cache and retry
+  useEffect(() => {
+    if (mpError && resolvedIdFromSlug && !cacheInvalidated && !idInParam && !bareId) {
+      const is404 = mpError.response?.status === 404 || mpError.message?.includes('404') || mpError.message?.includes('not found');
+      if (is404) {
+        console.warn('Cached ID returned 404, invalidating cache for slug:', mpId);
+        const LS_KEY = 'mplads_slug_index';
+        const slug = normalizeMPSlug(String(mpId));
+        try {
+          const cache = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+          delete cache[slug];
+          localStorage.setItem(LS_KEY, JSON.stringify(cache));
+        } catch (e) {
+          // ignore
+        }
+        // Reset state to trigger re-resolution
+        setResolvedIdFromSlug(null);
+        setCacheInvalidated(true);
+      }
+    }
+  }, [mpError, resolvedIdFromSlug, cacheInvalidated, mpId, idInParam, bareId]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
@@ -97,6 +125,16 @@ const MPDetail = () => {
         if (!resolvedIdFromSlug) setResolvedIdFromSlug(idInParam || bareId);
         try {
           const LS_KEY = 'mplads_slug_index';
+          const CACHE_VERSION_KEY = 'mplads_slug_cache_version';
+          const CURRENT_CACHE_VERSION = '2'; // Increment when DB structure changes
+
+          // Check cache version and clear if outdated
+          const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+          if (cachedVersion !== CURRENT_CACHE_VERSION) {
+            localStorage.removeItem(LS_KEY);
+            localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+          }
+
           const map = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
           map[human] = idInParam || bareId;
           localStorage.setItem(LS_KEY, JSON.stringify(map));
@@ -113,8 +151,20 @@ const MPDetail = () => {
     const slug = normalizeMPSlug(String(mpId));
 
     const LS_KEY = 'mplads_slug_index';
+    const CACHE_VERSION_KEY = 'mplads_slug_cache_version';
+    const CURRENT_CACHE_VERSION = '2'; // Increment when DB structure changes
+
     const readIndex = () => {
-      try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+      try {
+        // Check cache version and clear if outdated
+        const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+        if (cachedVersion !== CURRENT_CACHE_VERSION) {
+          localStorage.removeItem(LS_KEY);
+          localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+          return {};
+        }
+        return JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+      } catch { return {}; }
     };
     const writeIndex = (map) => {
       try { localStorage.setItem(LS_KEY, JSON.stringify(map)); } catch { /* ignore */ }
