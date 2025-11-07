@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
 import './ResponsiveTable.css';
 
 const ResponsiveTable = ({ 
@@ -107,9 +108,9 @@ const ResponsiveTable = ({
                     : defaultMobileCard(row, columns.slice(0, 2))
                   }
                 </div>
-                <button className="mobile-expand-button" aria-hidden="true">
+                <Button variant="ghost" className="mobile-expand-button" aria-hidden="true">
                   {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
-                </button>
+                </Button>
               </div>
               
               {isExpanded && (

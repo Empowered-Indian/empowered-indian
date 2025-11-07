@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import { FiDownload } from "react-icons/fi";
+import { Button } from '@/components/ui/button';
 import { formatINRCompact } from "./formatters";
 import { colors, createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles, utilBarStyleFor } from "./pdfUIStyles";
 import { generateAndDownloadPdf } from "./pdfGenerator";
@@ -248,12 +249,13 @@ const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}
 
   if (!currentFilteredStates || currentFilteredStates.length === 0) {
     return (
-      <button
+      <Button
+        variant="outline"
         disabled
-        style={getDisabledButtonStyles()}
+        className="gap-2"
       >
         <FiDownload /> No data to export
-      </button>
+      </Button>
     );
   }
 
@@ -273,14 +275,15 @@ const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}
   };
 
   return (
-    <button
+    <Button
+      variant="default"
       onClick={handleClick}
       disabled={loading}
-      style={getExportButtonStyles(loading)}
+      className="gap-2"
     >
       <FiDownload />
       {loading ? "Generating PDF..." : error ? "Export Failed" : "Download Report"}
-    </button>
+    </Button>
   );
 });
 

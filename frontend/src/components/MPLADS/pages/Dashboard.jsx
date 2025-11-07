@@ -19,6 +19,8 @@ import './Dashboard.css';
 import { formatINRCompact } from '../../../utils/formatters';
 import { useFilters } from '../../../contexts/FilterContext';
 import { getPeriodLabel } from '../../../utils/lsTerm';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -169,13 +171,13 @@ const Dashboard = () => {
 
       <div className="metrics-grid">
         {metrics.map((metric, index) => (
-          <div key={index} className={`metric-card metric-${metric.color}`}>
+          <Card key={index} className={`metric-card metric-${metric.color}`}>
             <div className="metric-icon">{metric.icon}</div>
-            <div className="metric-content">
+            <CardContent className="metric-content">
               <div className="metric-title-row">
                 <h2 className={`metric-title ${metric.title === 'Total MPs' ? 'preserve-case' : ''}`} style={{ fontSize: '1rem' }}>{metric.title}</h2>
                 {metric.tooltip && (
-                  <InfoTooltip 
+                  <InfoTooltip
                     content={metric.tooltip}
                     position="top"
                     size="small"
@@ -185,8 +187,8 @@ const Dashboard = () => {
               <p className="metric-value">{metric.value}</p>
               <p className="metric-description">{metric.description}</p>
               <p className="metric-period">{periodLabel}</p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
@@ -259,46 +261,54 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-info">
-        <div className="info-card">
-          <h2>About MPLADS</h2>
-          <p>
-            The Member of Parliament Local Area Development Scheme (MPLADS) enables MPs to recommend 
-            development projects worth ₹5 crores annually in their constituencies. This dashboard 
-            provides transparency into how these funds are being utilized across India.
-          </p>
-        </div>
+        <Card className="info-card">
+          <CardHeader>
+            <CardTitle>About MPLADS</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>
+              The Member of Parliament Local Area Development Scheme (MPLADS) enables MPs to recommend
+              development projects worth ₹5 crores annually in their constituencies. This dashboard
+              provides transparency into how these funds are being utilized across India.
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="info-card">
-          <h2>Quick Actions</h2>
-          <div className="quick-actions">
-            <button className="action-btn" onClick={() => navigate('/mplads/states')}>
-              View All States
-            </button>
-            <button className="action-btn" onClick={() => navigate('/mplads/search')}>
-              Search MPs
-            </button>
-            <div className="action-btn-wrapper">
-              <button className="action-btn" disabled aria-describedby="top-performers-disabled-tooltip">
-                View Top Performers
-              </button>
-              <InfoTooltip 
-                content="Top Performers feature is being worked on with very high priority and will be live soon!"
-                position="top"
-                size="small"
-              />
+        <Card className="info-card">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="quick-actions">
+              <Button className="action-btn bg-blue-600 text-white hover:bg-blue-700" onClick={() => navigate('/mplads/states')} variant="default">
+                View All States
+              </Button>
+              <Button className="action-btn bg-blue-600 text-white hover:bg-blue-700" onClick={() => navigate('/mplads/search')} variant="default">
+                Search MPs
+              </Button>
+              <div className="action-btn-wrapper">
+                <Button className="action-btn" disabled aria-describedby="top-performers-disabled-tooltip" variant="outline">
+                  View Top Performers
+                </Button>
+                <InfoTooltip
+                  content="Top Performers feature is being worked on with very high priority and will be live soon!"
+                  position="top"
+                  size="small"
+                />
+              </div>
+              <div className="action-btn-wrapper">
+                <Button className="action-btn" disabled aria-describedby="report-disabled-tooltip" variant="outline">
+                  Download Report
+                </Button>
+                <InfoTooltip
+                  content="Report generation is coming soon. You'll be able to download comprehensive MPLADS reports in PDF format."
+                  position="top"
+                  size="small"
+                />
+              </div>
             </div>
-            <div className="action-btn-wrapper">
-              <button className="action-btn" disabled aria-describedby="report-disabled-tooltip">
-                Download Report
-              </button>
-              <InfoTooltip 
-                content="Report generation is coming soon. You'll be able to download comprehensive MPLADS reports in PDF format."
-                position="top"
-                size="small"
-              />
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

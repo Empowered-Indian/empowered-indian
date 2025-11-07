@@ -3,6 +3,8 @@ import { sanitizeEmail } from '../../../../utils/inputSanitization';
 import { FiMail, FiCheckCircle, FiInfo, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { subscribeToMailingList } from '../../../../services/api/mailingList';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import './MailingListForm.css';
 
 const MailingListForm = () => {
@@ -52,7 +54,7 @@ const MailingListForm = () => {
     <form className="mailing-form" onSubmit={handleSubmit}>
       <div className="mailing-input-group">
         <FiMail className="mail-icon" />
-        <input
+        <Input
           style={{ width: '100%' }}
           type="email"
           placeholder="Enter your email"
@@ -62,9 +64,9 @@ const MailingListForm = () => {
           required
         />
       </div>
-      <button type="submit" className="mailing-submit" disabled={loading}>
+      <Button type="submit" variant="default" className="mailing-submit" disabled={loading}>
         {loading ? 'Submitting…' : 'Subscribe'}
-      </button>
+      </Button>
       {alreadySubscribed && (
         <div className="mailing-inline info">
           <FiInfo className="icon" />

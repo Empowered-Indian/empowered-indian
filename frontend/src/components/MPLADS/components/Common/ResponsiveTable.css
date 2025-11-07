@@ -94,23 +94,6 @@
   gap: var(--spacing-xs);
 }
 
-.mobile-expand-button {
-  background: none;
-  border: none;
-  color: var(--primary-color);
-  font-size: 1.25rem;
-  padding: var(--spacing-xs);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: background-color var(--transition-fast);
-}
-
-.mobile-expand-button:hover {
-  background-color: var(--bg-secondary);
-}
-
 .mobile-card-details {
   padding: 0 var(--spacing-md) var(--spacing-md);
   border-top: 1px solid var(--border-color);

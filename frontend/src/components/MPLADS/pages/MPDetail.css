@@ -127,12 +127,19 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.08);
   background: linear-gradient(135deg, #e0edff 0%, #eef2f7 100%);
+  color: #1e40af !important;
 }
 
 .action-btn.secondary {
   border-color: #e5e7eb;
   background: #ffffff;
   color: #334155;
+}
+
+.action-btn.secondary:hover {
+  background: #f8fafc;
+  color: #334155 !important;
+  border-color: #d1d5db;
 }
 
 .mp-summary-stats {
@@ -352,7 +359,7 @@
   display: flex;
   position: sticky;
   top: 72px; /* below sticky nav (64px) */
-  z-index: var(--z-sticky);
+  z-index: 10; /* Lower z-index to prevent overlapping modals */
   border-bottom: 2px solid #f3f4f6;
   margin-bottom: 32px;
   background: #ffffff;
@@ -381,12 +388,14 @@
 }
 
 .tab-btn:hover {
-  color: #3b82f6;
+  color: #3b82f6 !important;
+  background: transparent !important;
 }
 
 .tab-btn.active {
-  color: #3b82f6;
+  color: #3b82f6 !important;
   border-bottom-color: #3b82f6;
+  background: transparent !important;
 }
 
 /* Content Sections */

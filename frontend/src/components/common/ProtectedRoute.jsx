@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { Button } from '@/components/ui/button';
 import './ProtectedRoute.css';
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -57,20 +58,15 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
         <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
           You don't have permission to access this area. Admin privileges required.
         </p>
-        <button
+        <Button
+          variant="default"
           onClick={() => window.history.back()}
           style={{
-            padding: '0.75rem 1.5rem',
-            background: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: '500'
+            padding: '0.75rem 1.5rem'
           }}
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }

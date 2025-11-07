@@ -7,6 +7,9 @@
 }
 
 .header-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 1rem;
   color: #6b7280;
 }
@@ -142,22 +145,6 @@
   border-top: 1px solid #e2e8f0;
 }
 
-.btn-secondary {
-  padding: 12px 24px;
-  background: #6b7280;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background: #4b5563;
-}
-
 /* Placeholder Section */
 .placeholder-section {
   text-align: center;
@@ -174,6 +161,9 @@
 }
 
 .placeholder-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #6b7280;
   margin-bottom: 24px;
 }
@@ -331,7 +321,6 @@
   .cost-range .cost-range-slider .range-slider-container {
     max-width: none; /* Remove width constraint on mobile */
   }
-}
 
   .results-header {
     flex-direction: column;
@@ -365,11 +354,6 @@
 
   .project-card {
     padding: 16px;
-  }
-
-  .btn-secondary {
-    padding: 10px 20px;
-    font-size: 14px;
   }
 
   .placeholder-section {

@@ -1,7 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { FiX, FiMapPin, FiCalendar, FiDollarSign, FiUser, FiFileText, FiStar, FiImage, FiClock, FiCheck, FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
+import { FiMapPin, FiCalendar, FiDollarSign, FiUser, FiFileText, FiStar, FiClock, FiCheck, FiAlertCircle } from 'react-icons/fi';
 import { API_BASE_URL } from '../../../../utils/constants/api';
 import { useResponsive } from '../../../../hooks/useMediaQuery';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import './ProjectDetailModal.css';
 
 const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' }) => {
@@ -87,25 +95,6 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
     }
   };
 
-  // Handle escape key and mobile close behavior
-  useEffect(() => {
-    if (isOpen) {
-      const handleEscape = (e) => {
-        if (e.key === 'Escape') {
-          handleClose();
-        }
-      };
-      
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-      
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = 'auto';
-      };
-    }
-  }, [isOpen, handleClose]);
-  
   const handleClose = useCallback(() => {
     if (responsive.isMobile) {
       setIsClosing(true);
@@ -121,28 +110,16 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
   if (!isOpen) return null;
 
   return (
-    <div className={`modal-overlay ${responsive.isMobile ? 'mobile-modal' : ''} ${isClosing ? 'closing' : ''}`} onClick={handleClose}>
-      <div className={`project-detail-modal ${responsive.isMobile ? 'mobile-modal-content' : ''}`} onClick={(e) => e.stopPropagation()}>
-        <div className={`modal-header ${responsive.isMobile ? 'mobile-header' : ''}`}>
-          {responsive.isMobile ? (
-            <>
-              <button className="back-button" onClick={handleClose}>
-                <FiArrowLeft />
-                <span>Back</span>
-              </button>
-              <h2>Project Details</h2>
-            </>
-          ) : (
-            <>
-              <h2>Project Details</h2>
-              <button className="close-button" onClick={handleClose}>
-                <FiX />
-              </button>
-            </>
-          )}
-        </div>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-[900px] max-h-[90vh] overflow-hidden p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+          <DialogTitle>Project Details</DialogTitle>
+          <DialogDescription className="sr-only">
+            Detailed information about the {workType} project
+          </DialogDescription>
+        </DialogHeader>
 
-        <div className="modal-content">
+        <div className="modal-content overflow-y-auto max-h-[calc(90vh-100px)] px-6 pb-6">
           {isLoading ? (
             <div className="loading-state">
               <div className="loading-spinner"></div>
@@ -152,9 +129,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
             <div className="error-state">
               <FiAlertCircle size={48} />
               <p>{error}</p>
-              <button className="retry-button" onClick={fetchWorkDetails}>
+              <Button variant="default" className="retry-button bg-blue-600 text-white hover:bg-blue-700" onClick={fetchWorkDetails}>
                 Try Again
-              </button>
+              </Button>
             </div>
           ) : workData ? (
             <div className="project-details">
@@ -370,8 +347,8 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
             </div>
           ) : null}
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

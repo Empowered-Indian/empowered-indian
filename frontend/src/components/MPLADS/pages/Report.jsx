@@ -3,6 +3,11 @@ import { FiAlertTriangle, FiMessageSquare, FiSend, FiCheck, FiX } from 'react-ic
 import toast from 'react-hot-toast';
 import { sanitizeInput, sanitizeEmail } from '../../../utils/inputSanitization';
 import { API_BASE_URL } from '../../../utils/constants/api';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import './Report.css';
 
 const Report = () => {
@@ -131,20 +136,22 @@ const Report = () => {
       </div>
 
       <div className="report-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'feedback' ? 'active' : ''}`}
+        <Button
+          variant={activeTab === 'feedback' ? 'default' : 'ghost'}
+          className={`tab-button gap-2 ${activeTab === 'feedback' ? 'active' : ''}`}
           onClick={() => setActiveTab('feedback')}
         >
           <FiMessageSquare />
           General Feedback
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'data-issue' ? 'active' : ''}`}
+        </Button>
+        <Button
+          variant={activeTab === 'data-issue' ? 'default' : 'ghost'}
+          className={`tab-button gap-2 ${activeTab === 'data-issue' ? 'active' : ''}`}
           onClick={() => setActiveTab('data-issue')}
         >
           <FiAlertTriangle />
           Report Data Issue
-        </button>
+        </Button>
       </div>
 
       <div className="report-content">
@@ -157,39 +164,47 @@ const Report = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="feedback-type">Feedback Type *</label>
-                <select 
-                  id="feedback-type"
+                <Label htmlFor="feedback-type">Feedback Type *</Label>
+                <Select
                   value={feedbackForm.type}
-                  onChange={(e) => setFeedbackForm({ ...feedbackForm, type: e.target.value })}
+                  onValueChange={(value) => setFeedbackForm({ ...feedbackForm, type: value })}
                   required
                 >
-                  <option value="general">General Feedback</option>
-                  <option value="bug">Bug Report</option>
-                  <option value="feature_request">Feature Request</option>
-                  <option value="data_issue">Data Issue</option>
-                </select>
+                  <SelectTrigger id="feedback-type">
+                    <SelectValue placeholder="Select feedback type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">General Feedback</SelectItem>
+                    <SelectItem value="bug">Bug Report</SelectItem>
+                    <SelectItem value="feature_request">Feature Request</SelectItem>
+                    <SelectItem value="data_issue">Data Issue</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="form-group">
-                <label htmlFor="feedback-category">Category *</label>
-                <select 
-                  id="feedback-category"
+                <Label htmlFor="feedback-category">Category *</Label>
+                <Select
                   value={feedbackForm.category}
-                  onChange={(e) => setFeedbackForm({ ...feedbackForm, category: e.target.value })}
+                  onValueChange={(value) => setFeedbackForm({ ...feedbackForm, category: value })}
                   required
                 >
-                  <option value="general">General</option>
-                  <option value="mp">MP Information</option>
-                  <option value="work">Works/Projects</option>
-                  <option value="expenditure">Expenditure Data</option>
-                </select>
+                  <SelectTrigger id="feedback-category">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="mp">MP Information</SelectItem>
+                    <SelectItem value="work">Works/Projects</SelectItem>
+                    <SelectItem value="expenditure">Expenditure Data</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="feedback-title">Title *</label>
-              <input
+              <Label htmlFor="feedback-title">Title *</Label>
+              <Input
                 type="text"
                 id="feedback-title"
                 value={feedbackForm.title}
@@ -200,13 +215,13 @@ const Report = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="feedback-description">
-                Description *
-                <span className="char-count">
+              <Label htmlFor="feedback-description" className="flex justify-between items-center">
+                <span>Description *</span>
+                <span className="char-count text-xs font-normal">
                   {feedbackForm.description.length}/1000
                 </span>
-              </label>
-              <textarea
+              </Label>
+              <Textarea
                 id="feedback-description"
                 value={feedbackForm.description}
                 onChange={(e) => setFeedbackForm({ ...feedbackForm, description: sanitizeInput(e.target.value, { maxLength: 1000 }) })}
@@ -219,21 +234,25 @@ const Report = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="feedback-priority">Priority</label>
-                <select 
-                  id="feedback-priority"
+                <Label htmlFor="feedback-priority">Priority</Label>
+                <Select
                   value={feedbackForm.priority}
-                  onChange={(e) => setFeedbackForm({ ...feedbackForm, priority: e.target.value })}
+                  onValueChange={(value) => setFeedbackForm({ ...feedbackForm, priority: value })}
                 >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
+                  <SelectTrigger id="feedback-priority">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="form-group">
-                <label htmlFor="feedback-email">Contact Email (Optional)</label>
-                <input
+                <Label htmlFor="feedback-email">Contact Email (Optional)</Label>
+                <Input
                   type="email"
                   id="feedback-email"
                   value={feedbackForm.contactEmail}
@@ -243,9 +262,10 @@ const Report = () => {
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              className="submit-button"
+            <Button
+              type="submit"
+              variant="default"
+              className="submit-button gap-2"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -259,7 +279,7 @@ const Report = () => {
                   Submit Feedback
                 </>
               )}
-            </button>
+            </Button>
           </form>
         )}
 
@@ -271,27 +291,31 @@ const Report = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="issue-type">Issue Type *</label>
-              <select 
-                id="issue-type"
+              <Label htmlFor="issue-type">Issue Type *</Label>
+              <Select
                 value={dataIssueForm.issueType}
-                onChange={(e) => setDataIssueForm({ ...dataIssueForm, issueType: e.target.value })}
+                onValueChange={(value) => setDataIssueForm({ ...dataIssueForm, issueType: value })}
                 required
               >
-                <option value="incorrect_data">Incorrect Data</option>
-                <option value="missing_data">Missing Data</option>
-                <option value="outdated_data">Outdated Data</option>
-              </select>
+                <SelectTrigger id="issue-type">
+                  <SelectValue placeholder="Select issue type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="incorrect_data">Incorrect Data</SelectItem>
+                  <SelectItem value="missing_data">Missing Data</SelectItem>
+                  <SelectItem value="outdated_data">Outdated Data</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="issue-description">
-                Issue Description *
-                <span className="char-count">
+              <Label htmlFor="issue-description" className="flex justify-between items-center">
+                <span>Issue Description *</span>
+                <span className="char-count text-xs font-normal">
                   {dataIssueForm.description.length}/1000
                 </span>
-              </label>
-              <textarea
+              </Label>
+              <Textarea
                 id="issue-description"
                 value={dataIssueForm.description}
                 onChange={(e) => setDataIssueForm({ ...dataIssueForm, description: sanitizeInput(e.target.value, { maxLength: 1000 }) })}
@@ -304,8 +328,8 @@ const Report = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="issue-location">Location (State/Constituency)</label>
-                <input
+                <Label htmlFor="issue-location">Location (State/Constituency)</Label>
+                <Input
                   type="text"
                   id="issue-location"
                   value={dataIssueForm.location}
@@ -315,8 +339,8 @@ const Report = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="issue-mp">MP Name</label>
-                <input
+                <Label htmlFor="issue-mp">MP Name</Label>
+                <Input
                   type="text"
                   id="issue-mp"
                   value={dataIssueForm.mpName}
@@ -327,8 +351,8 @@ const Report = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="issue-work-id">Work/Project ID (if applicable)</label>
-              <input
+              <Label htmlFor="issue-work-id">Work/Project ID (if applicable)</Label>
+              <Input
                 type="text"
                 id="issue-work-id"
                 value={dataIssueForm.workId}
@@ -339,8 +363,8 @@ const Report = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="expected-value">Expected/Correct Value</label>
-                <input
+                <Label htmlFor="expected-value">Expected/Correct Value</Label>
+                <Input
                   type="text"
                   id="expected-value"
                   value={dataIssueForm.expectedValue}
@@ -350,8 +374,8 @@ const Report = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="actual-value">Current/Incorrect Value</label>
-                <input
+                <Label htmlFor="actual-value">Current/Incorrect Value</Label>
+                <Input
                   type="text"
                   id="actual-value"
                   value={dataIssueForm.actualValue}
@@ -362,8 +386,8 @@ const Report = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="issue-email">Contact Email (Optional)</label>
-              <input
+              <Label htmlFor="issue-email">Contact Email (Optional)</Label>
+              <Input
                 type="email"
                 id="issue-email"
                 value={dataIssueForm.contactEmail}
@@ -372,9 +396,10 @@ const Report = () => {
               />
             </div>
 
-            <button 
-              type="submit" 
-              className="submit-button"
+            <Button
+              type="submit"
+              variant="default"
+              className="submit-button gap-2"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -388,7 +413,7 @@ const Report = () => {
                   Report Issue
                 </>
               )}
-            </button>
+            </Button>
           </form>
         )}
       </div>

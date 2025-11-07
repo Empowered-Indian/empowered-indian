@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FiLoader, FiRefreshCw } from 'react-icons/fi';
 import SkeletonLoader from './SkeletonLoader';
+import { Button } from '@/components/ui/button';
 import './LoadingState.css';
 
 const LoadingState = ({ 
@@ -44,12 +45,13 @@ const LoadingState = ({
           <FiRefreshCw className="loading-timeout-icon" />
           <h3>Taking longer than expected</h3>
           <p>The request is taking longer than usual. This might be due to high server load.</p>
-          <button 
+          <Button
+            variant="default"
             className="loading-retry-btn"
             onClick={() => window.location.reload()}
           >
             Refresh Page
-          </button>
+          </Button>
         </div>
       </div>
     );

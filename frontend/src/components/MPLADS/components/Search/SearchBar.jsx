@@ -8,6 +8,8 @@ import { useSearchMPs } from '../../../../hooks/useApi';
 import { sanitizeInput, sanitizeForSubmission } from '../../../../utils/inputSanitization';
 import './SearchBar.css';
 import { buildMPSlugHuman, normalizeMPSlug } from '../../../../utils/slug';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 // A lean and robust search bar built from scratch.
 // - No suggestions dropdown
@@ -136,7 +138,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
       <span className="ni-search__icon" aria-hidden="true">
         <FiSearch />
       </span>
-      <input
+      <Input
         ref={inputRef}
         type="text"
         className="ni-search__input"
@@ -153,18 +155,19 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
         aria-controls="search-suggestion-list"
       />
       {query && (
-        <button
+        <Button
           type="button"
           className="ni-search__clear"
           aria-label="Clear search"
           onClick={handleClear}
+          variant="ghost"
         >
           <FiX />
-        </button>
+        </Button>
       )}
-      <button type="submit" className="ni-search__submit" aria-label="Search">
+      <Button type="submit" className="ni-search__submit" aria-label="Search" variant="ghost">
         <FiSearch />
-      </button>
+      </Button>
       </form>
 
       {open && query && (

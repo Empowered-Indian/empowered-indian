@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FiHome, 
-  FiMap, 
-  FiDollarSign, 
-  FiBarChart2, 
+import {
+  FiHome,
+  FiMap,
+  FiDollarSign,
+  FiBarChart2,
   FiMessageCircle,
   FiMenu,
   FiX,
@@ -11,6 +11,7 @@ import {
   FiUsers
 } from 'react-icons/fi';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import './Navigation.css';
 
 const Navigation = () => {
@@ -235,9 +236,10 @@ const Navigation = () => {
             <span className="nav-tagline">Empowered Indian</span>
           </Link>
 
-          <button 
+          <Button
             ref={toggleButtonRef}
-            className="mobile-menu-toggle"
+            variant="ghost"
+            className="mobile-menu-toggle gap-2"
             onClick={handleMenuToggle}
             aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={isMobileMenuOpen}
@@ -246,7 +248,7 @@ const Navigation = () => {
             type="button"
           >
             {isMobileMenuOpen ? <FiX /> : <FiMenu />}
-          </button>
+          </Button>
 
           {/* Mobile menu backdrop */}
           {isMobile && isMobileMenuOpen && (

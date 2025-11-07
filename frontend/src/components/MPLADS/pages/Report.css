@@ -30,30 +30,6 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.tab-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  font-size: 16px;
-  font-weight: 500;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tab-button:hover {
-  color: #374151;
-}
-
-.tab-button.active {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
-}
-
 /* Form Styles */
 .feedback-form,
 .data-issue-form {
@@ -131,33 +107,6 @@
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
-}
-
-/* Submit Button */
-.submit-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.submit-button:hover:not(:disabled) {
-  background: #2563eb;
-  transform: translateY(-1px);
-}
-
-.submit-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
 }
 
 /* Report Info */
@@ -287,16 +236,5 @@
 @media (max-width: 480px) {
   .report-tabs {
     flex-direction: column;
-  }
-  
-  .tab-button {
-    justify-content: center;
-    border-bottom: 1px solid #e5e7eb;
-    border-radius: 8px;
-  }
-  
-  .tab-button.active {
-    background: #eff6ff;
-    border-color: #3b82f6;
   }
 }

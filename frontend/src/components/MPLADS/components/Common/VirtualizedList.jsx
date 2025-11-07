@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import './VirtualizedList.css';
 
 const VirtualizedList = ({
@@ -239,13 +240,14 @@ const VirtualizedList = ({
               <p className="empty-title">No items found</p>
               <p className="empty-subtitle">{emptyMessage}</p>
               {enablePullToRefresh && onRefresh && (
-                <button 
+                <Button
+                  variant="default"
                   className="mobile-refresh-btn"
                   onClick={onRefresh}
                   disabled={isRefreshing}
                 >
                   {isRefreshing ? 'Refreshing...' : 'Tap to refresh'}
-                </button>
+                </Button>
               )}
             </>
           ) : (

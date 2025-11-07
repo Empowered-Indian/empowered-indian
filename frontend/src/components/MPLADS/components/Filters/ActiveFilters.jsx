@@ -1,5 +1,6 @@
 import { FiX, FiFilter, FiRotateCcw } from 'react-icons/fi';
 import { useFilters } from '../../../../contexts/FilterContext';
+import { Button } from '@/components/ui/button';
 import './ActiveFilters.css';
 
 const ActiveFilters = ({ className = '' }) => {
@@ -76,15 +77,16 @@ const ActiveFilters = ({ className = '' }) => {
           <span>Active Filters</span>
           <span className="active-filters-count">{activeFilterCount}</span>
         </div>
-        <button 
-          className="clear-all-filters-btn"
+        <Button
+          variant="outline"
+          className="clear-all-filters-btn gap-2"
           onClick={resetFilters}
           title="Clear all filters"
           aria-label="Clear all filters"
         >
           <FiRotateCcw />
           <span>Clear All</span>
-        </button>
+        </Button>
       </div>
       
       <div className="active-filters-list">
@@ -92,14 +94,15 @@ const ActiveFilters = ({ className = '' }) => {
           <div key={filter.key} className="active-filter-tag">
             <span className="filter-label">{filter.label}</span>
             <span className="filter-value">{filter.value}</span>
-            <button
+            <Button
+              variant="ghost"
               className="remove-filter-btn"
               onClick={() => removeFilter(filter.key)}
               title={`Remove ${filter.label} filter`}
               aria-label={`Remove ${filter.label} filter`}
             >
               <FiX />
-            </button>
+            </Button>
           </div>
         ))}
       </div>

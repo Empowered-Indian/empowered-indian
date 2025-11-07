@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
 
 /**
  * Centralized error handling utilities for consistent user feedback
@@ -267,23 +268,19 @@ export const handleMutationError = (error, retry = null, context = '') => {
       (t) => (
         <div>
           <div style={{ marginBottom: '8px' }}>{message}</div>
-          <button
+          <Button
+            variant="destructive"
             onClick={() => {
               toast.dismiss(t.id);
               retry();
             }}
             style={{
-              background: '#dc2626',
-              color: 'white',
-              border: 'none',
               padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '12px',
-              cursor: 'pointer'
+              fontSize: '12px'
             }}
           >
             Try Again
-          </button>
+          </Button>
         </div>
       ),
       {

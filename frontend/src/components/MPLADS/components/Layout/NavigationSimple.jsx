@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FiHome, 
-  FiMap, 
-  FiDollarSign, 
-  FiBarChart2, 
+import {
+  FiHome,
+  FiMap,
+  FiDollarSign,
+  FiBarChart2,
   FiMessageCircle,
   FiMenu,
   FiX,
@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react';
 import { useFilters } from '../../../../contexts/FilterContext';
 import { mpladsAPI } from '../../../../services/api/mplads';
 import { formatTermOrdinal, normalizeTerms } from '../../../../utils/lsTerm';
+import { Button } from '@/components/ui/button';
 
 const NavigationSimple = () => {
   const location = useLocation();
@@ -305,9 +306,11 @@ const NavigationSimple = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
+          <Button
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            variant="outline"
+            className="gap-2"
             style={{
               display: isMobile ? 'flex' : 'none',
               alignItems: 'center',
@@ -333,7 +336,7 @@ const NavigationSimple = () => {
             }}
           >
             {isOpen ? <FiX /> : <FiMenu />}
-          </button>
+          </Button>
         </div>
       </nav>
 
@@ -404,9 +407,10 @@ const NavigationSimple = () => {
               letterSpacing: '0.05em'
             }}>Empowered Indian</span>
           </div>
-          <button
+          <Button
             onClick={() => setIsOpen(false)}
             aria-label="Close menu"
+            variant="ghost"
             style={{
               background: 'transparent',
               border: 'none',
@@ -417,7 +421,7 @@ const NavigationSimple = () => {
             }}
           >
             <FiX />
-          </button>
+          </Button>
         </div>
         
         <div style={{ padding: '1rem' }}>

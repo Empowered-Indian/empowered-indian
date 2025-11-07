@@ -11,6 +11,8 @@ import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling.j
 import { getIdFromSlug, isBareObjectId, buildMPSlugHuman, buildMPSlugCandidates, normalizeMPSlug } from '../../../utils/slug';
 import { summaryAPI } from '../../../services/api';
 import { useFilters } from '../../../contexts/FilterContext';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import './MPDetail.css';
 import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf.jsx';
 
@@ -313,8 +315,9 @@ const MPDetail = () => {
             </div>
           </div>
           <div className="mp-header-actions">
-            <button
-              className="action-btn"
+            <Button
+              variant="outline"
+              className="action-btn gap-2"
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(window.location.origin + location.pathname);
@@ -327,7 +330,7 @@ const MPDetail = () => {
             >
               <FiCopy />
               <span>Copy Link</span>
-            </button>
+            </Button>
             <Link
               to="/mplads/compare"
               className="action-btn secondary"
@@ -421,24 +424,27 @@ const MPDetail = () => {
       </div>
 
       <div className="mp-tabs">
-        <button 
+        <Button
+          variant="ghost"
           className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           Overview
-        </button>
-        <button 
+        </Button>
+        <Button
+          variant="ghost"
           className={`tab-btn ${activeTab === 'projects' ? 'active' : ''}`}
           onClick={() => setActiveTab('projects')}
         >
           Projects
-        </button>
-        <button 
+        </Button>
+        <Button
+          variant="ghost"
           className={`tab-btn ${activeTab === 'financial' ? 'active' : ''}`}
           onClick={() => setActiveTab('financial')}
         >
           Financial Details
-        </button>
+        </Button>
       </div>
 
       <div className="mp-content">
@@ -510,83 +516,91 @@ const MPDetail = () => {
             <div className="performance-summary">
               <h3>Performance Summary</h3>
               <div className="performance-cards">
-                <div className="performance-card">
-                  <h4>Financial Performance</h4>
-                  <div className="performance-details">
-                    <div className="detail-row">
-                      <span>Allocated Amount:</span>
-                      <span className="amount">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                <Card className="performance-card">
+                  <CardHeader>
+                    <CardTitle>Financial Performance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="performance-details">
+                      <div className="detail-row">
+                        <span>Allocated Amount:</span>
+                        <span className="amount">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span>Utilized Amount:</span>
+                        <span className="amount">{formatCurrency(mp.totalExpenditure)}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span>Remaining Balance:</span>
+                        <span className="amount">
+                          {formatCurrency((mp.allocatedAmount || mp.totalAllocated || 0) - (mp.totalExpenditure || 0))}
+                        </span>
+                      </div>
+                      <div className="detail-row highlight">
+                        <span>
+                          Fund Utilization
+                          {' '}
+                          <InfoTooltip
+                            content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
+                            position="top"
+                            size="small"
+                          />
+                        </span>
+                        <span className={`percentage utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
+                          {(mp.utilizationPercentage || 0).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span>Works Completed:</span>
+                        <span className="percentage">
+                          {mp.completedWorksCount || 0}
+                        </span>
+                      </div>
                     </div>
-                    <div className="detail-row">
-                      <span>Utilized Amount:</span>
-                      <span className="amount">{formatCurrency(mp.totalExpenditure)}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span>Remaining Balance:</span>
-                      <span className="amount">
-                        {formatCurrency((mp.allocatedAmount || mp.totalAllocated || 0) - (mp.totalExpenditure || 0))}
-                      </span>
-                    </div>
-                    <div className="detail-row highlight">
-                      <span>
-                        Fund Utilization
-                        {' '}
-                        <InfoTooltip 
-                          content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                          position="top"
-                          size="small"
-                        />
-                      </span>
-                      <span className={`percentage utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
-                        {(mp.utilizationPercentage || 0).toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span>Works Completed:</span>
-                      <span className="percentage">
-                        {mp.completedWorksCount || 0}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
 
-                <div className="performance-card">
-                  <h4>Project Delivery</h4>
-                  <div className="performance-details">
-                    <div className="detail-row">
-                      <span>Total Projects:</span>
-                      <span className="count">{projectStats.total}</span>
+                <Card className="performance-card">
+                  <CardHeader>
+                    <CardTitle>Project Delivery</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="performance-details">
+                      <div className="detail-row">
+                        <span>Total Projects:</span>
+                        <span className="count">{projectStats.total}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span>Completed:</span>
+                        <span className="count completed">{projectStats.completed}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span>In Progress:</span>
+                        <span className="count ongoing">{projectStats.ongoing}</span>
+                      </div>
+                      <div className="detail-row highlight">
+                        <span>Completion Rate:</span>
+                        <span className={`percentage ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
+                          {completionRate.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="detail-row">
+                        <span>
+                          Fund Utilization
+                          {' '}
+                          <InfoTooltip
+                            content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
+                            position="top"
+                            size="small"
+                          />
+                        </span>
+                        <span className={`percentage ${(mp.utilizationPercentage || 0) >= 70 ? 'high' : (mp.utilizationPercentage || 0) >= 40 ? 'medium' : 'low'}`}>
+                          {(mp.utilizationPercentage || 0).toFixed(1)}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="detail-row">
-                      <span>Completed:</span>
-                      <span className="count completed">{projectStats.completed}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span>In Progress:</span>
-                      <span className="count ongoing">{projectStats.ongoing}</span>
-                    </div>
-                    <div className="detail-row highlight">
-                      <span>Completion Rate:</span>
-                      <span className={`percentage ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
-                        {completionRate.toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span>
-                        Fund Utilization
-                        {' '}
-                        <InfoTooltip 
-                          content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                          position="top"
-                          size="small"
-                        />
-                      </span>
-                      <span className={`percentage ${(mp.utilizationPercentage || 0) >= 70 ? 'high' : (mp.utilizationPercentage || 0) >= 40 ? 'medium' : 'low'}`}>
-                        {(mp.utilizationPercentage || 0).toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -620,106 +634,118 @@ const MPDetail = () => {
           <div className="financial-section">
             <h3>Financial Breakdown</h3>
             <div className="financial-details-grid">
-              <div className="financial-card">
-                <h4>Fund Allocation</h4>
-                <div className="financial-items">
-                  <div className="financial-item">
-                    <span className="item-label">Initial Allocation</span>
-                    <span className="item-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+              <Card className="financial-card">
+                <CardHeader>
+                  <CardTitle>Fund Allocation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="financial-items">
+                    <div className="financial-item">
+                      <span className="item-label">Initial Allocation</span>
+                      <span className="item-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                    </div>
+                    <div className="financial-item">
+                      <span className="item-label">Total Expenditure</span>
+                      <span className="item-value">{formatCurrency(mp.totalExpenditure)}</span>
+                    </div>
+                    <div className="financial-item total">
+                      <span className="item-label">Remaining Balance</span>
+                      <span className="item-value">
+                        {formatCurrency((mp.allocatedAmount || mp.totalAllocated || 0) - (mp.totalExpenditure || 0))}
+                      </span>
+                    </div>
                   </div>
-                  <div className="financial-item">
-                    <span className="item-label">Total Expenditure</span>
-                    <span className="item-value">{formatCurrency(mp.totalExpenditure)}</span>
-                  </div>
-                  <div className="financial-item total">
-                    <span className="item-label">Remaining Balance</span>
-                    <span className="item-value">
-                      {formatCurrency((mp.allocatedAmount || mp.totalAllocated || 0) - (mp.totalExpenditure || 0))}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
-              <div className="financial-card">
-                <h4>Utilization Metrics</h4>
-                <div className="financial-items">
-                  <div className="financial-item">
-                    <span className="item-label">
-                      Fund Utilization
-                      {' '}
-                      <InfoTooltip 
-                        content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                        position="top"
-                        size="small"
-                      />
-                    </span>
-                    <span className={`item-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
-                      {(mp.utilizationPercentage || 0).toFixed(2)}%
-                    </span>
-                  </div>
-                  <div className="financial-item">
-                    <span className="item-label">Works Completed</span>
-                    <span className="item-value">
-                      {mp.completedWorksCount || 0}
-                    </span>
-                  </div>
-                  <div className="financial-item">
-                    <span className="item-label">Average per Project</span>
-                    <span className="item-value">
-                      {formatCurrency(projectStats.total > 0 ? (mp.totalExpenditure || 0) / projectStats.total : 0)}
-                    </span>
-                  </div>
-                  <div className="financial-item">
-                    <span className="item-label">Completion Rate</span>
-                    <span className={`item-value ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
-                      {completionRate.toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="financial-card full-width">
-                <h4>Performance Indicators</h4>
-                <div className="indicators-grid">
-                  <div className="indicator">
-                    <div className="indicator-header">
-                      <span>
+              <Card className="financial-card">
+                <CardHeader>
+                  <CardTitle>Utilization Metrics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="financial-items">
+                    <div className="financial-item">
+                      <span className="item-label">
                         Fund Utilization
                         {' '}
-                        <InfoTooltip 
+                        <InfoTooltip
                           content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                           position="top"
                           size="small"
                         />
                       </span>
-                      <span className={`indicator-status utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
-                        {(mp.utilizationPercentage || 0) >= 70 ? 'Excellent' : (mp.utilizationPercentage || 0) >= 40 ? 'Good' : (mp.utilizationPercentage || 0) >= 20 ? 'Average' : 'Poor'}
+                      <span className={`item-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
+                        {(mp.utilizationPercentage || 0).toFixed(2)}%
                       </span>
                     </div>
-                    <div className="indicator-bar">
-                      <div 
-                        className={`indicator-fill utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
-                        style={{ width: `${Math.min(mp.utilizationPercentage || 0, 100)}%` }}
-                      ></div>
+                    <div className="financial-item">
+                      <span className="item-label">Works Completed</span>
+                      <span className="item-value">
+                        {mp.completedWorksCount || 0}
+                      </span>
+                    </div>
+                    <div className="financial-item">
+                      <span className="item-label">Average per Project</span>
+                      <span className="item-value">
+                        {formatCurrency(projectStats.total > 0 ? (mp.totalExpenditure || 0) / projectStats.total : 0)}
+                      </span>
+                    </div>
+                    <div className="financial-item">
+                      <span className="item-label">Completion Rate</span>
+                      <span className={`item-value ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
+                        {completionRate.toFixed(1)}%
+                      </span>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="indicator">
-                    <div className="indicator-header">
-                      <span>Project Completion</span>
-                      <span className={`indicator-status ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
-                        {completionRate >= 70 ? 'Excellent' : completionRate >= 50 ? 'Good' : completionRate >= 30 ? 'Average' : 'Poor'}
-                      </span>
+              <Card className="financial-card full-width">
+                <CardHeader>
+                  <CardTitle>Performance Indicators</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="indicators-grid">
+                    <div className="indicator">
+                      <div className="indicator-header">
+                        <span>
+                          Fund Utilization
+                          {' '}
+                          <InfoTooltip
+                            content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
+                            position="top"
+                            size="small"
+                          />
+                        </span>
+                        <span className={`indicator-status utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
+                          {(mp.utilizationPercentage || 0) >= 70 ? 'Excellent' : (mp.utilizationPercentage || 0) >= 40 ? 'Good' : (mp.utilizationPercentage || 0) >= 20 ? 'Average' : 'Poor'}
+                        </span>
+                      </div>
+                      <div className="indicator-bar">
+                        <div
+                          className={`indicator-fill utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
+                          style={{ width: `${Math.min(mp.utilizationPercentage || 0, 100)}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="indicator-bar">
-                      <div 
-                        className={`indicator-fill ${completionRate >= 70 ? 'utilization-high' : completionRate >= 50 ? 'utilization-medium' : 'utilization-low'}`}
-                        style={{ width: `${Math.min(completionRate, 100)}%` }}
-                      ></div>
+
+                    <div className="indicator">
+                      <div className="indicator-header">
+                        <span>Project Completion</span>
+                        <span className={`indicator-status ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
+                          {completionRate >= 70 ? 'Excellent' : completionRate >= 50 ? 'Good' : completionRate >= 30 ? 'Average' : 'Poor'}
+                        </span>
+                      </div>
+                      <div className="indicator-bar">
+                        <div
+                          className={`indicator-fill ${completionRate >= 70 ? 'utilization-high' : completionRate >= 50 ? 'utilization-medium' : 'utilization-low'}`}
+                          style={{ width: `${Math.min(completionRate, 100)}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}

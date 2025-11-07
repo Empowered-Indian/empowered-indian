@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FiUser, FiLock, FiEye, FiEyeOff, FiLogIn, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import './Login.css';
 
 const Login = () => {
@@ -131,11 +134,11 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="email">
+            <Label htmlFor="email" className="flex items-center gap-2">
               <FiUser />
               Email Address
-            </label>
-            <input
+            </Label>
+            <Input
               type="email"
               id="email"
               name="email"
@@ -144,7 +147,7 @@ const Login = () => {
               placeholder="Enter your email"
               required
               autoComplete="email"
-              className={validationErrors.email ? 'error' : ''}
+              className={validationErrors.email ? 'border-red-500' : ''}
               aria-invalid={!!validationErrors.email}
               aria-describedby={validationErrors.email ? 'email-error' : undefined}
             />
@@ -157,12 +160,12 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">
+            <Label htmlFor="password" className="flex items-center gap-2">
               <FiLock />
               Password
-            </label>
+            </Label>
             <div className="password-input">
-              <input
+              <Input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
@@ -171,18 +174,19 @@ const Login = () => {
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
-                className={validationErrors.password ? 'error' : ''}
+                className={validationErrors.password ? 'border-red-500' : ''}
                 aria-invalid={!!validationErrors.password}
                 aria-describedby={validationErrors.password ? 'password-error' : undefined}
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <FiEyeOff /> : <FiEye />}
-              </button>
+              </Button>
             </div>
             {validationErrors.password && (
               <span id="password-error" className="error-message">
@@ -192,9 +196,10 @@ const Login = () => {
             )}
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="login-button"
+            variant="default"
+            className="login-button gap-2 bg-blue-600 text-white hover:bg-blue-700"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -208,7 +213,7 @@ const Login = () => {
                 Sign In
               </>
             )}
-          </button>
+          </Button>
         </form>
 
         <div className="login-footer">

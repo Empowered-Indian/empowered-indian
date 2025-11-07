@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { FiDownload, FiFileText, FiDatabase } from 'react-icons/fi';
-import { 
+import { Button } from '@/components/ui/button';
+import {
   exportCompletedWorks,
-  exportRecommendedWorks, 
+  exportRecommendedWorks,
   exportExpenditures,
   exportMPSummary,
   exportAsJSON,
@@ -72,66 +73,72 @@ const ExportButton = ({
   if (variant === 'dropdown') {
     return (
       <div className="export-dropdown-container">
-        <button
+        <Button
           className={`export-dropdown-button ${showDropdown ? 'active' : ''}`}
           onClick={() => setShowDropdown(!showDropdown)}
           disabled={isExporting}
+          variant="outline"
         >
           <FiDownload />
           <span>{label || 'Export'}</span>
-          <svg 
+          <svg
             className={`dropdown-arrow ${showDropdown ? 'rotated' : ''}`}
-            width="12" 
-            height="12" 
+            width="12"
+            height="12"
             viewBox="0 0 12 12"
           >
             <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none"/>
           </svg>
-        </button>
+        </Button>
 
         {showDropdown && (
           <div className="export-dropdown-menu">
-            <button
+            <Button
               className="dropdown-item"
               onClick={() => handleExport('completed-works')}
               disabled={isExporting}
+              variant="ghost"
             >
               <FiFileText />
               <span>Completed Works (CSV)</span>
-            </button>
-            <button
+            </Button>
+            <Button
               className="dropdown-item"
               onClick={() => handleExport('recommended-works')}
               disabled={isExporting}
+              variant="ghost"
             >
               <FiFileText />
               <span>Recommended Works (CSV)</span>
-            </button>
-            <button
+            </Button>
+            <Button
               className="dropdown-item"
               onClick={() => handleExport('expenditures')}
               disabled={isExporting}
+              variant="ghost"
             >
               <FiFileText />
               <span>Expenditures (CSV)</span>
-            </button>
-            <button
+            </Button>
+            <Button
               className="dropdown-item"
               onClick={() => handleExport('mp-summary')}
               disabled={isExporting}
+              variant="ghost"
             >
               <FiFileText />
               <span>MP Summary (CSV)</span>
-            </button>
+            </Button>
             {data && (
-              <button
+              <Button
                 className="dropdown-item"
                 onClick={() => handleExport('json')}
                 disabled={isExporting}
+                variant="ghost"
               >
                 <FiDatabase />
                 <span>Current Data (JSON)</span>
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -157,11 +164,12 @@ const ExportButton = ({
   };
 
   return (
-    <button
+    <Button
       className={`export-button ${variant} ${isExporting ? 'exporting' : ''}`}
       onClick={() => handleExport(type)}
       disabled={isExporting}
       title={isExporting ? 'Exporting...' : `Export as CSV`}
+      variant={variant === 'secondary' ? 'outline' : 'default'}
     >
       {isExporting ? (
         <>
@@ -174,7 +182,7 @@ const ExportButton = ({
           <span>{getButtonLabel()}</span>
         </>
       )}
-    </button>
+    </Button>
   );
 };
 

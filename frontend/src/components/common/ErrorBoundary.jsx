@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Sentry from '@sentry/react';
 import { FiAlertTriangle, FiRefreshCw, FiHome, FiInfo } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
 import './ErrorBoundary.css';
 
 class ErrorBoundary extends React.Component {
@@ -175,30 +176,33 @@ class ErrorBoundary extends React.Component {
             </div>
             
             <div className="error-actions">
-              <button 
-                onClick={this.handleReset} 
-                className="error-action-primary"
+              <Button
+                variant="default"
+                onClick={this.handleReset}
+                className="error-action-primary gap-2 bg-blue-600 text-white hover:bg-blue-700"
                 title="Refresh the page and try again"
               >
                 <FiRefreshCw />
                 Try Again
-              </button>
-              <button 
-                onClick={this.handleGoHome} 
-                className="error-action-secondary"
+              </Button>
+              <Button
+                variant="outline"
+                onClick={this.handleGoHome}
+                className="error-action-secondary gap-2 border-gray-300 text-gray-700 hover:bg-gray-100"
                 title="Go back to the home page"
               >
                 <FiHome />
                 Go Home
-              </button>
+              </Button>
               {!import.meta.env.DEV && (
-                <button 
-                  onClick={this.handleReportError} 
+                <Button
+                  variant="outline"
+                  onClick={this.handleReportError}
                   className="error-action-utility"
                   title="Help us fix this issue by reporting it"
                 >
                   Report Issue
-                </button>
+                </Button>
               )}
             </div>
           </div>

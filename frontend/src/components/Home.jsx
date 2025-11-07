@@ -4,6 +4,7 @@ import { IndianRupee, Landmark, Map, FileStack, BarChart3, Construction, Search,
 import './Home.css'
 import MailingListForm from './MPLADS/components/Common/MailingListForm'
 import SiteFooter from './common/SiteFooter'
+import { Button } from '@/components/ui/button'
 
 function Home() {
   useEffect(() => {
@@ -123,8 +124,10 @@ function Home() {
                   <p className="status-description">
                     Track MP fund utilization, project progress, and expenditure patterns across constituencies.
                   </p>
-                  <Link to="/mplads" className="status-cta-button">
-                    View Dashboard
+                  <Link to="/mplads">
+                    <Button variant="default" className="mt-4 bg-blue-600 text-white hover:bg-blue-700">
+                      View Dashboard
+                    </Button>
                   </Link>
                 </div>
 

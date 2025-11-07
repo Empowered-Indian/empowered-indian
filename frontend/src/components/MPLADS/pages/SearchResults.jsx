@@ -1,7 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
+import { useMPSummary } from '../../../hooks/useApi';
+import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
+import { useFilters } from '../../../contexts/FilterContext';
+import SearchBar from '../components/Search/SearchBar';
+import FilterPanel from '../components/Filters/FilterPanel';
+import { Button } from '@/components/ui/button';
+import './SearchResults.css';
+
+const SearchResults = () => {
+  const [searchParams] = useSearchParams();
+  const [showFilters, setShowFilters] = useState(false);
+  const { filters, getApiParams, getActiveFilterCount } = useFilters();
   const [pageNo, setPageNo] = useState(1);
+
+  // Get search query from URL
+  const urlQuery = searchParams.get('q') || '';
+
   const apiParams = useMemo(() => getApiParams(), [getApiParams]);
   const filterKey = useMemo(() => JSON.stringify(apiParams), [apiParams]);
 
@@ -23,22 +39,6 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
   const currentPage = pagination.currentPage || pagination.page || pageNo;
   const canGoPrev = (pagination.hasPrev ?? currentPage > 1) && currentPage > 1;
   const canGoNext = (pagination.hasNext ?? currentPage < totalPages) && currentPage < totalPages;
-  const { filters, getApiParams, getActiveFilterCount } = useFilters();
-  const [pageNo, setPageNo] = useState(1);
-  
-  // Get search query from URL
-  const urlQuery = searchParams.get('q') || '';
-  
-  // Use the MP summary API with filters
-  const { data, isLoading, error } = useMPSummary({
-    ...getApiParams(),
-    search: urlQuery || filters.searchQuery,
-    page: pageNo,
-    limit: 20
-  });
-
-  const results = Array.isArray(data?.data?.mps) ? data.data.mps : (data?.data || []);
-  const pagination = data?.data?.pagination || data?.pagination || {};
   const activeFilterCount = getActiveFilterCount();
 
   const formatCurrency = (amount) => {
@@ -50,13 +50,11 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
   };
 
   const changePage = (pageChangeDirection = 'next') => {
-
     if (pageChangeDirection === 'next') {
       setPageNo(pageNo => pageNo + 1);
     } else {
       setPageNo(pageNo => pageNo - 1);
     }
-
   }
 
   const getUtilizationColor = (percentage) => {
@@ -81,8 +79,9 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
           <h1>Search Results</h1>
           <div className="search-controls">
             <SearchBar />
-            <button 
-              className={`filter-toggle ${showFilters ? 'active' : ''}`}
+            <Button
+              variant={showFilters ? 'default' : 'outline'}
+              className={`filter-toggle gap-2 ${showFilters ? 'active' : ''}`}
               onClick={() => setShowFilters(!showFilters)}
             >
               <FiFilter />
@@ -90,7 +89,7 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
               {activeFilterCount > 0 && (
                 <span className="filter-badge">{activeFilterCount}</span>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -106,7 +105,7 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
           <main className="search-results">
             <div className="results-header">
               <h2>
-                {isLoading ? 'Searching...' : 
+                {isLoading ? 'Searching...' :
                  results.length > 0 ? `Found ${pagination.totalCount || pagination.total || results.length} results` :
                  'No results found'}
               </h2>
@@ -129,8 +128,8 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
             ) : results.length > 0 ? (
               <div className="results-list">
                 {results.map((mp) => (
-                  <Link 
-                    key={mp._id || mp.id} 
+                  <Link
+                    key={mp._id || mp.id}
                     to={`/mplads/mps/${encodeURIComponent(normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp._id || mp.id)))}`}
                     className="result-card"
                   >
@@ -143,27 +142,25 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
                         <div className="result-meta">
                           <span className="meta-item">
                             <FiMapPin />
-            {(totalPages > 1) && (
-              <div className="pagination">
-                <button
-                  disabled={!canGoPrev}
-                  className="pagination-btn"
-                  onClick={() => setPageNo(prev => Math.max(1, prev - 1))}
-                >
-                  Previous
-                </button>
-                <span className="pagination-info">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  disabled={!canGoNext}
-                  className="pagination-btn"
-                  onClick={() => setPageNo(prev => Math.min(totalPages, prev + 1))}
-                >
-                  Next
-                </button>
-              </div>
-            )}
+                            {formatConstituencyName(mp.constituency, mp.house, mp.state)}
+                          </span>
+                          <span className="meta-item">
+                            {mp.house}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="result-stats">
+                      <div className="stat">
+                        <span className="stat-label">Allocated</span>
+                        <span className="stat-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                      </div>
+                      <div className="stat">
+                        <span className="stat-label">Expenditure</span>
+                        <span className="stat-value">{formatCurrency(mp.totalExpenditure)}</span>
+                      </div>
+                      <div className="stat">
                         <span className="stat-label">Utilization</span>
                         <span className={`stat-value utilization-${getUtilizationColor(mp.utilizationPercentage)}`}>
                           <FiTrendingUp />
@@ -181,25 +178,27 @@ import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
               </div>
             )}
 
-            {(pagination.totalPages || pagination.pages) > 1 && (
+            {totalPages > 1 && (
               <div className="pagination">
-                <button 
-                  disabled={!pagination.hasPrev && (pagination.currentPage || pagination.page) <= 1}
+                <Button
+                  variant="outline"
+                  disabled={!canGoPrev}
                   className="pagination-btn"
-                  onClick={() => changePage('previous')}
+                  onClick={() => setPageNo(prev => Math.max(1, prev - 1))}
                 >
                   Previous
-                </button>
+                </Button>
                 <span className="pagination-info">
-                  Page {pagination.currentPage || pagination.page} of {pagination.totalPages || pagination.pages}
+                  Page {currentPage} of {totalPages}
                 </span>
-                <button 
-                  disabled={!pagination.hasNext && (pagination.currentPage || pagination.page) >= (pagination.totalPages || pagination.pages)}
+                <Button
+                  variant="outline"
+                  disabled={!canGoNext}
                   className="pagination-btn"
-                  onClick={() => changePage('next')}
+                  onClick={() => setPageNo(prev => Math.min(totalPages, prev + 1))}
                 >
                   Next
-                </button>
+                </Button>
               </div>
             )}
           </main>

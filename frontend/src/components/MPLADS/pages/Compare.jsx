@@ -5,6 +5,9 @@ import { useResponsive } from '../../../hooks/useMediaQuery';
 import { sanitizeInput } from '../../../utils/inputSanitization';
 import SearchBar from '../components/Search/SearchBar';
 import ComparisonBarChart from '../components/Charts/ComparisonBarChart';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import './Compare.css';
 
 const Compare = () => {
@@ -165,32 +168,35 @@ const Compare = () => {
                 {selectedMPs.map((mp) => (
                   <div key={getMPUniqueId(mp)} className="chip" role="listitem">
                     <span className="chip-text">{mp.mpName} · {mp.constituency}</span>
-                    <button
-                      className="chip-remove"
+                    <Button
+                      variant="ghost"
+                      className="chip-remove gap-2"
                       onClick={() => removeMPFromComparison(mp)}
                       aria-label={`Remove ${mp.mpName}`}
                     >
                       <FiX />
-                    </button>
+                    </Button>
                   </div>
                 ))}
               </div>
               <div className="selection-actions">
-                <button
-                  className="compare-cta"
+                <Button
+                  variant="default"
+                  className="compare-cta bg-blue-600 text-white hover:bg-blue-700"
                   onClick={handleCompare}
                   disabled={selectedMPs.length < 2}
                   aria-disabled={selectedMPs.length < 2}
                 >
                   Compare
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   className="clear-selection"
                   onClick={clearAllSelections}
                   disabled={selectedMPs.length === 0}
                 >
                   Clear
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -199,29 +205,31 @@ const Compare = () => {
             /* Mobile MP Carousel */
             <div className="mobile-mp-carousel">
               <div className="carousel-header">
-                <button 
-                  className="carousel-nav-btn"
+                <Button
+                  variant="ghost"
+                  className="carousel-nav-btn gap-2"
                   onClick={() => navigateComparison('prev')}
                   disabled={currentComparisonIndex === 0}
                   aria-label="Previous MP"
                 >
                   <FiChevronLeft />
-                </button>
-                
+                </Button>
+
                 <div className="carousel-indicator">
                   <span className="current-mp">{currentComparisonIndex + 1}</span>
                   <span className="separator">of</span>
                   <span className="total-mps">{selectedMPs.length}</span>
                 </div>
-                
-                <button 
-                  className="carousel-nav-btn"
+
+                <Button
+                  variant="ghost"
+                  className="carousel-nav-btn gap-2"
                   onClick={() => navigateComparison('next')}
                   disabled={currentComparisonIndex === selectedMPs.length - 1}
                   aria-label="Next MP"
                 >
                   <FiChevronRight />
-                </button>
+                </Button>
               </div>
               
               <div 
@@ -242,21 +250,23 @@ const Compare = () => {
                         {selectedMPs[currentComparisonIndex]?.party} • {selectedMPs[currentComparisonIndex]?.house}
                       </div>
                     </div>
-                    <button 
-                      className="remove-mp"
+                    <Button
+                      variant="ghost"
+                      className="remove-mp gap-2"
                       onClick={() => removeMPFromComparison(selectedMPs[currentComparisonIndex])}
                       aria-label={`Remove ${selectedMPs[currentComparisonIndex]?.mpName}`}
                     >
                       <FiX />
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
               
               <div className="carousel-dots">
                 {selectedMPs.map((_, index) => (
-                  <button
+                  <Button
                     key={index}
+                    variant="ghost"
                     className={`dot ${index === currentComparisonIndex ? 'active' : ''}`}
                     onClick={() => setCurrentComparisonIndex(index)}
                     aria-label={`View MP ${index + 1}`}
@@ -280,37 +290,40 @@ const Compare = () => {
                     <div className="mp-constituency">{mp.constituency}, {mp.state}</div>
                     <div className="mp-party">{mp.house}</div>
                   </div>
-                  <button 
-                    className="remove-mp"
+                  <Button
+                    variant="ghost"
+                    className="remove-mp gap-2"
                     onClick={() => removeMPFromComparison(mp)}
                     aria-label={`Remove ${mp.mpName}`}
                   >
                     <FiX />
-                  </button>
+                  </Button>
                 </div>
               ))}
-              
+
               {selectedMPs.length < 4 && (
-                <button 
-                  className="add-mp-button"
+                <Button
+                  variant="outline"
+                  className="add-mp-button gap-2"
                   onClick={openMPSelector}
                 >
                   <FiPlus />
                   <span>Add MP</span>
-                </button>
+                </Button>
               )}
             </div>
           )}
           
           {/* Mobile Add MP Button */}
           {isMobile && selectedMPs.length < 4 && (
-            <button 
-              className="mobile-add-mp-button"
+            <Button
+              variant="outline"
+              className="mobile-add-mp-button gap-2"
               onClick={openMPSelector}
             >
               <FiPlus />
               <span>Add {selectedMPs.length === 0 ? 'First' : 'Another'} MP</span>
-            </button>
+            </Button>
           )}
         </div>
 
@@ -319,13 +332,14 @@ const Compare = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h3>Search and Select MP</h3>
-                <button 
-                  className="close-modal"
+                <Button
+                  variant="ghost"
+                  className="close-modal gap-2"
                   onClick={closeMPSelector}
                   aria-label="Close modal"
                 >
                   <FiX />
-                </button>
+                </Button>
               </div>
               
               <div className="search-container">
@@ -338,7 +352,7 @@ const Compare = () => {
                     {selectedMPs.length >= 2 && 'You can add more or start comparing'}
                   </span>
                 </div>
-                <input
+                <Input
                   type="text"
                   placeholder="Search by MP name, constituency, or state..."
                   value={searchQuery}
@@ -350,25 +364,27 @@ const Compare = () => {
                     {selectedMPs.map((mp) => (
                       <div key={getMPUniqueId(mp)} className="chip">
                         <span className="chip-text">{mp.mpName} · {mp.constituency}</span>
-                        <button
-                          className="chip-remove"
+                        <Button
+                          variant="ghost"
+                          className="chip-remove gap-2"
                           onClick={() => removeMPFromComparison(mp)}
                           aria-label={`Remove ${mp.mpName}`}
                         >
                           <FiX />
-                        </button>
+                        </Button>
                       </div>
                     ))}
                     <div className="modal-actions">
-                      <button
-                        className="compare-cta"
+                      <Button
+                        variant="default"
+                        className="compare-cta bg-blue-600 text-white hover:bg-blue-700"
                         onClick={handleCompare}
                         disabled={selectedMPs.length < 2}
                         aria-disabled={selectedMPs.length < 2}
                       >
                         Compare
-                      </button>
-                      <button className="clear-selection" onClick={clearAllSelections}>Clear</button>
+                      </Button>
+                      <Button variant="outline" className="clear-selection" onClick={clearAllSelections}>Clear</Button>
                     </div>
                   </div>
                 )}
@@ -413,39 +429,39 @@ const Compare = () => {
         <div className="comparison-results">
           <div className="comparison-summary">
             <div className="summary-cards">
-              <div className="summary-card">
+              <Card className="summary-card">
                 <div className="card-icon">
                   <FiUsers />
                 </div>
-                <div className="card-content">
+                <CardContent className="card-content">
                   <div className="card-title">MPs Selected</div>
                   <div className="card-value">{selectedMPs.length}</div>
-                </div>
-              </div>
-              
-              <div className="summary-card">
+                </CardContent>
+              </Card>
+
+              <Card className="summary-card">
                 <div className="card-icon">
                   <FiTrendingUp />
                 </div>
-                <div className="card-content">
+                <CardContent className="card-content">
                   <div className="card-title">Average Utilization</div>
                   <div className="card-value">{getAverageUtilization().toFixed(1)}%</div>
-                </div>
-              </div>
-              
-              <div className="summary-card">
+                </CardContent>
+              </Card>
+
+              <Card className="summary-card">
                 <div className="card-icon">
                   <FiBarChart2 />
                 </div>
-                <div className="card-content">
+                <CardContent className="card-content">
                   <div className="card-title">vs National Average</div>
                   <div className={`card-value ${
                     getAverageUtilization() > getNationalAverage() ? 'positive' : 'negative'
                   }`}>
                     {(getAverageUtilization() - getNationalAverage()).toFixed(1)}%
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
@@ -599,47 +615,59 @@ const Compare = () => {
           <div className="comparison-insights">
             <h3>Key Insights</h3>
             <div className="insights-grid">
-              <div className="insight-card">
-                <h4>Highest Utilization</h4>
-                {(() => {
-                  const highest = selectedMPs.reduce((max, mp) => 
-                    (mp.utilizationPercentage || 0) > (max.utilizationPercentage || 0) ? mp : max
-                  );
-                  return (
-                    <div>
-                      <div className="insight-mp">{highest.mpName}</div>
-                      <div className="insight-value">{highest.utilizationPercentage?.toFixed(1) || 0}%</div>
-                      <div className="insight-context">Highest fund utilization rate</div>
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              <div className="insight-card">
-                <h4>Most Works Completed</h4>
-                {(() => {
-                  const mostWorks = selectedMPs.reduce((max, mp) => 
-                    (mp.completedWorksCount || 0) > (max.completedWorksCount || 0) ? mp : max
-                  );
-                  return (
-                    <div>
-                      <div className="insight-mp">{mostWorks.mpName}</div>
-                      <div className="insight-value">{mostWorks.completedWorksCount || 0} works</div>
-                      <div className="insight-context">Highest number of development projects delivered</div>
-                    </div>
-                  );
-                })()}
-              </div>
-              
-              <div className="insight-card">
-                <h4>Above National Average</h4>
-                <div className="insight-value">
-                  {selectedMPs.filter(mp => 
-                    (mp.utilizationPercentage || 0) > getNationalAverage()
-                  ).length} of {selectedMPs.length}
-                </div>
-                <div className="insight-context">MPs performing better than national average ({getNationalAverage()}%)</div>
-              </div>
+              <Card className="insight-card">
+                <CardHeader>
+                  <CardTitle>Highest Utilization</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const highest = selectedMPs.reduce((max, mp) =>
+                      (mp.utilizationPercentage || 0) > (max.utilizationPercentage || 0) ? mp : max
+                    );
+                    return (
+                      <div>
+                        <div className="insight-mp">{highest.mpName}</div>
+                        <div className="insight-value">{highest.utilizationPercentage?.toFixed(1) || 0}%</div>
+                        <div className="insight-context">Highest fund utilization rate</div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              <Card className="insight-card">
+                <CardHeader>
+                  <CardTitle>Most Works Completed</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const mostWorks = selectedMPs.reduce((max, mp) =>
+                      (mp.completedWorksCount || 0) > (max.completedWorksCount || 0) ? mp : max
+                    );
+                    return (
+                      <div>
+                        <div className="insight-mp">{mostWorks.mpName}</div>
+                        <div className="insight-value">{mostWorks.completedWorksCount || 0} works</div>
+                        <div className="insight-context">Highest number of development projects delivered</div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+
+              <Card className="insight-card">
+                <CardHeader>
+                  <CardTitle>Above National Average</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="insight-value">
+                    {selectedMPs.filter(mp =>
+                      (mp.utilizationPercentage || 0) > getNationalAverage()
+                    ).length} of {selectedMPs.length}
+                  </div>
+                  <div className="insight-context">MPs performing better than national average ({getNationalAverage()}%)</div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
@@ -651,13 +679,14 @@ const Compare = () => {
             <FiBarChart2 size={48} />
             <h3>Start Comparing</h3>
             <p>Select MPs from the search above to compare their performance and fund utilization</p>
-            <button 
-              className="start-comparing-btn"
+            <Button
+              variant="default"
+              className="gap-2 bg-blue-600 text-white hover:bg-blue-700"
               onClick={openMPSelector}
             >
               <FiPlus />
               Add First MP
-            </button>
+            </Button>
           </div>
         </div>
       )}

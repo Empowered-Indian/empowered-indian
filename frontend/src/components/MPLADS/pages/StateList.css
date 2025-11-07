@@ -180,81 +180,11 @@
   flex: 1;
 }
 
-.view-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: #4a5568;
-  transition: all 0.2s ease;
-}
-
-.view-btn:not(:last-child) {
-  border-right: 1px solid #e2e8f0;
-}
-
-.view-btn.active {
-  background: #2c5282;
-  color: white;
-}
-
 /* Export controls within view-controls */
 .view-controls .export-controls {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-}
-
-.view-controls .export-controls .export-btn {
-  background: #3b82f6;
-  color: white;
-  border: 1px solid #3b82f6;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-}
-
-.view-controls .export-controls .export-btn:hover {
-  background: #2563eb;
-  border-color: #2563eb;
-  transform: translateY(-1px);
-}
-
-.view-controls .export-controls .export-btn:disabled {
-  background: #9ca3af;
-  border-color: #9ca3af;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.download-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  color: #4a5568;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.download-btn:hover:not(:disabled) {
-  background: #f7fafc;
-  border-color: #cbd5e0;
-}
-
-.download-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .performance-insights {
@@ -546,11 +476,6 @@
   
   .view-controls {
     width: 100%;
-  }
-  
-  .download-btn {
-    width: 100%;
-    justify-content: center;
   }
 
   .insights-grid {
