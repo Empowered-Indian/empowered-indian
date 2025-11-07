@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ['react', 'react-dom'],
   },
   build: {
     outDir: 'dist',
@@ -20,25 +21,36 @@ export default defineConfig(({ mode }) => ({
         manualChunks: (id) => {
           // Optimize chunking strategy
           if (id.includes('node_modules')) {
+            // Router - check BEFORE react to avoid mismatching
+            if (id.includes('react-router')) {
+              return 'router';
+            }
+            // Data fetching - check BEFORE react to avoid mismatching
+            if (id.includes('@tanstack/react-query')) {
+              return 'query';
+            }
+            // Icons - check BEFORE react to avoid mismatching
+            if (id.includes('react-icons')) {
+              return 'icons';
+            }
+            // Hot toast - check BEFORE react to avoid mismatching
+            if (id.includes('react-hot-toast')) {
+              return 'vendor';
+            }
+            // Radix UI components - check BEFORE react to avoid mismatching
+            if (id.includes('@radix-ui')) {
+              return 'vendor';
+            }
             // Core React libs - keep all React modules unified
-            if (id.includes('react-dom') || id.includes('react/') || id.includes('react')) {
+            // Use more specific matching to avoid catching react-* packages
+            if (id.includes('node_modules/react/') ||
+                id.includes('node_modules/react-dom/') ||
+                id.includes('scheduler')) {
               return 'react-vendor';
             }
             // ECharts - optimized with tree-shaking
             if (id.includes('echarts')) {
               return 'charts';
-            }
-            // Router
-            if (id.includes('react-router')) {
-              return 'router';
-            }
-            // Data fetching
-            if (id.includes('@tanstack/react-query')) {
-              return 'query';
-            }
-            // Icons
-            if (id.includes('react-icons')) {
-              return 'icons';
             }
             // Date utilities
             if (id.includes('date-fns')) {
