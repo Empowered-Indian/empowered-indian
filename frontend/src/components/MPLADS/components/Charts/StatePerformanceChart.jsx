@@ -228,7 +228,9 @@ const StatePerformanceChart = ({
     if (shouldHide && chartRef.current) {
       try {
         chartRef.current.dispose()
-      } catch {}
+      } catch {
+        // Ignore disposal errors
+      }
       chartRef.current = null
     }
   }, [isLoading, error, seriesData])
@@ -246,7 +248,9 @@ const StatePerformanceChart = ({
       ) {
         try {
           chartRef.current.dispose()
-        } catch {}
+        } catch {
+          // Ignore disposal errors
+        }
         chartRef.current = echarts.init(canvasRef.current, undefined, { renderer: 'canvas' })
       }
     }

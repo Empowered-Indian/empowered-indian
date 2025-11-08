@@ -22,7 +22,7 @@ const InfoTooltip = ({
   position = 'top',
   className = '',
   size = 'small',
-  usePortal = false, // Legacy prop - shadcn uses portal by default via Radix UI
+  usePortal = false, // eslint-disable-line no-unused-vars -- Legacy prop - shadcn uses portal by default via Radix UI
 }) => {
   // Map position prop to shadcn's side prop
   const sideMap = {

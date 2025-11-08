@@ -418,11 +418,11 @@
   .card-content {
     animation: none;
   }
-  
+
   .mobile-mp-card:hover {
     transform: none;
   }
-  
+
   .summary-card-header:active,
   .card-header:active {
     transform: none;
@@ -436,7 +436,7 @@
   .mobile-mp-card {
     border: 2px solid;
   }
-  
+
   .summary-card-header,
   .card-header {
     border-bottom: 2px solid;
@@ -726,7 +726,7 @@
     padding: 1rem;
     gap: 1rem;
   }
-  
+
   .stat-icon {
     width: 48px;
     height: 48px;
@@ -735,7 +735,7 @@
     width: 1.25rem;
     height: 1.25rem;
   }
-  
+
   .stat-value {
     font-size: 1.5rem;
   }

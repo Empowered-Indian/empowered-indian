@@ -3,14 +3,7 @@ import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/render
 import { FiDownload } from 'react-icons/fi'
 import { Button } from '@/components/ui/button'
 import { formatINRCompact } from './formatters'
-import {
-  colors,
-  createBaseStyles,
-  createExtendedStyles,
-  getExportButtonStyles,
-  getDisabledButtonStyles,
-  utilBarStyleFor,
-} from './pdfUIStyles'
+import { colors, createBaseStyles, createExtendedStyles, utilBarStyleFor } from './pdfUIStyles'
 import { generateAndDownloadPdf } from './pdfGenerator'
 
 const baseStyles = createBaseStyles(StyleSheet)

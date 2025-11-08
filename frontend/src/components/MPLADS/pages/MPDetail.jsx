@@ -81,8 +81,8 @@ const MPDetail = () => {
           const cache = JSON.parse(localStorage.getItem(LS_KEY) || '{}')
           delete cache[slug]
           localStorage.setItem(LS_KEY, JSON.stringify(cache))
-        } catch (e) {
-          // ignore
+        } catch {
+          // Ignore localStorage errors
         }
         // Reset state to trigger re-resolution
         setResolvedIdFromSlug(null)
@@ -165,7 +165,7 @@ const MPDetail = () => {
         } catch {
           /* ignore */
         }
-        navigate(`/mplads/mps/${human}`.replace(/\-+/g, '-'), { replace: true })
+        navigate(`/mplads/mps/${human}`.replace(/-+/g, '-'), { replace: true })
       }
     }
   }, [mpId, mp, mpLoading, navigate, idInParam, bareId, resolvedIdFromSlug, filters?.lsTerm])
@@ -238,8 +238,8 @@ const MPDetail = () => {
             found = matches
             break
           }
-        } catch (e) {
-          // continue to next attempt
+        } catch {
+          // Continue to next attempt
         }
       }
       if (cancelled) return
@@ -426,7 +426,7 @@ const MPDetail = () => {
                 try {
                   await navigator.clipboard.writeText(window.location.origin + location.pathname)
                   showSuccessToast('Link copied')
-                } catch (e) {
+                } catch {
                   showErrorToast('Unable to copy link')
                 }
               }}

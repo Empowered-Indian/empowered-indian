@@ -26,7 +26,7 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
   const [workData, setWorkData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [isClosing, setIsClosing] = useState(false)
+  const [_isClosing, setIsClosing] = useState(false)
   const responsive = useResponsive()
 
   const fetchWorkDetails = useCallback(async () => {

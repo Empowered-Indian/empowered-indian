@@ -95,7 +95,7 @@ class MPLADSApiClient {
      * This gets fresh session cookies that work for API calls
      */
     async initializeSession() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             try {
                 console.log('🔑 Initializing MPLADS session...');
                 
@@ -122,10 +122,10 @@ class MPLADSApiClient {
                         console.log('Following redirect to:', res.headers.location);
                         // For simplicity, we'll just continue with the original response
                     }
-                    
-                    let data = '';
+
+                    let _data = '';
                     res.on('data', (chunk) => {
-                        data += chunk;
+                        _data += chunk;
                     });
                     
                     res.on('end', async () => {
@@ -237,7 +237,7 @@ class MPLADSApiClient {
      * Make a quick test call to validate session
      */
     async makeQuickTestCall() {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             try {
                 const postData = 'combo=0%2C0%2C0%2C2&key=Total%20Works%20Completed';
                 
@@ -283,25 +283,25 @@ class MPLADSApiClient {
                                 }
                             }
                             resolve(false);
-                        } catch (error) {
+                        } catch {
                             resolve(false);
                         }
                     });
                 });
-                
-                req.on('error', (error) => {
+
+                req.on('error', () => {
                     resolve(false);
                 });
-                
+
                 req.setTimeout(10000, () => {
                     req.destroy();
                     resolve(false);
                 });
-                
+
                 req.write(postData);
                 req.end();
-                
-            } catch (error) {
+
+            } catch {
                 resolve(false);
             }
         });
@@ -420,26 +420,28 @@ class MPLADSApiClient {
                                         resolve(parsedTop);
                                         return;
                                     }
-                                } catch (_) {}
+                                } catch {
+                                    // Ignore parsing errors, continue to fallback logic
+                                }
                             }
 
                             // Otherwise, find the correct data key that matches our request
                             const expectedKey = keyParam.replace(/%20/g, ' '); // Convert URL encoded spaces back
                             const availableKeys = Object.keys(response || {});
 
-                            let dataKey = null;
+                            let _dataKey = null;
                             let rawData = null;
 
                             // Try exact match first
                             if (response && response[expectedKey]) {
-                                dataKey = expectedKey;
+                                _dataKey = expectedKey;
                                 rawData = response[expectedKey];
                             } else if (response) {
                                 // Try partial match
                                 for (const key of availableKeys) {
-                                    if (key.toLowerCase().includes(expectedKey.toLowerCase()) || 
+                                    if (key.toLowerCase().includes(expectedKey.toLowerCase()) ||
                                         expectedKey.toLowerCase().includes(key.toLowerCase())) {
-                                        dataKey = key;
+                                        _dataKey = key;
                                         rawData = response[key];
                                         break;
                                     }

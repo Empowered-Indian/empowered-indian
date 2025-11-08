@@ -35,17 +35,23 @@ export const AnalyticsProvider = ({ children }) => {
           // Record a lightweight event for observability
           try {
             analytics.trackError('duplicate_provider', 'AnalyticsProvider', false)
-          } catch {}
+          } catch {
+            // Ignore analytics errors in development
+          }
         }
       }
-    } catch {}
+    } catch {
+      // Ignore window access errors in SSR
+    }
     return () => {
       try {
         if (typeof window !== 'undefined') {
           const n = (window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ || 1) - 1
           window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ = n > 0 ? n : 0
         }
-      } catch {}
+      } catch {
+        // Ignore window access errors in SSR
+      }
     }
   }, [])
 

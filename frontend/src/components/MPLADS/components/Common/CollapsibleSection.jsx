@@ -25,7 +25,9 @@ const CollapsibleSection = ({
       requestAnimationFrame(() => {
         try {
           window.dispatchEvent(new Event('resize'))
-        } catch {}
+        } catch {
+          // Ignore resize event errors
+        }
       })
     }
 

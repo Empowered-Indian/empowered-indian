@@ -4,13 +4,7 @@ import { FiDownload } from 'react-icons/fi'
 import { Button } from '@/components/ui/button'
 import { formatINRCompact } from './formatters'
 import { useMPWorks } from '../hooks/useApi'
-import {
-  createBaseStyles,
-  createExtendedStyles,
-  getExportButtonStyles,
-  getDisabledButtonStyles,
-  colors,
-} from './pdfUIStyles'
+import { createBaseStyles, createExtendedStyles, colors } from './pdfUIStyles'
 import { generateAndDownloadPdf } from './pdfGenerator'
 import {
   PaymentIcon,
