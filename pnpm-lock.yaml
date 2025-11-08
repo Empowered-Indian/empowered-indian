@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       pnpm:
-        specifier: ^10.15.0
+        specifier: ^10.20.0
         version: 10.20.0
     devDependencies:
       '@eslint/js':
