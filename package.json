@@ -7,7 +7,7 @@
   "dependencies": {
     "pnpm": "^10.15.0"
   },
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.20.0",
   "scripts": {
     "dev": "turbo run dev --parallel --filter=frontend --filter=backend",
     "build": "turbo run build",
