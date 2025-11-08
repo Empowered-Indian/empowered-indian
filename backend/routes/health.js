@@ -8,7 +8,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 let cache;
 try {
   cache = require('../middleware/cache').cache;
-} catch (e) {
+} catch {
   // Cache module might not be initialized yet
 }
 
@@ -16,7 +16,7 @@ try {
 let getConnectionStats;
 try {
   getConnectionStats = require('../config/database').getConnectionStats;
-} catch (e) {
+} catch {
   // Database connection stats might not be available
 }
 
@@ -51,7 +51,7 @@ router.get('/ready', async (req, res) => {
       if (getConnectionStats) {
         try {
           connectionPoolStats = getConnectionStats();
-        } catch (statsError) {
+        } catch {
           // Connection stats not available
         }
       }
@@ -203,7 +203,7 @@ router.get('/', async (req, res) => {
       if (getConnectionStats) {
         try {
           connectionPoolStats = getConnectionStats();
-        } catch (statsError) {
+        } catch {
           // Connection stats not available
         }
       }

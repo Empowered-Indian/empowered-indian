@@ -2,17 +2,17 @@
 // This reduces bundle size from 1.05MB to ~300KB
 
 // Core module
-import * as echarts from 'echarts/core';
+import * as echarts from 'echarts/core'
 
 // Charts - import only what we use
-import { 
-  BarChart, 
-  LineChart, 
+import {
+  BarChart,
+  LineChart,
   PieChart,
   GaugeChart,
   ScatterChart,
-  HeatmapChart 
-} from 'echarts/charts';
+  HeatmapChart,
+} from 'echarts/charts'
 
 // Components - import only what we use
 import {
@@ -29,14 +29,14 @@ import {
   RadarComponent,
   GeoComponent,
   DatasetComponent,
-  TransformComponent
-} from 'echarts/components';
+  TransformComponent,
+} from 'echarts/components'
 
 // Renderers - Canvas is lighter than SVG
-import { CanvasRenderer } from 'echarts/renderers';
+import { CanvasRenderer } from 'echarts/renderers'
 
 // Features - optional features we use
-import { LabelLayout, UniversalTransition } from 'echarts/features';
+import { LabelLayout, UniversalTransition } from 'echarts/features'
 
 // Register only the components we need
 echarts.use([
@@ -47,7 +47,7 @@ echarts.use([
   GaugeChart,
   ScatterChart,
   HeatmapChart,
-  
+
   // Components
   GridComponent,
   TooltipComponent,
@@ -63,35 +63,36 @@ echarts.use([
   GeoComponent,
   DatasetComponent,
   TransformComponent,
-  
+
   // Renderer
   CanvasRenderer,
-  
+
   // Features
   LabelLayout,
-  UniversalTransition
-]);
+  UniversalTransition,
+])
 
 // Export the configured echarts
-export default echarts;
+export default echarts
 
 // Export utility functions for chart management
-export const disposeChart = (chartInstance) => {
+export const disposeChart = chartInstance => {
   if (chartInstance && typeof chartInstance.dispose === 'function') {
-    chartInstance.dispose();
+    chartInstance.dispose()
   }
-};
+}
 
-export const resizeChart = (chartInstance) => {
+export const resizeChart = chartInstance => {
   if (chartInstance && typeof chartInstance.resize === 'function') {
-    chartInstance.resize();
+    chartInstance.resize()
   }
-};
+}
 
 // Default chart options for consistent styling
 export const defaultChartOptions = {
   textStyle: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },
   color: [
     '#5B8FF9',
@@ -103,7 +104,7 @@ export const defaultChartOptions = {
     '#9661BC',
     '#F6903D',
     '#008685',
-    '#F08BB4'
+    '#F08BB4',
   ],
   tooltip: {
     trigger: 'axis',
@@ -111,23 +112,23 @@ export const defaultChartOptions = {
     borderColor: '#e0e0e0',
     borderWidth: 1,
     textStyle: {
-      color: '#333'
+      color: '#333',
     },
-    extraCssText: 'box-shadow: 0 2px 8px rgba(0,0,0,0.15);'
+    extraCssText: 'box-shadow: 0 2px 8px rgba(0,0,0,0.15);',
   },
   grid: {
     top: 60,
     right: 30,
     bottom: 60,
     left: 60,
-    containLabel: true
+    containLabel: true,
   },
   animation: true,
   animationDuration: 1000,
-  animationEasing: 'cubicOut'
-};
+  animationEasing: 'cubicOut',
+}
 
 // Helper function to merge default options with custom options
 export const mergeChartOptions = (customOptions = {}) => {
-  return echarts.util.merge(defaultChartOptions, customOptions, true);
-};
+  return echarts.util.merge(defaultChartOptions, customOptions, true)
+}

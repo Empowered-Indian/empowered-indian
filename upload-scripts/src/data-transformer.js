@@ -77,7 +77,7 @@ function parseDate(dateStr) {
         if (!isNaN(isoDate.getTime())) {
             return isoDate.toISOString().split('T')[0];
         }
-    } catch (error) {
+    } catch {
         console.warn(`Could not parse date as ISO: ${dateStr}`);
     }
     

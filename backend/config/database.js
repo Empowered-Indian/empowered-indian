@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const { secureLogger } = require('../utils/logger');
 
 const MAX_RETRIES = 5;
-const INITIAL_RETRY_DELAY = 1000; // 1 second
+const _INITIAL_RETRY_DELAY = 1000; // 1 second
 const BASE_RETRY_DELAY = 1000;
 
 // Environment-based configuration
-const isDevelopment = process.env.NODE_ENV === 'development';
+const _isDevelopment = process.env.NODE_ENV === 'development';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Connection pool configuration
@@ -149,12 +149,12 @@ const setupConnectionMonitoring = () => {
     });
   });
   
-  target.on('connectionCheckedOut', (event) => {
+  target.on('connectionCheckedOut', (_event) => {
     poolStats.activeConnections++;
     poolStats.availableConnections = Math.max(0, poolStats.availableConnections - 1);
   });
-  
-  target.on('connectionCheckedIn', (event) => {
+
+  target.on('connectionCheckedIn', (_event) => {
     poolStats.activeConnections = Math.max(0, poolStats.activeConnections - 1);
     poolStats.availableConnections++;
   });

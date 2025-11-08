@@ -34,7 +34,7 @@ const exportCompletedWorksCSV = async (req, res) => {
         }
 
         const worksCollection = await getCollection('works_completed');
-        const mpsCollection = await getCollection('mps');
+        const _mpsCollection = await getCollection('mps');
 
         // Apply house/term gating consistent with API controllers
         const reqHouse = req.query.house;

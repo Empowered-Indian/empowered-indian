@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { validate, schemas } = require('../middleware/validation');
+const { validate } = require('../middleware/validation');
 const { cacheMiddleware } = require('../middleware/cache');
 const { 
   getCompletedWorks, 
@@ -55,6 +55,6 @@ router.get('/recommendations/:recommendationId/payments', cache12h, getWorkPayme
 router.get('/:workId/payments', cache12h, getWorkPayments);
 
 // GET /api/works/:workId/payments - Get payment details for a specific work (restrict to numeric IDs to avoid shadowing)
-router.get('/:workId(\d+)/payments', cache12h, getWorkPayments);
+router.get('/:workId(\\d+)/payments', cache12h, getWorkPayments);
 
 module.exports = router;

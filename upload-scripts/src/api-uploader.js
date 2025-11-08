@@ -924,7 +924,7 @@ async function syncMPLADSDataFromAPI(options = {}) {
     const safeUri = (() => {
         try {
             if (!MONGODB_URI) return 'N/A';
-            const m = MONGODB_URI.match(/^(mongodb(?:\+srv)?:\/\/)([^@]*@)?([^\/?]+)(.*)$/);
+            const m = MONGODB_URI.match(/^(mongodb(?:\+srv)?:\/\/)([^@]*@)?([^/?]+)(.*)$/);
             if (!m) return '[hidden]';
             const [, protocol, auth, host, rest] = m;
             const redactedAuth = auth ? '[redacted]@' : '';

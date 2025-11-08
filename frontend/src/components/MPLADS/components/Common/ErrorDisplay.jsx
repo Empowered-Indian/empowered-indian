@@ -1,53 +1,55 @@
-import { FiAlertCircle, FiRefreshCw, FiHome } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import './ErrorDisplay.css';
+import { FiAlertCircle, FiRefreshCw, FiHome } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import './ErrorDisplay.css'
 
 const ErrorDisplay = ({
   error,
   onRetry,
   title = 'Something went wrong',
   showHomeButton = true,
-  customActions = null
+  customActions = null,
 }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // Extract error message
   const getErrorMessage = () => {
-    if (typeof error === 'string') return error;
-    if (error?.message) return error.message;
-    if (error?.response?.data?.message) return error.response.data.message;
-    if (error?.response?.status === 404) return 'The requested data was not found.';
-    if (error?.response?.status === 500) return 'Server error. Please try again later.';
-    if (error?.response?.status === 503) return 'Service temporarily unavailable. Please try again later.';
-    if (error?.code === 'NETWORK_ERROR') return 'Network connection error. Please check your internet connection.';
-    return 'An unexpected error occurred. Please try again.';
-  };
+    if (typeof error === 'string') return error
+    if (error?.message) return error.message
+    if (error?.response?.data?.message) return error.response.data.message
+    if (error?.response?.status === 404) return 'The requested data was not found.'
+    if (error?.response?.status === 500) return 'Server error. Please try again later.'
+    if (error?.response?.status === 503)
+      return 'Service temporarily unavailable. Please try again later.'
+    if (error?.code === 'NETWORK_ERROR')
+      return 'Network connection error. Please check your internet connection.'
+    return 'An unexpected error occurred. Please try again.'
+  }
 
   // Get error suggestions based on error type
   const getErrorSuggestions = () => {
-    const message = getErrorMessage().toLowerCase();
-    const suggestions = [];
+    const message = getErrorMessage().toLowerCase()
+    const suggestions = []
     if (message.includes('network') || message.includes('connection')) {
-      suggestions.push('Check your internet connection');
-      suggestions.push('Try disabling VPN if you\'re using one');
+      suggestions.push('Check your internet connection')
+      suggestions.push("Try disabling VPN if you're using one")
     } else if (message.includes('not found') || error?.response?.status === 404) {
-      suggestions.push('The data may have been moved or deleted');
-      suggestions.push('Try searching for similar data');
+      suggestions.push('The data may have been moved or deleted')
+      suggestions.push('Try searching for similar data')
     } else if (message.includes('server') || error?.response?.status >= 500) {
-      suggestions.push('Wait a few minutes and try again');
-      suggestions.push('If the problem persists, contact support');
+      suggestions.push('Wait a few minutes and try again')
+      suggestions.push('If the problem persists, contact support')
     } else if (message.includes('timeout')) {
-      suggestions.push('The server is taking too long to respond');
-      suggestions.push('Try again with fewer filters or a smaller date range');
+      suggestions.push('The server is taking too long to respond')
+      suggestions.push('Try again with fewer filters or a smaller date range')
     }
 
     if (suggestions.length === 0) {
-      suggestions.push('Refresh the page and try again');
-      suggestions.push('Clear your browser cache');
+      suggestions.push('Refresh the page and try again')
+      suggestions.push('Clear your browser cache')
     }
-    return suggestions;
-  };
+    return suggestions
+  }
 
   return (
     <div className="error-display">
@@ -99,7 +101,7 @@ const ErrorDisplay = ({
         </details>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ErrorDisplay;
+export default ErrorDisplay

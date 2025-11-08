@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { cacheMiddleware } = require('../middleware/cache');
-const { getMPDetails, getMPWorks, searchMPs } = require('../controllers/mpController');
+const { getMPDetails, getMPWorks } = require('../controllers/mpController');
 
 // Cache MP details for 24 hours
 const cache24h = cacheMiddleware(24 * 60 * 60);

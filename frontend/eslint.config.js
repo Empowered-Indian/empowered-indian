@@ -27,6 +27,13 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  // Config files use Node.js globals
+  {
+    files: ['*.config.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
   // Keep this last to disable formatting-related ESLint rules in favor of Prettier
   prettier,
 ])

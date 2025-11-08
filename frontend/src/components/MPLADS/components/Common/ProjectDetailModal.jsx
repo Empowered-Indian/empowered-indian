@@ -1,113 +1,124 @@
-import { useState, useEffect, useCallback } from 'react';
-import { FiMapPin, FiCalendar, FiDollarSign, FiUser, FiFileText, FiStar, FiClock, FiCheck, FiAlertCircle } from 'react-icons/fi';
-import { API_BASE_URL } from '../../../../utils/constants/api';
-import { useResponsive } from '../../../../hooks/useMediaQuery';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, useCallback } from 'react'
+import {
+  FiMapPin,
+  FiCalendar,
+  FiDollarSign,
+  FiUser,
+  FiFileText,
+  FiStar,
+  FiClock,
+  FiCheck,
+  FiAlertCircle,
+} from 'react-icons/fi'
+import { API_BASE_URL } from '../../../../utils/constants/api'
+import { useResponsive } from '../../../../hooks/useMediaQuery'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import './ProjectDetailModal.css';
+} from '@/components/ui/dialog'
+import './ProjectDetailModal.css'
 
 const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' }) => {
-  const [workData, setWorkData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [isClosing, setIsClosing] = useState(false);
-  const responsive = useResponsive();
+  const [workData, setWorkData] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [_isClosing, setIsClosing] = useState(false)
+  const responsive = useResponsive()
 
   const fetchWorkDetails = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    
+    setIsLoading(true)
+    setError(null)
+
     try {
-      const endpoint = workType === 'completed' 
-        ? `${API_BASE_URL}/works/completed/${workId}`
-        : `${API_BASE_URL}/works/recommended/${workId}`;
-      
-      const response = await fetch(endpoint);
-      const result = await response.json();
-      
+      const endpoint =
+        workType === 'completed'
+          ? `${API_BASE_URL}/works/completed/${workId}`
+          : `${API_BASE_URL}/works/recommended/${workId}`
+
+      const response = await fetch(endpoint)
+      const result = await response.json()
+
       if (result.success) {
-        setWorkData(result.data);
+        setWorkData(result.data)
       } else {
-        throw new Error(result.message || 'Failed to fetch work details');
+        throw new Error(result.message || 'Failed to fetch work details')
       }
     } catch (error) {
-      console.error('Error fetching work details:', error);
-      setError('Failed to load project details. Please try again.');
+      console.error('Error fetching work details:', error)
+      setError('Failed to load project details. Please try again.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [workId, workType]);
+  }, [workId, workType])
 
   useEffect(() => {
     if (isOpen && workId) {
-      fetchWorkDetails();
+      fetchWorkDetails()
     }
-  }, [isOpen, workId, fetchWorkDetails]);
+  }, [isOpen, workId, fetchWorkDetails])
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(amount || 0);
-  };
+    }).format(amount || 0)
+  }
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+  const formatDate = dateString => {
+    if (!dateString) return 'N/A'
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
-    });
-  };
+      day: 'numeric',
+    })
+  }
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status?.toLowerCase()) {
       case 'completed':
-        return <FiCheck className="status-icon completed" />;
+        return <FiCheck className="status-icon completed" />
       case 'in-progress':
       case 'in progress':
-        return <FiClock className="status-icon in-progress" />;
+        return <FiClock className="status-icon in-progress" />
       case 'recommended':
-        return <FiFileText className="status-icon recommended" />;
+        return <FiFileText className="status-icon recommended" />
       default:
-        return <FiAlertCircle className="status-icon pending" />;
+        return <FiAlertCircle className="status-icon pending" />
     }
-  };
+  }
 
-  const getStatusClass = (status) => {
+  const getStatusClass = status => {
     switch (status?.toLowerCase()) {
       case 'completed':
-        return 'completed';
+        return 'completed'
       case 'in-progress':
       case 'in progress':
-        return 'in-progress';
+        return 'in-progress'
       case 'recommended':
-        return 'recommended';
+        return 'recommended'
       default:
-        return 'pending';
+        return 'pending'
     }
-  };
+  }
 
   const handleClose = useCallback(() => {
     if (responsive.isMobile) {
-      setIsClosing(true);
+      setIsClosing(true)
       setTimeout(() => {
-        onClose?.();
-        setIsClosing(false);
-      }, 250); // Match CSS animation duration
+        onClose?.()
+        setIsClosing(false)
+      }, 250) // Match CSS animation duration
     } else {
-      onClose?.();
+      onClose?.()
     }
-  }, [responsive.isMobile, onClose]);
-  
-  if (!isOpen) return null;
+  }, [responsive.isMobile, onClose])
+
+  if (!isOpen) return null
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -129,7 +140,11 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
             <div className="error-state">
               <FiAlertCircle size={48} />
               <p>{error}</p>
-              <Button variant="default" className="retry-button bg-blue-600 text-white hover:bg-blue-700" onClick={fetchWorkDetails}>
+              <Button
+                variant="default"
+                className="retry-button bg-blue-600 text-white hover:bg-blue-700"
+                onClick={fetchWorkDetails}
+              >
                 Try Again
               </Button>
             </div>
@@ -143,7 +158,7 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                     <span className="work-id">ID: {workData.work_id}</span>
                     <span className={`status-badge ${getStatusClass(workData.status)}`}>
                       {getStatusIcon(workData.status)}
-                      {workType === 'completed' ? 'Completed' : (workData.status || 'Recommended')}
+                      {workType === 'completed' ? 'Completed' : workData.status || 'Recommended'}
                     </span>
                   </div>
                 </div>
@@ -160,7 +175,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
               {/* Project Info Grid */}
               <div className="project-info-grid">
                 <div className="info-section">
-                  <h4><FiMapPin /> Location Details</h4>
+                  <h4>
+                    <FiMapPin /> Location Details
+                  </h4>
                   <div className="info-content">
                     <div className="info-item">
                       <span className="info-label">Location:</span>
@@ -178,7 +195,8 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                       <div className="info-item">
                         <span className="info-label">GPS:</span>
                         <span className="info-value">
-                          {workData.gps_coordinates.latitude.toFixed(6)}, {workData.gps_coordinates.longitude.toFixed(6)}
+                          {workData.gps_coordinates.latitude.toFixed(6)},{' '}
+                          {workData.gps_coordinates.longitude.toFixed(6)}
                         </span>
                       </div>
                     )}
@@ -186,7 +204,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                 </div>
 
                 <div className="info-section">
-                  <h4><FiUser /> MP Information</h4>
+                  <h4>
+                    <FiUser /> MP Information
+                  </h4>
                   <div className="info-content">
                     <div className="info-item">
                       <span className="info-label">MP Name:</span>
@@ -204,7 +224,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                 </div>
 
                 <div className="info-section">
-                  <h4><FiFileText /> Project Information</h4>
+                  <h4>
+                    <FiFileText /> Project Information
+                  </h4>
                   <div className="info-content">
                     <div className="info-item">
                       <span className="info-label">Category:</span>
@@ -226,7 +248,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                 </div>
 
                 <div className="info-section">
-                  <h4><FiCalendar /> Timeline</h4>
+                  <h4>
+                    <FiCalendar /> Timeline
+                  </h4>
                   <div className="info-content">
                     {workType === 'completed' ? (
                       <>
@@ -243,7 +267,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                       <>
                         <div className="info-item">
                           <span className="info-label">Recommendation Date:</span>
-                          <span className="info-value">{formatDate(workData.recommended_date)}</span>
+                          <span className="info-value">
+                            {formatDate(workData.recommended_date)}
+                          </span>
                         </div>
                         <div className="info-item">
                           <span className="info-label">Recommended Year:</span>
@@ -252,7 +278,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                         {workData.expected_completion_date && (
                           <div className="info-item">
                             <span className="info-label">Expected Completion:</span>
-                            <span className="info-value">{formatDate(workData.expected_completion_date)}</span>
+                            <span className="info-value">
+                              {formatDate(workData.expected_completion_date)}
+                            </span>
                           </div>
                         )}
                       </>
@@ -262,7 +290,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
               </div>
 
               {/* Beneficiaries and Impact */}
-              {(workData.beneficiaries || workData.expected_beneficiaries || workData.impact_metrics) && (
+              {(workData.beneficiaries ||
+                workData.expected_beneficiaries ||
+                workData.impact_metrics) && (
                 <div className="impact-section">
                   <h4>Impact & Beneficiaries</h4>
                   <div className="impact-grid">
@@ -270,29 +300,37 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                       <div className="impact-item">
                         <span className="impact-label">Beneficiaries:</span>
                         <span className="impact-value">
-                          {(workData.beneficiaries || workData.expected_beneficiaries).toLocaleString('en-IN')}
+                          {(
+                            workData.beneficiaries || workData.expected_beneficiaries
+                          ).toLocaleString('en-IN')}
                         </span>
                       </div>
                     )}
-                    
+
                     {workData.impact_metrics?.schools_connected && (
                       <div className="impact-item">
                         <span className="impact-label">Schools Connected:</span>
-                        <span className="impact-value">{workData.impact_metrics.schools_connected}</span>
+                        <span className="impact-value">
+                          {workData.impact_metrics.schools_connected}
+                        </span>
                       </div>
                     )}
-                    
+
                     {workData.impact_metrics?.roads_length_km && (
                       <div className="impact-item">
                         <span className="impact-label">Roads Length:</span>
-                        <span className="impact-value">{workData.impact_metrics.roads_length_km} km</span>
+                        <span className="impact-value">
+                          {workData.impact_metrics.roads_length_km} km
+                        </span>
                       </div>
                     )}
-                    
+
                     {workData.impact_metrics?.water_connections && (
                       <div className="impact-item">
                         <span className="impact-label">Water Connections:</span>
-                        <span className="impact-value">{workData.impact_metrics.water_connections}</span>
+                        <span className="impact-value">
+                          {workData.impact_metrics.water_connections}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -302,11 +340,13 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
               {/* Quality Rating for completed works */}
               {workType === 'completed' && workData.quality_rating && (
                 <div className="quality-section">
-                  <h4><FiStar /> Quality Rating</h4>
+                  <h4>
+                    <FiStar /> Quality Rating
+                  </h4>
                   <div className="rating-display">
                     <span className="rating-value">{workData.quality_rating.toFixed(1)}</span>
                     <div className="rating-stars">
-                      {[1, 2, 3, 4, 5].map((star) => (
+                      {[1, 2, 3, 4, 5].map(star => (
                         <FiStar
                           key={star}
                           className={star <= workData.quality_rating ? 'star-filled' : 'star-empty'}
@@ -317,11 +357,12 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                 </div>
               )}
 
-
               {/* Expenditure Summary for completed works */}
               {workType === 'completed' && workData.expenditure_summary && (
                 <div className="expenditure-section">
-                  <h4><FiDollarSign /> Expenditure Summary</h4>
+                  <h4>
+                    <FiDollarSign /> Expenditure Summary
+                  </h4>
                   <div className="expenditure-grid">
                     <div className="expenditure-item">
                       <span className="expenditure-label">Total Expenditure:</span>
@@ -331,7 +372,9 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
                     </div>
                     <div className="expenditure-item">
                       <span className="expenditure-label">Payment Count:</span>
-                      <span className="expenditure-value">{workData.expenditure_summary.payment_count}</span>
+                      <span className="expenditure-value">
+                        {workData.expenditure_summary.payment_count}
+                      </span>
                     </div>
                     {workData.expenditure_summary.last_payment_date && (
                       <div className="expenditure-item">
@@ -349,7 +392,7 @@ const ProjectDetailModal = ({ isOpen, onClose, workId, workType = 'completed' })
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default ProjectDetailModal;
+export default ProjectDetailModal

@@ -1,52 +1,52 @@
-import { useState, useEffect } from 'react';
-import { FiCalendar, FiCreditCard, FiCheckCircle, FiClock, FiInfo } from 'react-icons/fi';
-import { worksAPI } from '../../../../services/api';
-import { formatINRCompact } from '../../../../utils/formatters';
+import { useState, useEffect } from 'react'
+import { FiCalendar, FiCreditCard, FiCheckCircle, FiClock, FiInfo } from 'react-icons/fi'
+import { worksAPI } from '../../../../services/api'
+import { formatINRCompact } from '../../../../utils/formatters'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import './PaymentDetailsModal.css';
+} from '@/components/ui/dialog'
+import './PaymentDetailsModal.css'
 
 const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClose }) => {
-  const [paymentData, setPaymentData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [paymentData, setPaymentData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchPaymentDetails = async () => {
       try {
-        setLoading(true);
-        let response;
+        setLoading(true)
+        let response
         if (workId) {
-          response = await worksAPI.getWorkPayments(workId);
+          response = await worksAPI.getWorkPayments(workId)
         } else if (recommendationId) {
-          response = await worksAPI.getRecommendationPayments(recommendationId);
+          response = await worksAPI.getRecommendationPayments(recommendationId)
         }
-        setPaymentData(response.data);
+        setPaymentData(response.data)
       } catch (err) {
-        setError(err.message || 'Failed to load payment details');
+        setError(err.message || 'Failed to load payment details')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     if (workId || recommendationId) {
-      fetchPaymentDetails();
+      fetchPaymentDetails()
     }
-  }, [workId, recommendationId]);
+  }, [workId, recommendationId])
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+  const formatDate = dateString => {
+    if (!dateString) return 'N/A'
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
-    });
-  };
+      day: 'numeric',
+    })
+  }
 
   if (loading) {
     return (
@@ -63,7 +63,7 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
           </div>
         </DialogContent>
       </Dialog>
-    );
+    )
   }
 
   if (error || !paymentData) {
@@ -81,7 +81,7 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
           </div>
         </DialogContent>
       </Dialog>
-    );
+    )
   }
 
   return (
@@ -90,7 +90,8 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
         <DialogHeader>
           <DialogTitle>Payment Details</DialogTitle>
           <DialogDescription className="sr-only">
-            Detailed payment information for {workDescription || paymentData.workDetails.description}
+            Detailed payment information for{' '}
+            {workDescription || paymentData.workDetails.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -98,11 +99,19 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
           {/* Work Info */}
           <div className="work-info">
             <h4>Work Information</h4>
-            <p className="work-description">{workDescription || paymentData.workDetails.description}</p>
+            <p className="work-description">
+              {workDescription || paymentData.workDetails.description}
+            </p>
             <div className="work-meta">
-              <span><strong>MP:</strong> {paymentData.workDetails.mpName}</span>
-              <span><strong>Constituency:</strong> {paymentData.workDetails.constituency}</span>
-              <span><strong>Work ID:</strong> {paymentData.workId}</span>
+              <span>
+                <strong>MP:</strong> {paymentData.workDetails.mpName}
+              </span>
+              <span>
+                <strong>Constituency:</strong> {paymentData.workDetails.constituency}
+              </span>
+              <span>
+                <strong>Work ID:</strong> {paymentData.workId}
+              </span>
             </div>
           </div>
 
@@ -121,7 +130,9 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
                 <FiCheckCircle className="summary-icon success" />
                 <div>
                   <span className="summary-label">Total Amount Paid</span>
-                  <span className="summary-value">{formatINRCompact(paymentData.summary.totalAmountPaid)}</span>
+                  <span className="summary-value">
+                    {formatINRCompact(paymentData.summary.totalAmountPaid)}
+                  </span>
                 </div>
               </div>
               <div className="summary-item">
@@ -155,15 +166,23 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
                   </div>
                   <div className="timeline-content">
                     <div className="timeline-summary">
-                      <span className="payment-count">{timelineItem.count} payment{timelineItem.count > 1 ? 's' : ''}</span>
-                      <span className="payment-amount">{formatINRCompact(timelineItem.totalAmount)}</span>
+                      <span className="payment-count">
+                        {timelineItem.count} payment{timelineItem.count > 1 ? 's' : ''}
+                      </span>
+                      <span className="payment-amount">
+                        {formatINRCompact(timelineItem.totalAmount)}
+                      </span>
                     </div>
                     {timelineItem.count <= 5 && (
                       <div className="timeline-details">
                         {timelineItem.payments.map((payment, payIndex) => (
                           <div key={payIndex} className="payment-detail">
-                            <span className="payment-amount-small">{formatINRCompact(payment.amount)}</span>
-                            <span className={`payment-status ${payment.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                            <span className="payment-amount-small">
+                              {formatINRCompact(payment.amount)}
+                            </span>
+                            <span
+                              className={`payment-status ${payment.status.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
                               {payment.status}
                             </span>
                           </div>
@@ -193,7 +212,7 @@ const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClos
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default PaymentDetailsModal;
+export default PaymentDetailsModal

@@ -5,6 +5,7 @@ A beautiful, polished range slider component designed specifically for the MPLAD
 ## Features
 
 ### 🎨 Design & Aesthetics
+
 - **Gradient tracks** with smooth color transitions from primary blue to civic gold
 - **Elegant handles** with subtle shadows, hover effects, and micro-animations
 - **Value tooltips** that appear on hover/drag with smooth fade animations
@@ -12,6 +13,7 @@ A beautiful, polished range slider component designed specifically for the MPLAD
 - **Responsive design** optimized for all screen sizes
 
 ### ⚡ Performance & Interactions
+
 - **Hardware-accelerated animations** using CSS transforms only
 - **Smooth dragging** with grab/grabbing cursor states
 - **Track highlighting** on interaction with scale effects
@@ -19,6 +21,7 @@ A beautiful, polished range slider component designed specifically for the MPLAD
 - **Touch-optimized** for mobile devices with proper touch targets
 
 ### ♿ Accessibility
+
 - **WCAG 2.1 AA compliant** with proper ARIA labels and roles
 - **Keyboard navigation** support with focus indicators
 - **Screen reader support** with descriptive labels
@@ -27,6 +30,7 @@ A beautiful, polished range slider component designed specifically for the MPLAD
 - **Focus management** with visible focus states
 
 ### 🔧 Functionality
+
 - **Dual range mode** for min/max value selection
 - **Single value mode** for threshold/single value selection
 - **Custom step values** for precise control
@@ -38,12 +42,13 @@ A beautiful, polished range slider component designed specifically for the MPLAD
 ## Usage
 
 ### Basic Range Slider
+
 ```jsx
-import { RangeSlider } from '../Common/Slider';
+import { RangeSlider } from '../Common/Slider'
 
 function BudgetFilter() {
-  const [budgetRange, setBudgetRange] = useState([10000, 500000]);
-  
+  const [budgetRange, setBudgetRange] = useState([10000, 500000])
+
   return (
     <RangeSlider
       label="Budget Range"
@@ -52,14 +57,15 @@ function BudgetFilter() {
       step={5000}
       value={budgetRange}
       onChange={setBudgetRange}
-      formatValue={(value) => `₹${(value / 1000).toFixed(0)}K`}
+      formatValue={value => `₹${(value / 1000).toFixed(0)}K`}
       showTooltips={true}
     />
-  );
+  )
 }
 ```
 
 ### Single Value Slider
+
 ```jsx
 <RangeSlider
   label="Fund Utilization Threshold"
@@ -69,12 +75,13 @@ function BudgetFilter() {
   value={75}
   onChange={setThreshold}
   range={false}
-  formatValue={(value) => `${value}%`}
+  formatValue={value => `${value}%`}
   showTooltips={true}
 />
 ```
 
 ### With Tick Marks
+
 ```jsx
 <RangeSlider
   label="Financial Years"
@@ -90,23 +97,23 @@ function BudgetFilter() {
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `min` | `number` | `0` | Minimum value |
-| `max` | `number` | `100` | Maximum value |
-| `step` | `number` | `1` | Step increment |
-| `value` | `number \| [number, number]` | `[min, max]` | Current value(s) |
-| `onChange` | `function` | - | Called when value changes |
-| `onChangeComplete` | `function` | - | Called when dragging ends |
-| `disabled` | `boolean` | `false` | Disable the slider |
-| `formatValue` | `function` | `(val) => val` | Format display values |
-| `label` | `string` | - | Accessible label |
-| `id` | `string` | - | HTML id attribute |
-| `className` | `string` | `''` | Additional CSS classes |
-| `showTooltips` | `boolean` | `true` | Show value tooltips |
-| `showTicks` | `boolean` | `false` | Show tick marks |
-| `tickValues` | `number[]` | `[]` | Custom tick positions |
-| `range` | `boolean` | `true` | Enable dual-handle range mode |
+| Prop               | Type                         | Default        | Description                   |
+| ------------------ | ---------------------------- | -------------- | ----------------------------- |
+| `min`              | `number`                     | `0`            | Minimum value                 |
+| `max`              | `number`                     | `100`          | Maximum value                 |
+| `step`             | `number`                     | `1`            | Step increment                |
+| `value`            | `number \| [number, number]` | `[min, max]`   | Current value(s)              |
+| `onChange`         | `function`                   | -              | Called when value changes     |
+| `onChangeComplete` | `function`                   | -              | Called when dragging ends     |
+| `disabled`         | `boolean`                    | `false`        | Disable the slider            |
+| `formatValue`      | `function`                   | `(val) => val` | Format display values         |
+| `label`            | `string`                     | -              | Accessible label              |
+| `id`               | `string`                     | -              | HTML id attribute             |
+| `className`        | `string`                     | `''`           | Additional CSS classes        |
+| `showTooltips`     | `boolean`                    | `true`         | Show value tooltips           |
+| `showTicks`        | `boolean`                    | `false`        | Show tick marks               |
+| `tickValues`       | `number[]`                   | `[]`           | Custom tick positions         |
+| `range`            | `boolean`                    | `true`         | Enable dual-handle range mode |
 
 ## Styling Integration
 
@@ -162,6 +169,7 @@ The component uses CSS variables from the MPLADS design system:
 ## Development
 
 The component follows React best practices:
+
 - Functional component with hooks
 - Proper prop validation
 - Memory leak prevention

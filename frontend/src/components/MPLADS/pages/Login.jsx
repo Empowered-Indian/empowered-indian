@@ -1,128 +1,129 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { FiUser, FiLock, FiEye, FiEyeOff, FiLogIn, FiAlertCircle } from 'react-icons/fi';
-import toast from 'react-hot-toast';
-import { useAuth } from '../../../hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import './Login.css';
+import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { FiUser, FiLock, FiEye, FiEyeOff, FiLogIn, FiAlertCircle } from 'react-icons/fi'
+import toast from 'react-hot-toast'
+import { useAuth } from '../../../hooks/useAuth'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import './Login.css'
 
 const Login = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useAuth();
-  
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
+    password: '',
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [validationErrors, setValidationErrors] = useState({})
 
   // Get the page user was trying to access
-  const from = location.state?.from?.pathname || '/mplads/admin';
+  const from = location.state?.from?.pathname || '/mplads/admin'
 
   // Email validation function
-  const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    
+  const validateEmail = email => {
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+
     if (!email) {
-      return 'Email is required';
+      return 'Email is required'
     }
-    
+
     if (email.length > 254) {
-      return 'Email is too long';
+      return 'Email is too long'
     }
-    
+
     if (!emailRegex.test(email)) {
-      return 'Please enter a valid email address';
+      return 'Please enter a valid email address'
     }
-    
+
     // Check for common security issues
-    if (email.includes('<') || email.includes('>') || email.includes('"') || email.includes('\'')) {
-      return 'Email contains invalid characters';
+    if (email.includes('<') || email.includes('>') || email.includes('"') || email.includes("'")) {
+      return 'Email contains invalid characters'
     }
-    
-    return null;
-  };
+
+    return null
+  }
 
   // Password validation function
-  const validatePassword = (password) => {
+  const validatePassword = password => {
     if (!password) {
-      return 'Password is required';
+      return 'Password is required'
     }
-    
-    if (password.length < 3) {
-      return 'Password is too short';
-    }
-    
-    if (password.length > 128) {
-      return 'Password is too long';
-    }
-    
-    return null;
-  };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    
+    if (password.length < 3) {
+      return 'Password is too short'
+    }
+
+    if (password.length > 128) {
+      return 'Password is too long'
+    }
+
+    return null
+  }
+
+  const handleChange = e => {
+    const { name, value } = e.target
+
     setFormData({
       ...formData,
-      [name]: value
-    });
-    
+      [name]: value,
+    })
+
     // Clear validation error for this field when user starts typing
     if (validationErrors[name]) {
       setValidationErrors({
         ...validationErrors,
-        [name]: null
-      });
+        [name]: null,
+      })
     }
-  };
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async e => {
+    e.preventDefault()
+
     // Validate form fields
-    const emailError = validateEmail(formData.email);
-    const passwordError = validatePassword(formData.password);
-    
+    const emailError = validateEmail(formData.email)
+    const passwordError = validatePassword(formData.password)
+
     const errors = {
       email: emailError,
-      password: passwordError
-    };
-    
-    setValidationErrors(errors);
-    
+      password: passwordError,
+    }
+
+    setValidationErrors(errors)
+
     // If there are validation errors, don't submit
     if (emailError || passwordError) {
       if (emailError) {
-        toast.error(emailError);
+        toast.error(emailError)
       } else if (passwordError) {
-        toast.error(passwordError);
+        toast.error(passwordError)
       }
-      return;
+      return
     }
 
-    setIsLoading(true);
-    
+    setIsLoading(true)
+
     try {
-      const result = await login(formData.email.trim(), formData.password);
-      
+      const result = await login(formData.email.trim(), formData.password)
+
       if (result.success) {
-        toast.success('Login successful!');
-        navigate(from, { replace: true });
+        toast.success('Login successful!')
+        navigate(from, { replace: true })
       } else {
-        toast.error(result.message || 'Login failed');
+        toast.error(result.message || 'Login failed')
       }
     } catch {
-      toast.error('Login failed. Please try again.');
+      toast.error('Login failed. Please try again.')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="login-page">
@@ -224,7 +225,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

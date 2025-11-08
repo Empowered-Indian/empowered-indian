@@ -1,4 +1,4 @@
-const { MP, Expenditure, WorksCompleted, WorksRecommended, Summary } = require('../models');
+const { Expenditure, WorksCompleted, Summary } = require('../models');
 const { getLsTermSelection } = require('../utils/lsTerm');
 const { escapeRegex } = require('../utils/validators');
 

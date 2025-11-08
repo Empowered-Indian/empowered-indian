@@ -1,5 +1,5 @@
 const { Summary } = require('../models');
-const { getLsTermSelection, buildLsTermFindFilter, buildMixedHouseOrFilter } = require('../utils/lsTerm');
+const { getLsTermSelection, buildMixedHouseOrFilter } = require('../utils/lsTerm');
 const { secureLogger } = require('../utils/logger');
 const { escapeRegex } = require('../utils/validators');
 

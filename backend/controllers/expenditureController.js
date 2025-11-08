@@ -1,4 +1,4 @@
-const { Expenditure, MP } = require('../models');
+const { Expenditure } = require('../models');
 const { getLsTermSelection } = require('../utils/lsTerm');
 const { ObjectId } = require('mongodb');
 const { escapeRegex, validatePagination } = require('../utils/validators');

@@ -1,66 +1,83 @@
-import React from "react";
-import { useState, useMemo } from 'react';
-import { FiSearch, FiFilter, FiDownload, FiInfo, FiTrendingUp, FiTrendingDown, FiMinus } from 'react-icons/fi';
-import { useStateSummary } from '../../../hooks/useApi';
-import StateCard from '../components/States/StateCard';
-import InfoTooltip from '../components/Common/InfoTooltip';
-import SkeletonLoader from '../components/Common/SkeletonLoader';
-import './StateList.css';
-import { formatINRCompact } from '../../../utils/formatters';
-import { useFilters } from '../../../contexts/FilterContext';
-import { getPeriodLabel } from '../../../utils/lsTerm';
-import { sanitizeInput } from '../../../utils/inputSanitization';
-import StateCardList from '../components/States/StateCardList';
-import ExportStatesListAsPdf from '../../../utils/exportStatesListAsPdf';
-import { Button } from '@/components/ui/button';
+import React from 'react'
+import { useState, useMemo } from 'react'
+import {
+  FiSearch,
+  FiFilter,
+  FiDownload,
+  FiInfo,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiMinus,
+} from 'react-icons/fi'
+import { useStateSummary } from '../../../hooks/useApi'
+import StateCard from '../components/States/StateCard'
+import InfoTooltip from '../components/Common/InfoTooltip'
+import SkeletonLoader from '../components/Common/SkeletonLoader'
+import './StateList.css'
+import { formatINRCompact } from '../../../utils/formatters'
+import { useFilters } from '../../../contexts/FilterContext'
+import { getPeriodLabel } from '../../../utils/lsTerm'
+import { sanitizeInput } from '../../../utils/inputSanitization'
+import StateCardList from '../components/States/StateCardList'
+import ExportStatesListAsPdf from '../../../utils/exportStatesListAsPdf'
+import { Button } from '@/components/ui/button'
 
 const StateList = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('utilizationPercentage');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [viewMode, setViewMode] = useState('grid');
-  const [filterRange, setFilterRange] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState('utilizationPercentage')
+  const [sortOrder, setSortOrder] = useState('desc')
+  const [viewMode, setViewMode] = useState('grid')
+  const [filterRange, setFilterRange] = useState('all')
 
-  const exportPdfRef = React.useRef(null);
+  const exportPdfRef = React.useRef(null)
 
-  const updateExportPdfStates = (newStates) => {
+  const updateExportPdfStates = newStates => {
     if (exportPdfRef.current && exportPdfRef.current.updateFilteredStates) {
-      exportPdfRef.current.updateFilteredStates(newStates);
+      exportPdfRef.current.updateFilteredStates(newStates)
     }
-  };
+  }
 
   // Fetch once; perform filter/sort client-side to avoid extra calls
-  const { data, isLoading, error } = useStateSummary();
+  const { data, isLoading, error } = useStateSummary()
 
-  const { filters } = useFilters();
-  const periodLabel = (filters?.house || 'Lok Sabha') === 'Lok Sabha'
-    ? getPeriodLabel(filters?.lsTerm || 18)
-    : (filters?.house === 'Rajya Sabha'
-      ? 'Rajya Sabha'
-      : `Both Houses • ${getPeriodLabel(filters?.lsTerm || 18)}`);
+  const { filters } = useFilters()
+  const periodLabel =
+    (filters?.house || 'Lok Sabha') === 'Lok Sabha'
+      ? getPeriodLabel(filters?.lsTerm || 18)
+      : filters?.house === 'Rajya Sabha'
+        ? 'Rajya Sabha'
+        : `Both Houses • ${getPeriodLabel(filters?.lsTerm || 18)}`
 
   const states = useMemo(() => {
-    return data?.data || [];
-  }, [data?.data]);
+    return data?.data || []
+  }, [data?.data])
 
   // Calculate national statistics and remove duplicates
   const { uniqueStates, nationalStats } = useMemo(() => {
-    if (states.length === 0) return { uniqueStates: [], nationalStats: null };
+    if (states.length === 0) return { uniqueStates: [], nationalStats: null }
 
     // Remove duplicates by state name
-    const stateMap = new Map();
+    const stateMap = new Map()
     states.forEach(state => {
-      const stateName = state.state || state.name;
-      if (stateName && (!stateMap.has(stateName) || state.mpCount > (stateMap.get(stateName).mpCount || 0))) {
-        stateMap.set(stateName, state);
+      const stateName = state.state || state.name
+      if (
+        stateName &&
+        (!stateMap.has(stateName) || state.mpCount > (stateMap.get(stateName).mpCount || 0))
+      ) {
+        stateMap.set(stateName, state)
       }
-    });
+    })
 
-    const uniqueStates = Array.from(stateMap.values());
+    const uniqueStates = Array.from(stateMap.values())
 
-    const totalAllocated = uniqueStates.reduce((sum, state) => sum + (state.totalAllocated || 0), 0);
-    const totalExpenditure = uniqueStates.reduce((sum, state) => sum + (state.totalExpenditure || 0), 0);
-    const avgUtilization = uniqueStates.reduce((sum, state) => sum + (state.utilizationPercentage || 0), 0) / uniqueStates.length;
+    const totalAllocated = uniqueStates.reduce((sum, state) => sum + (state.totalAllocated || 0), 0)
+    const totalExpenditure = uniqueStates.reduce(
+      (sum, state) => sum + (state.totalExpenditure || 0),
+      0
+    )
+    const avgUtilization =
+      uniqueStates.reduce((sum, state) => sum + (state.utilizationPercentage || 0), 0) /
+      uniqueStates.length
 
     return {
       uniqueStates,
@@ -68,87 +85,86 @@ const StateList = () => {
         totalStates: uniqueStates.length,
         totalAllocated,
         totalExpenditure,
-        avgUtilization
-      }
-    };
-  }, [states]);
+        avgUtilization,
+      },
+    }
+  }, [states])
 
   // Filter and sort states locally to avoid unnecessary API calls
   const filteredStates = useMemo(() => {
-    let filtered = uniqueStates;
+    let filtered = uniqueStates
 
     // Apply search filter
     if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter((state) => {
-        const stateName = (state.state || state.name || '').toLowerCase();
-        return stateName.includes(q);
-      });
+      const q = searchQuery.toLowerCase()
+      filtered = filtered.filter(state => {
+        const stateName = (state.state || state.name || '').toLowerCase()
+        return stateName.includes(q)
+      })
     }
 
     // Apply performance filter
     if (filterRange !== 'all') {
-      filtered = filtered.filter((state) => {
-        const utilization = state.utilizationPercentage || 0;
+      filtered = filtered.filter(state => {
+        const utilization = state.utilizationPercentage || 0
         switch (filterRange) {
           case 'high':
-            return utilization >= 80;
+            return utilization >= 80
           case 'medium':
-            return utilization >= 50 && utilization < 80;
+            return utilization >= 50 && utilization < 80
           case 'low':
-            return utilization < 50;
+            return utilization < 50
           default:
-            return true;
+            return true
         }
-      });
+      })
     }
 
     // Apply sort locally
     const sorted = [...filtered].sort((a, b) => {
-      const getVal = (s) => {
+      const getVal = s => {
         switch (sortBy) {
           case 'name':
-            return (s.state || s.name || '').toString();
+            return (s.state || s.name || '').toString()
           case 'totalAllocated':
-            return Number(s.totalAllocated || 0);
+            return Number(s.totalAllocated || 0)
           case 'totalExpenditure':
-            return Number(s.totalExpenditure || 0);
+            return Number(s.totalExpenditure || 0)
           case 'totalWorksCompleted':
-            return Number(s.totalWorksCompleted || 0);
+            return Number(s.totalWorksCompleted || 0)
           case 'utilizationPercentage':
           default:
-            return Number(s.utilizationPercentage || 0);
+            return Number(s.utilizationPercentage || 0)
         }
-      };
+      }
 
-      const va = getVal(a);
-      const vb = getVal(b);
+      const va = getVal(a)
+      const vb = getVal(b)
 
       if (sortBy === 'name') {
         // String compare
-        const cmp = va.localeCompare(vb, undefined, { sensitivity: 'base' });
-        return sortOrder === 'asc' ? cmp : -cmp;
+        const cmp = va.localeCompare(vb, undefined, { sensitivity: 'base' })
+        return sortOrder === 'asc' ? cmp : -cmp
       }
 
       // Numeric compare
-      const cmp = va - vb;
-      return sortOrder === 'asc' ? cmp : -cmp;
-    });
+      const cmp = va - vb
+      return sortOrder === 'asc' ? cmp : -cmp
+    })
 
-    return sorted;
-  }, [uniqueStates, searchQuery, filterRange, sortBy, sortOrder]);
+    return sorted
+  }, [uniqueStates, searchQuery, filterRange, sortBy, sortOrder])
 
   // Currency formatting handled via formatINRCompact
 
-
-  const handleSort = (field) => {
+  const handleSort = field => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortBy(field);
-      setSortOrder('desc');
+      setSortBy(field)
+      setSortOrder('desc')
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -185,7 +201,6 @@ const StateList = () => {
           </div>
         </div>
 
-
         <div className="states-content">
           <SkeletonLoader type="text" width="150px" height="1.5rem" />
           <div className="states-grid">
@@ -195,7 +210,7 @@ const StateList = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -203,7 +218,7 @@ const StateList = () => {
       <div className="states-error">
         <p>Error loading state data. Please try again later.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -256,7 +271,9 @@ const StateList = () => {
             </div>
             <div className="insight-content">
               <h3>High Performers</h3>
-              <p className="insight-count">{uniqueStates.filter(s => (s.utilizationPercentage || 0) >= 80).length}</p>
+              <p className="insight-count">
+                {uniqueStates.filter(s => (s.utilizationPercentage || 0) >= 80).length}
+              </p>
               <p className="insight-desc">States with ≥80% utilization</p>
             </div>
           </div>
@@ -267,10 +284,14 @@ const StateList = () => {
             </div>
             <div className="insight-content">
               <h3>Average Performers</h3>
-              <p className="insight-count">{uniqueStates.filter(s => {
-                const util = s.utilizationPercentage || 0;
-                return util >= 50 && util < 80;
-              }).length}</p>
+              <p className="insight-count">
+                {
+                  uniqueStates.filter(s => {
+                    const util = s.utilizationPercentage || 0
+                    return util >= 50 && util < 80
+                  }).length
+                }
+              </p>
               <p className="insight-desc">States with 50-79% utilization</p>
             </div>
           </div>
@@ -281,7 +302,9 @@ const StateList = () => {
             </div>
             <div className="insight-content">
               <h3>Needs Improvement</h3>
-              <p className="insight-count">{uniqueStates.filter(s => (s.utilizationPercentage || 0) < 50).length}</p>
+              <p className="insight-count">
+                {uniqueStates.filter(s => (s.utilizationPercentage || 0) < 50).length}
+              </p>
               <p className="insight-desc">States with &lt;50% utilization</p>
             </div>
           </div>
@@ -296,7 +319,7 @@ const StateList = () => {
               type="text"
               placeholder="Filter states and UTs..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(sanitizeInput(e.target.value))}
+              onChange={e => setSearchQuery(sanitizeInput(e.target.value))}
             />
           </div>
         </div>
@@ -306,7 +329,7 @@ const StateList = () => {
             <label>Performance:</label>
             <select
               value={filterRange}
-              onChange={(e) => setFilterRange(e.target.value)}
+              onChange={e => setFilterRange(e.target.value)}
               className="sort-select"
             >
               <option value="all">All States</option>
@@ -321,7 +344,7 @@ const StateList = () => {
               <label>Sort by:</label>
               <select
                 value={sortBy}
-                onChange={(e) => handleSort(e.target.value)}
+                onChange={e => handleSort(e.target.value)}
                 className="sort-select"
               >
                 <option value="utilizationPercentage">Utilization %</option>
@@ -331,7 +354,9 @@ const StateList = () => {
                 <option value="name">State Name</option>
               </select>
             </div>
-          ) : (<></>)}
+          ) : (
+            <></>
+          )}
 
           <div className="view-controls">
             <div>
@@ -359,14 +384,23 @@ const StateList = () => {
         </div>
       </div>
 
-
       {/* States Grid/List */}
       <div className="states-content">
         <div className="content-header">
-          <h2>All States & UTs ({filteredStates.length}{filteredStates.length !== uniqueStates.length ? ` of ${uniqueStates.length}` : ''})</h2>
+          <h2>
+            All States & UTs ({filteredStates.length}
+            {filteredStates.length !== uniqueStates.length ? ` of ${uniqueStates.length}` : ''})
+          </h2>
           {filterRange !== 'all' && (
             <div className="active-filter">
-              <span className="filter-label">Showing: {filterRange === 'high' ? 'High Performers' : filterRange === 'medium' ? 'Average Performers' : 'Needs Improvement'}</span>
+              <span className="filter-label">
+                Showing:{' '}
+                {filterRange === 'high'
+                  ? 'High Performers'
+                  : filterRange === 'medium'
+                    ? 'Average Performers'
+                    : 'Needs Improvement'}
+              </span>
               <Button
                 className="clear-filter"
                 onClick={() => setFilterRange('all')}
@@ -381,10 +415,8 @@ const StateList = () => {
         {filteredStates.length > 0 ? (
           <>
             {viewMode === 'list' ? (
-              <StateCardList
-                states={filteredStates}
-                onSortedStatesChange={updateExportPdfStates}
-              />) : (
+              <StateCardList states={filteredStates} onSortedStatesChange={updateExportPdfStates} />
+            ) : (
               <div className={`states-grid`}>
                 {filteredStates.map((state, index) => (
                   <StateCard
@@ -393,7 +425,7 @@ const StateList = () => {
                       ...state,
                       name: state.state || state.name || 'Unknown State',
                       rank: index + 1,
-                      totalStates: states.length
+                      totalStates: states.length,
                     }}
                   />
                 ))}
@@ -407,7 +439,7 @@ const StateList = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default StateList;
+export default StateList

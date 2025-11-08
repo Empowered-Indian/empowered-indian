@@ -16,12 +16,13 @@ function calculateNextUpdate(frequency = 'daily') {
             nextUpdate.setDate(now.getDate() + 1);
             nextUpdate.setHours(2, 0, 0, 0); // 2 AM next day
             break;
-            
-        case 'weekly':
+
+        case 'weekly': {
             const daysUntilMonday = (7 - now.getDay() + 1) % 7 || 7;
             nextUpdate.setDate(now.getDate() + daysUntilMonday);
             nextUpdate.setHours(2, 0, 0, 0); // 2 AM Monday
             break;
+        }
             
         case 'bi-weekly':
             nextUpdate.setDate(now.getDate() + 14);

@@ -10,8 +10,8 @@ const safeLog = (level, message, meta = {}, correlationId = null) => {
     if (level === 'info') return secureLogger.info(message, meta, correlationId);
     if (level === 'security_auth_failed') return secureLogger.security.authenticationFailed(meta.ip, meta.username, meta.reason, correlationId);
     return secureLogger.debug(message, meta, correlationId);
-  } catch (e) {
-    try { console.error('[auth-logger-fallback]', message, meta && meta.error ? meta.error : ''); } catch (_) { /* no-op */ }
+  } catch {
+    try { console.error('[auth-logger-fallback]', message, meta && meta.error ? meta.error : ''); } catch { /* no-op */ }
   }
 };
 

@@ -8,7 +8,7 @@ const {
   logout, 
   verifyToken 
 } = require('../controllers/authController');
-const { authenticateToken, adminAuth } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const { contentSecurityStack } = require('../middleware/sanitization');
 const { strictLimiter } = require('../middleware/rateLimiting');
 

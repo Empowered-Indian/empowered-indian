@@ -1,74 +1,78 @@
-import { useState } from 'react';
-import { FiDownload, FiFileText, FiDatabase } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { FiDownload, FiFileText, FiDatabase } from 'react-icons/fi'
+import { Button } from '@/components/ui/button'
 import {
   exportCompletedWorks,
   exportRecommendedWorks,
   exportExpenditures,
   exportMPSummary,
   exportAsJSON,
-  getCurrentFilters
-} from '../../../../utils/exportUtils';
-import { useFilters } from '../../../../contexts/FilterContext';
-import { useAnalytics } from '../../../../hooks/useAnalytics';
-import './ExportButton.css';
+  getCurrentFilters,
+} from '../../../../utils/exportUtils'
+import { useFilters } from '../../../../contexts/FilterContext'
+import { useAnalytics } from '../../../../hooks/useAnalytics'
+import './ExportButton.css'
 
-const ExportButton = ({ 
+const ExportButton = ({
   type, // 'completed-works', 'recommended-works', 'expenditures', 'mp-summary'
   additionalFilters = {},
   data = null, // For JSON export
   label,
-  variant = 'primary' // 'primary', 'secondary', 'dropdown'
+  variant = 'primary', // 'primary', 'secondary', 'dropdown'
 }) => {
-  const [isExporting, setIsExporting] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const { filters } = useFilters();
-  const { trackExport } = useAnalytics();
+  const [isExporting, setIsExporting] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const { filters } = useFilters()
+  const { trackExport } = useAnalytics()
 
-  const handleExport = async (exportType) => {
-    setIsExporting(true);
-    
+  const handleExport = async exportType => {
+    setIsExporting(true)
+
     try {
-      const currentFilters = getCurrentFilters(filters);
-      const combinedFilters = { ...currentFilters, ...additionalFilters };
-      
+      const currentFilters = getCurrentFilters(filters)
+      const combinedFilters = { ...currentFilters, ...additionalFilters }
+
       // Estimate record count for analytics
-      const estimatedRecords = data ? (Array.isArray(data) ? data.length : Object.keys(data).length) : 0;
+      const estimatedRecords = data
+        ? Array.isArray(data)
+          ? data.length
+          : Object.keys(data).length
+        : 0
 
       switch (exportType) {
         case 'completed-works':
-          await exportCompletedWorks(combinedFilters);
-          trackExport('completed_works', 'csv', estimatedRecords);
-          break;
+          await exportCompletedWorks(combinedFilters)
+          trackExport('completed_works', 'csv', estimatedRecords)
+          break
         case 'recommended-works':
-          await exportRecommendedWorks(combinedFilters);
-          trackExport('recommended_works', 'csv', estimatedRecords);
-          break;
+          await exportRecommendedWorks(combinedFilters)
+          trackExport('recommended_works', 'csv', estimatedRecords)
+          break
         case 'expenditures':
-          await exportExpenditures(combinedFilters);
-          trackExport('expenditures', 'csv', estimatedRecords);
-          break;
+          await exportExpenditures(combinedFilters)
+          trackExport('expenditures', 'csv', estimatedRecords)
+          break
         case 'mp-summary':
-          await exportMPSummary(combinedFilters);
-          trackExport('mp_summary', 'csv', estimatedRecords);
-          break;
+          await exportMPSummary(combinedFilters)
+          trackExport('mp_summary', 'csv', estimatedRecords)
+          break
         case 'json':
           if (data) {
-            const filename = `${exportType}_${new Date().toISOString().split('T')[0]}.json`;
-            exportAsJSON(data, filename);
-            trackExport('current_data', 'json', estimatedRecords);
+            const filename = `${exportType}_${new Date().toISOString().split('T')[0]}.json`
+            exportAsJSON(data, filename)
+            trackExport('current_data', 'json', estimatedRecords)
           }
-          break;
+          break
         default:
-          console.warn('Unknown export type:', exportType);
+          console.warn('Unknown export type:', exportType)
       }
     } catch (error) {
-      console.error('Export failed:', error);
+      console.error('Export failed:', error)
     } finally {
-      setIsExporting(false);
-      setShowDropdown(false);
+      setIsExporting(false)
+      setShowDropdown(false)
     }
-  };
+  }
 
   if (variant === 'dropdown') {
     return (
@@ -87,7 +91,7 @@ const ExportButton = ({
             height="12"
             viewBox="0 0 12 12"
           >
-            <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none"/>
+            <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="2" fill="none" />
           </svg>
         </Button>
 
@@ -143,25 +147,25 @@ const ExportButton = ({
           </div>
         )}
       </div>
-    );
+    )
   }
 
   const getButtonLabel = () => {
-    if (label) return label;
-    
+    if (label) return label
+
     switch (type) {
       case 'completed-works':
-        return 'Export Completed Works';
+        return 'Export Completed Works'
       case 'recommended-works':
-        return 'Export Recommended Works';
+        return 'Export Recommended Works'
       case 'expenditures':
-        return 'Export Expenditures';
+        return 'Export Expenditures'
       case 'mp-summary':
-        return 'Export MP Summary';
+        return 'Export MP Summary'
       default:
-        return 'Export Data';
+        return 'Export Data'
     }
-  };
+  }
 
   return (
     <Button
@@ -183,7 +187,7 @@ const ExportButton = ({
         </>
       )}
     </Button>
-  );
-};
+  )
+}
 
-export default ExportButton;
+export default ExportButton

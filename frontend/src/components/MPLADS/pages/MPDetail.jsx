@@ -1,233 +1,273 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiUser, FiTrendingUp, FiDollarSign, FiCheckCircle, FiMapPin, FiUsers, FiTarget, FiAlertTriangle, FiCopy, FiBarChart2 } from 'react-icons/fi';
-import { useMPDetails, useMPWorks } from '../../../hooks/useApi';
-import { formatINRCompact } from '../../../utils/formatters';
-import FundUtilizationGauge from '../components/Charts/FundUtilizationGauge';
-import InfoTooltip from '../components/Common/InfoTooltip';
-import ProjectListing from '../components/Projects/ProjectListing';
-import SkeletonLoader from '../components/Common/SkeletonLoader';
-import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling.jsx';
-import { getIdFromSlug, isBareObjectId, buildMPSlugHuman, buildMPSlugCandidates, normalizeMPSlug } from '../../../utils/slug';
-import { summaryAPI } from '../../../services/api';
-import { useFilters } from '../../../contexts/FilterContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import './MPDetail.css';
-import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf.jsx';
+import { useEffect, useState } from 'react'
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
+import {
+  FiArrowLeft,
+  FiUser,
+  FiTrendingUp,
+  FiDollarSign,
+  FiCheckCircle,
+  FiMapPin,
+  FiUsers,
+  FiTarget,
+  FiAlertTriangle,
+  FiCopy,
+  FiBarChart2,
+} from 'react-icons/fi'
+import { useMPDetails, useMPWorks } from '../../../hooks/useApi'
+import { formatINRCompact } from '../../../utils/formatters'
+import FundUtilizationGauge from '../components/Charts/FundUtilizationGauge'
+import InfoTooltip from '../components/Common/InfoTooltip'
+import ProjectListing from '../components/Projects/ProjectListing'
+import SkeletonLoader from '../components/Common/SkeletonLoader'
+import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling.jsx'
+import {
+  getIdFromSlug,
+  isBareObjectId,
+  buildMPSlugHuman,
+  buildMPSlugCandidates,
+  normalizeMPSlug,
+} from '../../../utils/slug'
+import { summaryAPI } from '../../../services/api'
+import { useFilters } from '../../../contexts/FilterContext'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import './MPDetail.css'
+import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf.jsx'
 
 const MPDetail = () => {
-  const navigate = useNavigate();
-  const { filters } = useFilters();
-  const { mpId } = useParams();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [resolvedIdFromSlug, setResolvedIdFromSlug] = useState(null);
-  const [resolvingSlug, setResolvingSlug] = useState(false);
-  const [ambiguousMatches, setAmbiguousMatches] = useState(null);
-  const [cacheInvalidated, setCacheInvalidated] = useState(false);
+  const navigate = useNavigate()
+  const { filters } = useFilters()
+  const { mpId } = useParams()
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState('overview')
+  const [resolvedIdFromSlug, setResolvedIdFromSlug] = useState(null)
+  const [resolvingSlug, setResolvingSlug] = useState(false)
+  const [ambiguousMatches, setAmbiguousMatches] = useState(null)
+  const [cacheInvalidated, setCacheInvalidated] = useState(false)
 
   // Determine if route param contains an ID
-  const idInParam = getIdFromSlug(mpId);
-  const bareId = isBareObjectId(mpId) ? mpId : null;
-  const effectiveId = idInParam || bareId || resolvedIdFromSlug;
+  const idInParam = getIdFromSlug(mpId)
+  const bareId = isBareObjectId(mpId) ? mpId : null
+  const effectiveId = idInParam || bareId || resolvedIdFromSlug
 
   // Fetch MP details
-  const { data: mpData, isLoading: mpLoading, error: mpError } = useMPDetails(effectiveId);
+  const { data: mpData, isLoading: mpLoading, error: mpError } = useMPDetails(effectiveId)
 
   // Fetch MP works
   const { data: worksData, isLoading: worksLoading } = useMPWorks(effectiveId, {
-    limit: 100
-  });
+    limit: 100,
+  })
 
-  const mp = mpData?.data?.mp || mpData?.data || {};
-  const works = worksData?.data?.works || worksData?.data || [];
+  const mp = mpData?.data?.mp || mpData?.data || {}
+  const works = worksData?.data?.works || worksData?.data || []
 
   // Reset cache invalidation flag when navigating to different MP
   useEffect(() => {
-    setCacheInvalidated(false);
-  }, [mpId]);
+    setCacheInvalidated(false)
+  }, [mpId])
 
   // Handle stale cache: if we get 404 with a cached ID, invalidate cache and retry
   useEffect(() => {
     if (mpError && resolvedIdFromSlug && !cacheInvalidated && !idInParam && !bareId) {
-      const is404 = mpError.response?.status === 404 || mpError.message?.includes('404') || mpError.message?.includes('not found');
+      const is404 =
+        mpError.response?.status === 404 ||
+        mpError.message?.includes('404') ||
+        mpError.message?.includes('not found')
       if (is404) {
-        console.warn('Cached ID returned 404, invalidating cache for slug:', mpId);
-        const LS_KEY = 'mplads_slug_index';
-        const slug = normalizeMPSlug(String(mpId));
+        console.warn('Cached ID returned 404, invalidating cache for slug:', mpId)
+        const LS_KEY = 'mplads_slug_index'
+        const slug = normalizeMPSlug(String(mpId))
         try {
-          const cache = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-          delete cache[slug];
-          localStorage.setItem(LS_KEY, JSON.stringify(cache));
-        } catch (e) {
-          // ignore
+          const cache = JSON.parse(localStorage.getItem(LS_KEY) || '{}')
+          delete cache[slug]
+          localStorage.setItem(LS_KEY, JSON.stringify(cache))
+        } catch {
+          // Ignore localStorage errors
         }
         // Reset state to trigger re-resolution
-        setResolvedIdFromSlug(null);
-        setCacheInvalidated(true);
+        setResolvedIdFromSlug(null)
+        setCacheInvalidated(true)
       }
     }
-  }, [mpError, resolvedIdFromSlug, cacheInvalidated, mpId, idInParam, bareId]);
+  }, [mpError, resolvedIdFromSlug, cacheInvalidated, mpId, idInParam, bareId])
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(amount || 0);
-  };
+    }).format(amount || 0)
+  }
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat('en-IN').format(num || 0);
-  };
+  const formatNumber = num => {
+    return new Intl.NumberFormat('en-IN').format(num || 0)
+  }
 
-  const getUtilizationClass = (percentage) => {
-    if (percentage >= 70) return 'high';
-    if (percentage >= 40) return 'medium';
-    return 'low';
-  };
+  const getUtilizationClass = percentage => {
+    if (percentage >= 70) return 'high'
+    if (percentage >= 40) return 'medium'
+    return 'low'
+  }
 
   // Calculate project statistics from MP summary data
   const projectStats = {
     completed: mp.completedWorksCount || 0,
     ongoing: Math.max(0, (mp.recommendedWorksCount || 0) - (mp.completedWorksCount || 0)),
     recommended: mp.recommendedWorksCount || 0,
-    total: mp.recommendedWorksCount || 0
-  };
+    total: mp.recommendedWorksCount || 0,
+  }
 
   // Use backend-calculated completion rate, or calculate it correctly as fallback
-  const completionRate = mp.completionRate || (
-    (mp.recommendedWorksCount || 0) > 0 ? 
-    Math.min(((mp.completedWorksCount || 0) / (mp.recommendedWorksCount || 0)) * 100, 100) : 0
-  );
+  const completionRate =
+    mp.completionRate ||
+    ((mp.recommendedWorksCount || 0) > 0
+      ? Math.min(((mp.completedWorksCount || 0) / (mp.recommendedWorksCount || 0)) * 100, 100)
+      : 0)
 
   // Payment gap analysis (same logic as MPCard)
-  const hasPaymentGap = (mp) => {
-    const completedValue = mp.completedWorksValue || mp.totalCompletedAmount || 0;
-    const gap = (mp.totalExpenditure || 0) - completedValue;
-    const gapPercentage = mp.totalExpenditure > 0 ? (gap / mp.totalExpenditure * 100) : 0;
-    return gapPercentage > 50; // Flag if more than 50% of spending is unaccounted
-  };
+  const hasPaymentGap = mp => {
+    const completedValue = mp.completedWorksValue || mp.totalCompletedAmount || 0
+    const gap = (mp.totalExpenditure || 0) - completedValue
+    const gapPercentage = mp.totalExpenditure > 0 ? (gap / mp.totalExpenditure) * 100 : 0
+    return gapPercentage > 50 // Flag if more than 50% of spending is unaccounted
+  }
 
-  const inProgressPayments = mp.inProgressPayments !== undefined ? mp.inProgressPayments : 
-    ((mp.totalExpenditure || 0) - (mp.completedWorksValue || mp.totalCompletedAmount || 0));
-  const showWarning = hasPaymentGap(mp);
+  const inProgressPayments =
+    mp.inProgressPayments !== undefined
+      ? mp.inProgressPayments
+      : (mp.totalExpenditure || 0) - (mp.completedWorksValue || mp.totalCompletedAmount || 0)
+  const showWarning = hasPaymentGap(mp)
 
   // Canonicalize URL to slug when user lands on bare id (ensure hooks are before any early returns)
   useEffect(() => {
-    if (!mp || mpLoading) return;
+    if (!mp || mpLoading) return
     // If URL has an ID (either as bare or trailing), canonicalize to human slug without ID
     if (idInParam || bareId) {
-      const human = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }));
+      const human = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }))
       if (human) {
         // preserve the resolved id so data remains while URL updates
-        if (!resolvedIdFromSlug) setResolvedIdFromSlug(idInParam || bareId);
+        if (!resolvedIdFromSlug) setResolvedIdFromSlug(idInParam || bareId)
         try {
-          const LS_KEY = 'mplads_slug_index';
-          const CACHE_VERSION_KEY = 'mplads_slug_cache_version';
-          const CURRENT_CACHE_VERSION = '2'; // Increment when DB structure changes
+          const LS_KEY = 'mplads_slug_index'
+          const CACHE_VERSION_KEY = 'mplads_slug_cache_version'
+          const CURRENT_CACHE_VERSION = '2' // Increment when DB structure changes
 
           // Check cache version and clear if outdated
-          const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+          const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY)
           if (cachedVersion !== CURRENT_CACHE_VERSION) {
-            localStorage.removeItem(LS_KEY);
-            localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+            localStorage.removeItem(LS_KEY)
+            localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION)
           }
 
-          const map = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-          map[human] = idInParam || bareId;
-          localStorage.setItem(LS_KEY, JSON.stringify(map));
-        } catch { /* ignore */ }
-        navigate(`/mplads/mps/${human}`.replace(/\-+/g, '-'), { replace: true });
+          const map = JSON.parse(localStorage.getItem(LS_KEY) || '{}')
+          map[human] = idInParam || bareId
+          localStorage.setItem(LS_KEY, JSON.stringify(map))
+        } catch {
+          /* ignore */
+        }
+        navigate(`/mplads/mps/${human}`.replace(/-+/g, '-'), { replace: true })
       }
     }
-  }, [mpId, mp, mpLoading, navigate, idInParam, bareId, resolvedIdFromSlug, filters?.lsTerm]);
+  }, [mpId, mp, mpLoading, navigate, idInParam, bareId, resolvedIdFromSlug, filters?.lsTerm])
 
   // Resolve slug -> id when URL has no id
   useEffect(() => {
-    if (effectiveId) return; // already have id
-    if (!mpId || idInParam || bareId) return; // param has an id or is empty
-    const slug = normalizeMPSlug(String(mpId));
+    if (effectiveId) return // already have id
+    if (!mpId || idInParam || bareId) return // param has an id or is empty
+    const slug = normalizeMPSlug(String(mpId))
 
-    const LS_KEY = 'mplads_slug_index';
-    const CACHE_VERSION_KEY = 'mplads_slug_cache_version';
-    const CURRENT_CACHE_VERSION = '2'; // Increment when DB structure changes
+    const LS_KEY = 'mplads_slug_index'
+    const CACHE_VERSION_KEY = 'mplads_slug_cache_version'
+    const CURRENT_CACHE_VERSION = '2' // Increment when DB structure changes
 
     const readIndex = () => {
       try {
         // Check cache version and clear if outdated
-        const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY);
+        const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY)
         if (cachedVersion !== CURRENT_CACHE_VERSION) {
-          localStorage.removeItem(LS_KEY);
-          localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
-          return {};
+          localStorage.removeItem(LS_KEY)
+          localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION)
+          return {}
         }
-        return JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-      } catch { return {}; }
-    };
-    const writeIndex = (map) => {
-      try { localStorage.setItem(LS_KEY, JSON.stringify(map)); } catch { /* ignore */ }
-    };
-
-    const fromCache = readIndex();
-    if (fromCache[slug]) {
-      setResolvedIdFromSlug(fromCache[slug]);
-      return;
+        return JSON.parse(localStorage.getItem(LS_KEY) || '{}')
+      } catch {
+        return {}
+      }
+    }
+    const writeIndex = map => {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(map))
+      } catch {
+        /* ignore */
+      }
     }
 
-    let cancelled = false;
-    const resolve = async () => {
-      setResolvingSlug(true);
-      const attempts = [];
-      const house = filters?.house || 'Both Houses';
-      const lsTerm = Number(filters?.lsTerm || 18);
-      // Try with current filters
-      attempts.push({ house: house !== 'Both Houses' ? house : undefined, ls_term: house === 'Lok Sabha' ? lsTerm : undefined });
-      // Then without house (both)
-      attempts.push({});
-      // Then fallback ls terms if needed
-      attempts.push({ house: 'Lok Sabha', ls_term: 18 });
-      attempts.push({ house: 'Lok Sabha', ls_term: 17 });
-      attempts.push({ house: 'Rajya Sabha' });
+    const fromCache = readIndex()
+    if (fromCache[slug]) {
+      setResolvedIdFromSlug(fromCache[slug])
+      return
+    }
 
-      let found = [];
+    let cancelled = false
+    const resolve = async () => {
+      setResolvingSlug(true)
+      const attempts = []
+      const house = filters?.house || 'Both Houses'
+      const lsTerm = Number(filters?.lsTerm || 18)
+      // Try with current filters
+      attempts.push({
+        house: house !== 'Both Houses' ? house : undefined,
+        ls_term: house === 'Lok Sabha' ? lsTerm : undefined,
+      })
+      // Then without house (both)
+      attempts.push({})
+      // Then fallback ls terms if needed
+      attempts.push({ house: 'Lok Sabha', ls_term: 18 })
+      attempts.push({ house: 'Lok Sabha', ls_term: 17 })
+      attempts.push({ house: 'Rajya Sabha' })
+
+      let found = []
       for (const params of attempts) {
         try {
-          const resp = await summaryAPI.getMPSummary({ page: 1, limit: 800, ...params });
-          const list = resp?.data?.data || resp?.data || [];
-          if (!Array.isArray(list) || list.length === 0) continue;
+          const resp = await summaryAPI.getMPSummary({ page: 1, limit: 800, ...params })
+          const list = resp?.data?.data || resp?.data || []
+          if (!Array.isArray(list) || list.length === 0) continue
           // find matching by any candidate slug
-          const matches = list.filter((m) => buildMPSlugCandidates(m).includes(slug));
+          const matches = list.filter(m => buildMPSlugCandidates(m).includes(slug))
           if (matches.length > 0) {
-            found = matches;
-            break;
+            found = matches
+            break
           }
-        } catch (e) {
-          // continue to next attempt
+        } catch {
+          // Continue to next attempt
         }
       }
-      if (cancelled) return;
+      if (cancelled) return
       if (found.length === 1 && (found[0]._id || found[0].id)) {
-        const id = found[0]._id || found[0].id;
-        setResolvedIdFromSlug(id);
-        const idx = readIndex();
-        idx[slug] = id;
-        writeIndex(idx);
+        const id = found[0]._id || found[0].id
+        setResolvedIdFromSlug(id)
+        const idx = readIndex()
+        idx[slug] = id
+        writeIndex(idx)
       } else if (found.length > 1) {
-        setAmbiguousMatches(found);
+        setAmbiguousMatches(found)
       }
-      setResolvingSlug(false);
-    };
-    resolve();
-    return () => { cancelled = true; };
-  }, [effectiveId, mpId, idInParam, bareId, filters?.house, filters?.lsTerm]);
+      setResolvingSlug(false)
+    }
+    resolve()
+    return () => {
+      cancelled = true
+    }
+  }, [effectiveId, mpId, idInParam, bareId, filters?.house, filters?.lsTerm])
 
   if (ambiguousMatches && ambiguousMatches.length > 1 && !effectiveId) {
     return (
       <div className="mp-detail-page">
         <div className="mp-detail-header">
-          <Link to="/mplads/mps" className="back-link"><FiArrowLeft />Back to All MPs</Link>
+          <Link to="/mplads/mps" className="back-link">
+            <FiArrowLeft />
+            Back to All MPs
+          </Link>
           <div className="mp-title-section">
             <div className="mp-title-info">
               <h1>Multiple matches found</h1>
@@ -241,24 +281,38 @@ const MPDetail = () => {
         </div>
         <div className="performance-summary" style={{ marginTop: 16 }}>
           <div className="performance-cards">
-            {ambiguousMatches.map((m) => {
-              const slug = normalizeMPSlug(buildMPSlugHuman(m, { lsTerm: filters?.lsTerm }));
-              const id = m._id || m.id;
+            {ambiguousMatches.map(m => {
+              const slug = normalizeMPSlug(buildMPSlugHuman(m, { lsTerm: filters?.lsTerm }))
+              const id = m._id || m.id
               return (
-                <Link key={id} to={`/mplads/mps/${encodeURIComponent(slug)}`} className="performance-card" style={{ textDecoration: 'none' }}>
+                <Link
+                  key={id}
+                  to={`/mplads/mps/${encodeURIComponent(slug)}`}
+                  className="performance-card"
+                  style={{ textDecoration: 'none' }}
+                >
                   <h4 style={{ marginBottom: 8 }}>{m.mpName || m.name}</h4>
                   <div className="performance-details">
-                    <div className="detail-row"><span>House</span><span>{m.house || '—'}</span></div>
-                    <div className="detail-row"><span>Constituency</span><span>{m.constituency || '—'}</span></div>
-                    <div className="detail-row"><span>State</span><span>{m.state || '—'}</span></div>
+                    <div className="detail-row">
+                      <span>House</span>
+                      <span>{m.house || '—'}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span>Constituency</span>
+                      <span>{m.constituency || '—'}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span>State</span>
+                      <span>{m.state || '—'}</span>
+                    </div>
                   </div>
                 </Link>
-              );
+              )
             })}
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (mpLoading || (!effectiveId && resolvingSlug)) {
@@ -320,10 +374,10 @@ const MPDetail = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  if (mpError || !mp || (typeof mp !== 'object') || (!mp.mpName && !mp.name)) {
+  if (mpError || !mp || typeof mp !== 'object' || (!mp.mpName && !mp.name)) {
     return (
       <div className="mp-detail-error">
         <div className="error-content">
@@ -335,10 +389,8 @@ const MPDetail = () => {
           </Link>
         </div>
       </div>
-    );
+    )
   }
-
-  
 
   return (
     <div className="mp-detail-page">
@@ -347,7 +399,7 @@ const MPDetail = () => {
           <FiArrowLeft />
           Back to All MPs
         </Link>
-        
+
         <div className="mp-title-section">
           <div className="mp-avatar-large">
             <FiUser />
@@ -357,7 +409,9 @@ const MPDetail = () => {
             <div className="mp-basic-info">
               <div className="info-item">
                 <FiMapPin />
-                <span>{mp.constituency}, {mp.state}</span>
+                <span>
+                  {mp.constituency}, {mp.state}
+                </span>
               </div>
               <div className="info-item">
                 <span className="house-badge-large">{mp.house}</span>
@@ -370,10 +424,10 @@ const MPDetail = () => {
               className="action-btn gap-2"
               onClick={async () => {
                 try {
-                  await navigator.clipboard.writeText(window.location.origin + location.pathname);
-                  showSuccessToast('Link copied');
-                } catch (e) {
-                  showErrorToast('Unable to copy link');
+                  await navigator.clipboard.writeText(window.location.origin + location.pathname)
+                  showSuccessToast('Link copied')
+                } catch {
+                  showErrorToast('Unable to copy link')
                 }
               }}
               title="Copy link"
@@ -381,11 +435,7 @@ const MPDetail = () => {
               <FiCopy />
               <span>Copy Link</span>
             </Button>
-            <Link
-              to="/mplads/compare"
-              className="action-btn secondary"
-              title="Compare MPs"
-            >
+            <Link to="/mplads/compare" className="action-btn secondary" title="Compare MPs">
               <FiBarChart2 />
               <span>Compare</span>
             </Link>
@@ -399,24 +449,29 @@ const MPDetail = () => {
               <FiDollarSign className="summary-stat-icon" />
             </div>
             <div className="stat-content">
-              <div className="stat-value">{formatINRCompact(mp.allocatedAmount || mp.totalAllocated || 0, { includeRupeeSymbol: true })}</div>
+              <div className="stat-value">
+                {formatINRCompact(mp.allocatedAmount || mp.totalAllocated || 0, {
+                  includeRupeeSymbol: true,
+                })}
+              </div>
               <div className="stat-label">Total Allocated</div>
               <div className="stat-subtitle">Budget assigned to MP</div>
             </div>
           </div>
-          
+
           <div className="summary-stat-card utilization">
             <div className="stat-icon-wrapper">
               <FiTrendingUp className="summary-stat-icon" />
             </div>
             <div className="stat-content">
-              <div className={`stat-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
+              <div
+                className={`stat-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
+              >
                 {(mp.utilizationPercentage || 0).toFixed(1)}%
               </div>
               <div className="stat-label">
-                Fund Utilization
-                {' '}
-                <InfoTooltip 
+                Fund Utilization{' '}
+                <InfoTooltip
                   content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                   position="top"
                   size="small"
@@ -427,26 +482,30 @@ const MPDetail = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="summary-stat-card works">
             <div className="stat-icon-wrapper">
               <FiCheckCircle className="summary-stat-icon" />
             </div>
             <div className="stat-content">
-              <div className="stat-value">{formatNumber(mp.completedWorksCount || projectStats.completed)}</div>
+              <div className="stat-value">
+                {formatNumber(mp.completedWorksCount || projectStats.completed)}
+              </div>
               <div className="stat-label">Works Completed</div>
               <div className="stat-subtitle">
                 out of {formatNumber(mp.recommendedWorksCount || 0)} recommended
               </div>
             </div>
           </div>
-          
+
           <div className="summary-stat-card success">
             <div className="stat-icon-wrapper">
               <FiTarget className="summary-stat-icon" />
             </div>
             <div className="stat-content">
-              <div className={`stat-value ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
+              <div
+                className={`stat-value ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}
+              >
                 {completionRate.toFixed(1)}%
               </div>
               <div className="stat-label">Completion Rate</div>
@@ -460,10 +519,12 @@ const MPDetail = () => {
             <div className="warning-content">
               <FiAlertTriangle className="warning-icon" />
               <div className="warning-text">
-                <span className="warning-amount">{formatINRCompact(inProgressPayments, { includeRupeeSymbol: true })}</span>
+                <span className="warning-amount">
+                  {formatINRCompact(inProgressPayments, { includeRupeeSymbol: true })}
+                </span>
                 <span className="warning-message">paid but work is incomplete</span>
               </div>
-              <InfoTooltip 
+              <InfoTooltip
                 content="This indicates funds have been disbursed but corresponding completed works haven't been fully recorded. This may represent works in progress or reporting gaps."
                 position="left"
                 size="medium"
@@ -503,20 +564,19 @@ const MPDetail = () => {
             <div className="overview-grid">
               <div className="chart-container">
                 <h3>
-                  Fund Utilization
-                  {' '}
-                  <InfoTooltip 
+                  Fund Utilization{' '}
+                  <InfoTooltip
                     content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                     position="top"
                     size="small"
                   />
                 </h3>
-                <FundUtilizationGauge 
+                <FundUtilizationGauge
                   utilization={mp.utilizationPercentage || 0}
                   title={`${mp.name || mp.mpName} Utilization`}
                 />
               </div>
-              
+
               <div className="projects-overview">
                 <h3>Projects Overview</h3>
                 <div className="project-stats-grid">
@@ -529,7 +589,7 @@ const MPDetail = () => {
                       <span className="stat-description">Completed Projects</span>
                     </div>
                   </div>
-                  
+
                   <div className="project-stat-card ongoing">
                     <div className="stat-icon-container">
                       <FiTrendingUp />
@@ -539,7 +599,7 @@ const MPDetail = () => {
                       <span className="stat-description">Ongoing Projects</span>
                     </div>
                   </div>
-                  
+
                   <div className="project-stat-card recommended">
                     <div className="stat-icon-container">
                       <FiTarget />
@@ -549,7 +609,7 @@ const MPDetail = () => {
                       <span className="stat-description">Recommended Projects</span>
                     </div>
                   </div>
-                  
+
                   <div className="project-stat-card total">
                     <div className="stat-icon-container">
                       <FiUsers />
@@ -574,7 +634,9 @@ const MPDetail = () => {
                     <div className="performance-details">
                       <div className="detail-row">
                         <span>Allocated Amount:</span>
-                        <span className="amount">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                        <span className="amount">
+                          {formatCurrency(mp.allocatedAmount || mp.totalAllocated)}
+                        </span>
                       </div>
                       <div className="detail-row">
                         <span>Utilized Amount:</span>
@@ -583,28 +645,30 @@ const MPDetail = () => {
                       <div className="detail-row">
                         <span>Remaining Balance:</span>
                         <span className="amount">
-                          {formatCurrency((mp.allocatedAmount || mp.totalAllocated || 0) - (mp.totalExpenditure || 0))}
+                          {formatCurrency(
+                            (mp.allocatedAmount || mp.totalAllocated || 0) -
+                              (mp.totalExpenditure || 0)
+                          )}
                         </span>
                       </div>
                       <div className="detail-row highlight">
                         <span>
-                          Fund Utilization
-                          {' '}
+                          Fund Utilization{' '}
                           <InfoTooltip
                             content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                             position="top"
                             size="small"
                           />
                         </span>
-                        <span className={`percentage utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
+                        <span
+                          className={`percentage utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
+                        >
                           {(mp.utilizationPercentage || 0).toFixed(1)}%
                         </span>
                       </div>
                       <div className="detail-row">
                         <span>Works Completed:</span>
-                        <span className="percentage">
-                          {mp.completedWorksCount || 0}
-                        </span>
+                        <span className="percentage">{mp.completedWorksCount || 0}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -630,21 +694,24 @@ const MPDetail = () => {
                       </div>
                       <div className="detail-row highlight">
                         <span>Completion Rate:</span>
-                        <span className={`percentage ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
+                        <span
+                          className={`percentage ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}
+                        >
                           {completionRate.toFixed(1)}%
                         </span>
                       </div>
                       <div className="detail-row">
                         <span>
-                          Fund Utilization
-                          {' '}
+                          Fund Utilization{' '}
                           <InfoTooltip
                             content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                             position="top"
                             size="small"
                           />
                         </span>
-                        <span className={`percentage ${(mp.utilizationPercentage || 0) >= 70 ? 'high' : (mp.utilizationPercentage || 0) >= 40 ? 'medium' : 'low'}`}>
+                        <span
+                          className={`percentage ${(mp.utilizationPercentage || 0) >= 70 ? 'high' : (mp.utilizationPercentage || 0) >= 40 ? 'medium' : 'low'}`}
+                        >
                           {(mp.utilizationPercentage || 0).toFixed(1)}%
                         </span>
                       </div>
@@ -662,7 +729,7 @@ const MPDetail = () => {
             {worksLoading ? (
               <div className="loading">Loading projects data...</div>
             ) : works.length > 0 ? (
-              <ProjectListing 
+              <ProjectListing
                 mpId={effectiveId}
                 mpName={mp.name || mp.mpName}
                 showFiltersDefault={true}
@@ -671,7 +738,7 @@ const MPDetail = () => {
                   recommendedWorksCount: mp.recommendedWorksCount,
                   completedWorksValue: mp.completedWorksValue || mp.totalCompletedAmount,
                   totalRecommendedAmount: mp.totalRecommendedAmount,
-                  totalExpenditure: mp.totalExpenditure
+                  totalExpenditure: mp.totalExpenditure,
                 }}
               />
             ) : (
@@ -692,7 +759,9 @@ const MPDetail = () => {
                   <div className="financial-items">
                     <div className="financial-item">
                       <span className="item-label">Initial Allocation</span>
-                      <span className="item-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                      <span className="item-value">
+                        {formatCurrency(mp.allocatedAmount || mp.totalAllocated)}
+                      </span>
                     </div>
                     <div className="financial-item">
                       <span className="item-label">Total Expenditure</span>
@@ -701,7 +770,10 @@ const MPDetail = () => {
                     <div className="financial-item total">
                       <span className="item-label">Remaining Balance</span>
                       <span className="item-value">
-                        {formatCurrency((mp.allocatedAmount || mp.totalAllocated || 0) - (mp.totalExpenditure || 0))}
+                        {formatCurrency(
+                          (mp.allocatedAmount || mp.totalAllocated || 0) -
+                            (mp.totalExpenditure || 0)
+                        )}
                       </span>
                     </div>
                   </div>
@@ -716,33 +788,38 @@ const MPDetail = () => {
                   <div className="financial-items">
                     <div className="financial-item">
                       <span className="item-label">
-                        Fund Utilization
-                        {' '}
+                        Fund Utilization{' '}
                         <InfoTooltip
                           content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                           position="top"
                           size="small"
                         />
                       </span>
-                      <span className={`item-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
+                      <span
+                        className={`item-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
+                      >
                         {(mp.utilizationPercentage || 0).toFixed(2)}%
                       </span>
                     </div>
                     <div className="financial-item">
                       <span className="item-label">Works Completed</span>
-                      <span className="item-value">
-                        {mp.completedWorksCount || 0}
-                      </span>
+                      <span className="item-value">{mp.completedWorksCount || 0}</span>
                     </div>
                     <div className="financial-item">
                       <span className="item-label">Average per Project</span>
                       <span className="item-value">
-                        {formatCurrency(projectStats.total > 0 ? (mp.totalExpenditure || 0) / projectStats.total : 0)}
+                        {formatCurrency(
+                          projectStats.total > 0
+                            ? (mp.totalExpenditure || 0) / projectStats.total
+                            : 0
+                        )}
                       </span>
                     </div>
                     <div className="financial-item">
                       <span className="item-label">Completion Rate</span>
-                      <span className={`item-value ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
+                      <span
+                        className={`item-value ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}
+                      >
                         {completionRate.toFixed(1)}%
                       </span>
                     </div>
@@ -759,16 +836,23 @@ const MPDetail = () => {
                     <div className="indicator">
                       <div className="indicator-header">
                         <span>
-                          Fund Utilization
-                          {' '}
+                          Fund Utilization{' '}
                           <InfoTooltip
                             content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
                             position="top"
                             size="small"
                           />
                         </span>
-                        <span className={`indicator-status utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}>
-                          {(mp.utilizationPercentage || 0) >= 70 ? 'Excellent' : (mp.utilizationPercentage || 0) >= 40 ? 'Good' : (mp.utilizationPercentage || 0) >= 20 ? 'Average' : 'Poor'}
+                        <span
+                          className={`indicator-status utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
+                        >
+                          {(mp.utilizationPercentage || 0) >= 70
+                            ? 'Excellent'
+                            : (mp.utilizationPercentage || 0) >= 40
+                              ? 'Good'
+                              : (mp.utilizationPercentage || 0) >= 20
+                                ? 'Average'
+                                : 'Poor'}
                         </span>
                       </div>
                       <div className="indicator-bar">
@@ -782,8 +866,16 @@ const MPDetail = () => {
                     <div className="indicator">
                       <div className="indicator-header">
                         <span>Project Completion</span>
-                        <span className={`indicator-status ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}>
-                          {completionRate >= 70 ? 'Excellent' : completionRate >= 50 ? 'Good' : completionRate >= 30 ? 'Average' : 'Poor'}
+                        <span
+                          className={`indicator-status ${completionRate >= 70 ? 'high' : completionRate >= 50 ? 'medium' : 'low'}`}
+                        >
+                          {completionRate >= 70
+                            ? 'Excellent'
+                            : completionRate >= 50
+                              ? 'Good'
+                              : completionRate >= 30
+                                ? 'Average'
+                                : 'Poor'}
                         </span>
                       </div>
                       <div className="indicator-bar">
@@ -801,7 +893,7 @@ const MPDetail = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MPDetail;
+export default MPDetail

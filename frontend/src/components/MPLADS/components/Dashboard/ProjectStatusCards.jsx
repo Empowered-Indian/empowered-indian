@@ -1,12 +1,8 @@
-import { FiFileText, FiCheckCircle, FiClock, FiTrendingUp } from 'react-icons/fi';
-import './ProjectStatusCards.css';
+import { FiFileText, FiCheckCircle, FiClock, FiTrendingUp } from 'react-icons/fi'
+import './ProjectStatusCards.css'
 
 const ProjectStatusCards = ({ data = {} }) => {
-  const {
-    totalRecommended = 0,
-    totalInProgress = 0,
-    totalCompleted = 0
-  } = data;
+  const { totalRecommended = 0, totalInProgress = 0, totalCompleted = 0 } = data
 
   const cards = [
     {
@@ -15,15 +11,16 @@ const ProjectStatusCards = ({ data = {} }) => {
       icon: <FiFileText />,
       color: 'blue',
       percentage: null,
-      description: 'Projects recommended by MPs'
+      description: 'Projects recommended by MPs',
     },
     {
       title: 'In Progress',
       value: totalInProgress,
       icon: <FiClock />,
       color: 'orange',
-      percentage: totalRecommended > 0 ? ((totalInProgress / totalRecommended) * 100).toFixed(1) : 0,
-      description: 'Projects awaiting completion'
+      percentage:
+        totalRecommended > 0 ? ((totalInProgress / totalRecommended) * 100).toFixed(1) : 0,
+      description: 'Projects awaiting completion',
     },
     {
       title: 'Completed',
@@ -31,13 +28,13 @@ const ProjectStatusCards = ({ data = {} }) => {
       icon: <FiCheckCircle />,
       color: 'green',
       percentage: totalRecommended > 0 ? ((totalCompleted / totalRecommended) * 100).toFixed(1) : 0,
-      description: 'Projects successfully completed'
-    }
-  ];
+      description: 'Projects successfully completed',
+    },
+  ]
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat('en-IN').format(num);
-  };
+  const formatNumber = num => {
+    return new Intl.NumberFormat('en-IN').format(num)
+  }
 
   return (
     <div className="project-status-cards">
@@ -58,7 +55,7 @@ const ProjectStatusCards = ({ data = {} }) => {
             </div>
             {card.percentage !== null && (
               <div className="status-card-progress">
-                <div 
+                <div
                   className="status-card-progress-bar"
                   style={{ width: `${card.percentage}%` }}
                 ></div>
@@ -68,7 +65,7 @@ const ProjectStatusCards = ({ data = {} }) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProjectStatusCards;
+export default ProjectStatusCards

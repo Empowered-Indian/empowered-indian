@@ -1,44 +1,44 @@
-import { useState } from 'react';
-import { sanitizeEmail } from '../../../../utils/inputSanitization';
-import { FiMail, FiCheckCircle, FiInfo, FiAlertCircle } from 'react-icons/fi';
-import toast from 'react-hot-toast';
-import { subscribeToMailingList } from '../../../../services/api/mailingList';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import './MailingListForm.css';
+import { useState } from 'react'
+import { sanitizeEmail } from '../../../../utils/inputSanitization'
+import { FiMail, FiCheckCircle, FiInfo, FiAlertCircle } from 'react-icons/fi'
+import toast from 'react-hot-toast'
+import { subscribeToMailingList } from '../../../../services/api/mailingList'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import './MailingListForm.css'
 
 const MailingListForm = () => {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [alreadySubscribed, setAlreadySubscribed] = useState(false);
-  const [inlineError, setInlineError] = useState('');
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false)
+  const [inlineError, setInlineError] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) return toast.error('Please enter your email');
+  const handleSubmit = async e => {
+    e.preventDefault()
+    if (!email) return toast.error('Please enter your email')
 
     try {
-      setLoading(true);
-      setAlreadySubscribed(false);
-      setInlineError('');
-      const res = await subscribeToMailingList(email, { skipErrorToast: true });
-      toast.success(res?.message || 'Verification email sent');
-      setSubmitted(true);
+      setLoading(true)
+      setAlreadySubscribed(false)
+      setInlineError('')
+      const res = await subscribeToMailingList(email, { skipErrorToast: true })
+      toast.success(res?.message || 'Verification email sent')
+      setSubmitted(true)
     } catch (err) {
-      const status = err?.response?.status;
-      const message = err?.response?.data?.message || err?.response?.data?.error;
+      const status = err?.response?.status
+      const message = err?.response?.data?.message || err?.response?.data?.error
       if (status === 409) {
-        setAlreadySubscribed(true);
+        setAlreadySubscribed(true)
       } else if (message) {
-        setInlineError(message);
+        setInlineError(message)
       } else {
-        setInlineError('Something went wrong. Please try again later.');
+        setInlineError('Something went wrong. Please try again later.')
       }
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (submitted) {
     return (
@@ -47,7 +47,7 @@ const MailingListForm = () => {
         <h4>Check your inbox</h4>
         <p>We sent a verification link to confirm your subscription.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -59,12 +59,12 @@ const MailingListForm = () => {
           type="email"
           placeholder="Enter your email"
           value={email}
-          onChange={(e) => setEmail(sanitizeEmail(e.target.value))}
+          onChange={e => setEmail(sanitizeEmail(e.target.value))}
           disabled={loading}
           required
         />
       </div>
-      <Button type="submit" variant="primary" className="mailing-submit" disabled={loading}>
+      <Button type="submit" variant="default" className="mailing-submit" disabled={loading}>
         {loading ? 'Submitting…' : 'Subscribe'}
       </Button>
       {alreadySubscribed && (
@@ -81,9 +81,7 @@ const MailingListForm = () => {
       )}
       <p className="mailing-hint">No spam. Unsubscribe anytime.</p>
     </form>
-  );
-};
+  )
+}
 
-export default MailingListForm;
-
-
+export default MailingListForm

@@ -345,8 +345,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
@@ -360,24 +364,24 @@
     align-items: stretch;
     gap: 16px;
   }
-  
+
   .project-amount {
     text-align: left;
   }
-  
+
   .project-info-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .impact-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .expenditure-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .photos-grid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }

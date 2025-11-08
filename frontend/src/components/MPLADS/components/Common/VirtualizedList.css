@@ -227,11 +227,11 @@
   .virtualized-list-scroll.mobile-optimized {
     scroll-behavior: auto;
   }
-  
+
   .mobile-refresh-btn:active:not(:disabled) {
     transform: none;
   }
-  
+
   .pull-to-refresh,
   .refresh-arrow {
     transition: none;
@@ -243,7 +243,7 @@
   .pull-to-refresh {
     border-bottom: 2px solid;
   }
-  
+
   .mobile-refresh-btn {
     border: 2px solid;
   }
