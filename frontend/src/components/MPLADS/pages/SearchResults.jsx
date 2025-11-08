@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
 import { useMPSummary } from '../../../hooks/useApi';
@@ -20,6 +20,7 @@ const SearchResults = () => {
 
   const apiParams = useMemo(() => getApiParams(), [getApiParams]);
   const filterKey = useMemo(() => JSON.stringify(apiParams), [apiParams]);
+  const resultContentRef = useRef(null);
 
   useEffect(() => {
     setPageNo(1);
@@ -51,10 +52,18 @@ const SearchResults = () => {
 
   const changePage = (pageChangeDirection = 'next') => {
     if (pageChangeDirection === 'next') {
-      setPageNo(pageNo => pageNo + 1);
+      setPageNo(prev => Math.min(totalPages, prev + 1));
     } else {
-      setPageNo(pageNo => pageNo - 1);
+      setPageNo(prev => Math.max(1, prev - 1));
     }
+    setTimeout(() => {
+      if (resultContentRef) {
+        resultContentRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+       });
+      }
+    }, 10);
   }
 
   const getUtilizationColor = (percentage) => {
@@ -73,7 +82,7 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="search-results-page">
+    <div className="search-results-page" ref={resultContentRef}>
       <div className="search-header">
         <div className="search-header-content">
           <h1>Search Results</h1>
@@ -184,7 +193,7 @@ const SearchResults = () => {
                   variant="outline"
                   disabled={!canGoPrev}
                   className="pagination-btn"
-                  onClick={() => setPageNo(prev => Math.max(1, prev - 1))}
+                  onClick={() => changePage('prev')}
                 >
                   Previous
                 </Button>
@@ -195,7 +204,7 @@ const SearchResults = () => {
                   variant="outline"
                   disabled={!canGoNext}
                   className="pagination-btn"
-                  onClick={() => setPageNo(prev => Math.min(totalPages, prev + 1))}
+                  onClick={() => changePage('next')}
                 >
                   Next
                 </Button>
