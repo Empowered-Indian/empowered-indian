@@ -64,7 +64,7 @@ const MailingListForm = () => {
           required
         />
       </div>
-      <Button type="submit" variant="default" className="mailing-submit" disabled={loading}>
+      <Button type="submit" variant="primary" className="mailing-submit" disabled={loading}>
         {loading ? 'Submitting…' : 'Subscribe'}
       </Button>
       {alreadySubscribed && (
