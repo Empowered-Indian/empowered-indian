@@ -1,85 +1,85 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi';
-import { useMPSummary } from '../../../hooks/useApi';
-import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug';
-import { useFilters } from '../../../contexts/FilterContext';
-import SearchBar from '../components/Search/SearchBar';
-import FilterPanel from '../components/Filters/FilterPanel';
-import { Button } from '@/components/ui/button';
-import './SearchResults.css';
+import { useEffect, useMemo, useState, useRef } from 'react'
+import { useSearchParams, Link } from 'react-router-dom'
+import { FiFilter, FiX, FiUser, FiMapPin, FiTrendingUp } from 'react-icons/fi'
+import { useMPSummary } from '../../../hooks/useApi'
+import { buildMPSlugHuman, normalizeMPSlug } from '../../../utils/slug'
+import { useFilters } from '../../../contexts/FilterContext'
+import SearchBar from '../components/Search/SearchBar'
+import FilterPanel from '../components/Filters/FilterPanel'
+import { Button } from '@/components/ui/button'
+import './SearchResults.css'
 
 const SearchResults = () => {
-  const [searchParams] = useSearchParams();
-  const [showFilters, setShowFilters] = useState(false);
-  const { filters, getApiParams, getActiveFilterCount } = useFilters();
-  const [pageNo, setPageNo] = useState(1);
+  const [searchParams] = useSearchParams()
+  const [showFilters, setShowFilters] = useState(false)
+  const { filters, getApiParams, getActiveFilterCount } = useFilters()
+  const [pageNo, setPageNo] = useState(1)
 
   // Get search query from URL
-  const urlQuery = searchParams.get('q') || '';
+  const urlQuery = searchParams.get('q') || ''
 
-  const apiParams = useMemo(() => getApiParams(), [getApiParams]);
-  const filterKey = useMemo(() => JSON.stringify(apiParams), [apiParams]);
-  const resultContentRef = useRef(null);
+  const apiParams = useMemo(() => getApiParams(), [getApiParams])
+  const filterKey = useMemo(() => JSON.stringify(apiParams), [apiParams])
+  const resultContentRef = useRef(null)
 
   useEffect(() => {
-    setPageNo(1);
-  }, [urlQuery, filterKey]);
+    setPageNo(1)
+  }, [urlQuery, filterKey])
 
   // Use the MP summary API with filters
   const { data, isLoading, error } = useMPSummary({
     ...apiParams,
     search: urlQuery || filters.searchQuery,
     page: pageNo,
-    limit: 20
-  });
+    limit: 20,
+  })
 
-  const results = Array.isArray(data?.data?.mps) ? data.data.mps : (data?.data || []);
-  const pagination = data?.data?.pagination || data?.pagination || {};
-  const totalPages = pagination.totalPages || pagination.pages || 1;
-  const currentPage = pagination.currentPage || pagination.page || pageNo;
-  const canGoPrev = (pagination.hasPrev ?? currentPage > 1) && currentPage > 1;
-  const canGoNext = (pagination.hasNext ?? currentPage < totalPages) && currentPage < totalPages;
-  const activeFilterCount = getActiveFilterCount();
+  const results = Array.isArray(data?.data?.mps) ? data.data.mps : data?.data || []
+  const pagination = data?.data?.pagination || data?.pagination || {}
+  const totalPages = pagination.totalPages || pagination.pages || 1
+  const currentPage = pagination.currentPage || pagination.page || pageNo
+  const canGoPrev = (pagination.hasPrev ?? currentPage > 1) && currentPage > 1
+  const canGoNext = (pagination.hasNext ?? currentPage < totalPages) && currentPage < totalPages
+  const activeFilterCount = getActiveFilterCount()
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(amount || 0);
-  };
+    }).format(amount || 0)
+  }
 
   const changePage = (pageChangeDirection = 'next') => {
     if (pageChangeDirection === 'next') {
-      setPageNo(prev => Math.min(totalPages, prev + 1));
+      setPageNo(prev => Math.min(totalPages, prev + 1))
     } else {
-      setPageNo(prev => Math.max(1, prev - 1));
+      setPageNo(prev => Math.max(1, prev - 1))
     }
     setTimeout(() => {
       if (resultContentRef) {
         resultContentRef.current.scrollIntoView({
           behavior: 'smooth',
           block: 'start',
-       });
+        })
       }
-    }, 10);
+    }, 10)
   }
 
-  const getUtilizationColor = (percentage) => {
-    if (percentage >= 90) return 'high';
-    if (percentage >= 70) return 'medium';
-    return 'low';
-  };
+  const getUtilizationColor = percentage => {
+    if (percentage >= 90) return 'high'
+    if (percentage >= 70) return 'medium'
+    return 'low'
+  }
 
   const formatConstituencyName = (constituency, house, state) => {
     // Handle special cases for Rajya Sabha members
-    if (constituency === "Sitting Rajya Sabha" || constituency === "Nominated Rajya Sabha") {
-      const type = constituency.includes("Nominated") ? "Nominated" : "Sitting";
-      return `${type} ${house}, ${state}`;
+    if (constituency === 'Sitting Rajya Sabha' || constituency === 'Nominated Rajya Sabha') {
+      const type = constituency.includes('Nominated') ? 'Nominated' : 'Sitting'
+      return `${type} ${house}, ${state}`
     }
-    return constituency;
-  };
+    return constituency
+  }
 
   return (
     <div className="search-results-page" ref={resultContentRef}>
@@ -95,9 +95,7 @@ const SearchResults = () => {
             >
               <FiFilter />
               <span>Filters</span>
-              {activeFilterCount > 0 && (
-                <span className="filter-badge">{activeFilterCount}</span>
-              )}
+              {activeFilterCount > 0 && <span className="filter-badge">{activeFilterCount}</span>}
             </Button>
           </div>
         </div>
@@ -114,14 +112,14 @@ const SearchResults = () => {
           <main className="search-results">
             <div className="results-header">
               <h2>
-                {isLoading ? 'Searching...' :
-                 results.length > 0 ? `Found ${pagination.totalCount || pagination.total || results.length} results` :
-                 'No results found'}
+                {isLoading
+                  ? 'Searching...'
+                  : results.length > 0
+                    ? `Found ${pagination.totalCount || pagination.total || results.length} results`
+                    : 'No results found'}
               </h2>
               {(urlQuery || filters.searchQuery) && (
-                <p className="search-query">
-                  for "{urlQuery || filters.searchQuery}"
-                </p>
+                <p className="search-query">for "{urlQuery || filters.searchQuery}"</p>
               )}
             </div>
 
@@ -136,7 +134,7 @@ const SearchResults = () => {
               </div>
             ) : results.length > 0 ? (
               <div className="results-list">
-                {results.map((mp) => (
+                {results.map(mp => (
                   <Link
                     key={mp._id || mp.id}
                     to={`/mplads/mps/${encodeURIComponent(normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }) || String(mp._id || mp.id)))}`}
@@ -153,9 +151,7 @@ const SearchResults = () => {
                             <FiMapPin />
                             {formatConstituencyName(mp.constituency, mp.house, mp.state)}
                           </span>
-                          <span className="meta-item">
-                            {mp.house}
-                          </span>
+                          <span className="meta-item">{mp.house}</span>
                         </div>
                       </div>
                     </div>
@@ -163,7 +159,9 @@ const SearchResults = () => {
                     <div className="result-stats">
                       <div className="stat">
                         <span className="stat-label">Allocated</span>
-                        <span className="stat-value">{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</span>
+                        <span className="stat-value">
+                          {formatCurrency(mp.allocatedAmount || mp.totalAllocated)}
+                        </span>
                       </div>
                       <div className="stat">
                         <span className="stat-label">Expenditure</span>
@@ -171,7 +169,9 @@ const SearchResults = () => {
                       </div>
                       <div className="stat">
                         <span className="stat-label">Utilization</span>
-                        <span className={`stat-value utilization-${getUtilizationColor(mp.utilizationPercentage)}`}>
+                        <span
+                          className={`stat-value utilization-${getUtilizationColor(mp.utilizationPercentage)}`}
+                        >
                           <FiTrendingUp />
                           {mp.utilizationPercentage?.toFixed(1) || 0}%
                         </span>
@@ -214,7 +214,7 @@ const SearchResults = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SearchResults;
+export default SearchResults

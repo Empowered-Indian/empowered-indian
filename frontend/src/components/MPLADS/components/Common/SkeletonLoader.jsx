@@ -1,11 +1,11 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton'
 
 const SkeletonLoader = ({
   type = 'text',
   width = '100%',
   height = '1rem',
   count = 1,
-  className = ''
+  className = '',
 }) => {
   const renderSkeleton = () => {
     switch (type) {
@@ -22,7 +22,7 @@ const SkeletonLoader = ({
               <Skeleton className="h-4 w-3/5" />
             </div>
           </div>
-        );
+        )
 
       case 'table':
         return (
@@ -40,7 +40,7 @@ const SkeletonLoader = ({
               </div>
             ))}
           </div>
-        );
+        )
 
       case 'chart':
         return (
@@ -48,7 +48,7 @@ const SkeletonLoader = ({
             <Skeleton className="h-6 w-1/3" />
             <Skeleton className="h-64 w-full" />
           </div>
-        );
+        )
 
       case 'stat':
         return (
@@ -56,7 +56,7 @@ const SkeletonLoader = ({
             <Skeleton className="h-8 w-24" />
             <Skeleton className="h-4 w-32" />
           </div>
-        );
+        )
 
       case 'list':
         return (
@@ -71,30 +71,24 @@ const SkeletonLoader = ({
               </div>
             ))}
           </div>
-        );
+        )
 
       default:
-        return (
-          <Skeleton
-            style={{ width, height }}
-          />
-        );
+        return <Skeleton style={{ width, height }} />
     }
-  };
+  }
 
   return (
     <div className={className}>
-      {count > 1 ? (
-        Array.from({ length: count }).map((_, index) => (
-          <div key={index} className="mb-4 last:mb-0">
-            {renderSkeleton()}
-          </div>
-        ))
-      ) : (
-        renderSkeleton()
-      )}
+      {count > 1
+        ? Array.from({ length: count }).map((_, index) => (
+            <div key={index} className="mb-4 last:mb-0">
+              {renderSkeleton()}
+            </div>
+          ))
+        : renderSkeleton()}
     </div>
-  );
-};
+  )
+}
 
-export default SkeletonLoader;
+export default SkeletonLoader

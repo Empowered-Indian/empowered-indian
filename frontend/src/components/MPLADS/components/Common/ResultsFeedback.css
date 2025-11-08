@@ -193,34 +193,34 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
   }
-  
+
   .results-empty {
     padding: 1.5rem 1rem;
   }
-  
+
   .results-empty-icon {
     font-size: 2rem;
   }
-  
+
   .results-empty-title {
     font-size: 1.1rem;
   }
-  
+
   .results-empty-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .results-action-btn {
     justify-content: center;
   }
-  
+
   .results-summary {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
-  
+
   .results-summary-actions {
     align-self: flex-end;
   }
@@ -231,7 +231,7 @@
   .results-feedback {
     border-width: 2px;
   }
-  
+
   .results-action-btn {
     border-width: 2px;
   }

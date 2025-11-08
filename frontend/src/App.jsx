@@ -32,7 +32,7 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="app">
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 duration: 4000,
@@ -52,13 +52,16 @@ function App() {
               <Route path="/unsubscribe/:token" element={<UnsubscribeSuccess />} />
               <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
               <Route path="/login" element={<Login />} />
-              
+
               {/* MPLADS Routes */}
-              <Route path="/mplads" element={
-                <FilterProvider>
-                  <Layout />
-                </FilterProvider>
-              }>
+              <Route
+                path="/mplads"
+                element={
+                  <FilterProvider>
+                    <Layout />
+                  </FilterProvider>
+                }
+              >
                 <Route index element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="track-area" element={<TrackArea />} />
@@ -69,13 +72,16 @@ function App() {
                 <Route path="states/:stateId" element={<StateDetail />} />
                 <Route path="mps" element={<MPList />} />
                 <Route path="mps/:mpId" element={<MPDetail />} />
-                <Route path="admin" element={
-                  <ProtectedRoute requireAdmin={true}>
-                    <Admin />
-                  </ProtectedRoute>
-                } />
+                <Route
+                  path="admin"
+                  element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <Admin />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
-              
+
               {/* All other routes show Not Found */}
               <Route path="*" element={<NotFound />} />
             </Routes>

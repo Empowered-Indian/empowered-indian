@@ -39,8 +39,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-state {
@@ -74,7 +78,9 @@
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .stat-item:hover {
@@ -147,7 +153,7 @@
   flex-shrink: 0;
 }
 
-.search-box input[type="text"] {
+.search-box input[type='text'] {
   flex: 1;
   border: none;
   outline: none;
@@ -166,7 +172,7 @@
   color: #4a5568;
 }
 
-.exact-match-toggle input[type="checkbox"] {
+.exact-match-toggle input[type='checkbox'] {
   cursor: pointer;
 }
 
@@ -297,11 +303,11 @@
   .stats-grid {
     gap: 1rem;
   }
-  
+
   .stat-item {
     padding: 0.75rem;
   }
-  
+
   .stat-number {
     font-size: 1.25rem;
   }

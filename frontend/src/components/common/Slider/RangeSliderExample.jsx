@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import RangeSlider from './RangeSlider';
+import React, { useState } from 'react'
+import RangeSlider from './RangeSlider'
 
 /**
  * Example component demonstrating various RangeSlider configurations
@@ -7,28 +7,28 @@ import RangeSlider from './RangeSlider';
  */
 const RangeSliderExample = () => {
   // State for different slider examples
-  const [budgetRange, setBudgetRange] = useState([10000, 500000]);
-  const [yearRange, setYearRange] = useState([2014, 2024]);
-  const [singleValue, setSingleValue] = useState(75);
-  const [performanceRange, setPerformanceRange] = useState([20, 80]);
+  const [budgetRange, setBudgetRange] = useState([10000, 500000])
+  const [yearRange, setYearRange] = useState([2014, 2024])
+  const [singleValue, setSingleValue] = useState(75)
+  const [performanceRange, setPerformanceRange] = useState([20, 80])
 
   // Format currency values
-  const formatCurrency = (value) => {
+  const formatCurrency = value => {
     if (value >= 100000) {
-      return `₹${(value / 100000).toFixed(1)}L`;
+      return `₹${(value / 100000).toFixed(1)}L`
     } else if (value >= 1000) {
-      return `₹${(value / 1000).toFixed(1)}K`;
+      return `₹${(value / 1000).toFixed(1)}K`
     }
-    return `₹${value}`;
-  };
+    return `₹${value}`
+  }
 
   // Format percentage
-  const formatPercentage = (value) => `${value}%`;
+  const formatPercentage = value => `${value}%`
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h2>RangeSlider Examples</h2>
-      
+
       {/* Budget Range Slider */}
       <div style={{ marginBottom: '3rem' }}>
         <h3>Budget Allocation Range</h3>
@@ -44,7 +44,9 @@ const RangeSliderExample = () => {
           showTicks={true}
           tickValues={[5000, 50000, 100000, 250000, 500000, 1000000]}
         />
-        <p>Selected range: {formatCurrency(budgetRange[0])} - {formatCurrency(budgetRange[1])}</p>
+        <p>
+          Selected range: {formatCurrency(budgetRange[0])} - {formatCurrency(budgetRange[1])}
+        </p>
       </div>
 
       {/* Year Range Slider */}
@@ -61,7 +63,9 @@ const RangeSliderExample = () => {
           showTicks={true}
           tickValues={[2009, 2012, 2015, 2018, 2021, 2024]}
         />
-        <p>Selected years: {yearRange[0]} - {yearRange[1]}</p>
+        <p>
+          Selected years: {yearRange[0]} - {yearRange[1]}
+        </p>
       </div>
 
       {/* Single Value Slider */}
@@ -96,7 +100,10 @@ const RangeSliderExample = () => {
           showTooltips={true}
           className="performance-slider"
         />
-        <p>Performance range: {formatPercentage(performanceRange[0])} - {formatPercentage(performanceRange[1])}</p>
+        <p>
+          Performance range: {formatPercentage(performanceRange[0])} -{' '}
+          {formatPercentage(performanceRange[1])}
+        </p>
       </div>
 
       {/* Disabled State Example */}
@@ -114,7 +121,7 @@ const RangeSliderExample = () => {
         <p>This slider is disabled to show the disabled state styling.</p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RangeSliderExample;
+export default RangeSliderExample

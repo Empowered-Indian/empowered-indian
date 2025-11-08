@@ -1,60 +1,60 @@
-import React from 'react';
-import * as Sentry from '@sentry/react';
-import { FiAlertTriangle, FiRefreshCw, FiHome, FiInfo } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
-import './ErrorBoundary.css';
+import React from 'react'
+import * as Sentry from '@sentry/react'
+import { FiAlertTriangle, FiRefreshCw, FiHome, FiInfo } from 'react-icons/fi'
+import { Button } from '@/components/ui/button'
+import './ErrorBoundary.css'
 
 class ErrorBoundary extends React.Component {
   static defaultProps = {
     level: 'page', // 'page', 'section', 'component'
     showDetails: false,
     onReset: null,
-    fallback: null
-  };
+    fallback: null,
+  }
   constructor(props) {
-    super(props);
-    this.state = { 
-      hasError: false, 
+    super(props)
+    this.state = {
+      hasError: false,
       error: null,
-      errorInfo: null
-    };
+      errorInfo: null,
+    }
   }
 
   static getDerivedStateFromError() {
     // Update state so the next render will show the fallback UI
-    return { hasError: true };
+    return { hasError: true }
   }
 
   componentDidCatch(error, errorInfo) {
     // Log error to console in development
     if (import.meta.env.DEV) {
-      console.error('Error caught by boundary:', error, errorInfo);
+      console.error('Error caught by boundary:', error, errorInfo)
     }
-    
+
     // Update state with error details
     this.setState({
       error,
-      errorInfo
-    });
+      errorInfo,
+    })
 
     // Report error to Sentry with additional context
-    Sentry.withScope((scope) => {
+    Sentry.withScope(scope => {
       // Add context information
-      scope.setTag('errorBoundary', this.props.level || 'unknown');
-      scope.setTag('component', this.constructor.name);
-      
+      scope.setTag('errorBoundary', this.props.level || 'unknown')
+      scope.setTag('component', this.constructor.name)
+
       // Add component hierarchy information
       if (errorInfo?.componentStack) {
         scope.setContext('componentStack', {
-          stack: errorInfo.componentStack
-        });
+          stack: errorInfo.componentStack,
+        })
       }
 
       // Add user context (non-PII)
       scope.setUser({
         id: null, // No user tracking for government app
         ip_address: null, // No IP tracking
-      });
+      })
 
       // Add additional context
       scope.setContext('errorBoundary', {
@@ -62,33 +62,33 @@ class ErrorBoundary extends React.Component {
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
         url: window.location.href,
-        viewport: `${window.innerWidth}x${window.innerHeight}`
-      });
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+      })
 
       // Report the error
-      Sentry.captureException(error);
-    });
+      Sentry.captureException(error)
+    })
   }
 
   handleReset = () => {
-    this.setState({ 
-      hasError: false, 
+    this.setState({
+      hasError: false,
       error: null,
-      errorInfo: null 
-    });
-    
+      errorInfo: null,
+    })
+
     // Call custom reset handler if provided
     if (this.props.onReset) {
-      this.props.onReset();
+      this.props.onReset()
     } else {
       // Default: reload the page
-      window.location.reload();
+      window.location.reload()
     }
-  };
+  }
 
   handleGoHome = () => {
-    window.location.href = '/';
-  };
+    window.location.href = '/'
+  }
 
   handleReportError = () => {
     // In a real app, this would send error reports to a service
@@ -98,31 +98,31 @@ class ErrorBoundary extends React.Component {
       componentStack: this.state.errorInfo?.componentStack,
       userAgent: navigator.userAgent,
       url: window.location.href,
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('Error Report:', errorInfo);
-    
+      timestamp: new Date().toISOString(),
+    }
+
+    console.log('Error Report:', errorInfo)
+
     // Show user feedback
-    alert('Error report has been logged. Thank you for helping us improve!');
-  };
+    alert('Error report has been logged. Thank you for helping us improve!')
+  }
 
   render() {
     if (this.state.hasError) {
-      const { fallback: CustomFallback } = this.props;
-      
+      const { fallback: CustomFallback } = this.props
+
       // If a custom fallback is provided, use it
       if (CustomFallback) {
         return (
-          <CustomFallback 
+          <CustomFallback
             error={this.state.error}
             errorInfo={this.state.errorInfo}
             onReset={this.handleReset}
             onGoHome={this.handleGoHome}
           />
-        );
+        )
       }
-      
+
       return (
         <div className="error-boundary-container">
           <div className="error-boundary-content">
@@ -133,7 +133,7 @@ class ErrorBoundary extends React.Component {
                 We encountered an unexpected error. Don't worry, your data is safe.
               </p>
             </div>
-            
+
             <div className="error-boundary-details">
               <div className="error-suggestion">
                 <FiInfo className="suggestion-icon" />
@@ -147,7 +147,7 @@ class ErrorBoundary extends React.Component {
                   </ul>
                 </div>
               </div>
-              
+
               {import.meta.env.DEV && this.state.error && (
                 <details className="error-technical-details">
                   <summary>Technical Details (Development Only)</summary>
@@ -156,14 +156,14 @@ class ErrorBoundary extends React.Component {
                       <h4>Error Message:</h4>
                       <pre className="error-text">{this.state.error.toString()}</pre>
                     </div>
-                    
+
                     {this.state.error.stack && (
                       <div className="error-section">
                         <h4>Stack Trace:</h4>
                         <pre className="error-stack">{this.state.error.stack}</pre>
                       </div>
                     )}
-                    
+
                     {this.state.errorInfo?.componentStack && (
                       <div className="error-section">
                         <h4>Component Stack:</h4>
@@ -174,7 +174,7 @@ class ErrorBoundary extends React.Component {
                 </details>
               )}
             </div>
-            
+
             <div className="error-actions">
               <Button
                 variant="default"
@@ -207,11 +207,11 @@ class ErrorBoundary extends React.Component {
             </div>
           </div>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary

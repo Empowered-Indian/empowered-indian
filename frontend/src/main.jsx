@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import * as Sentry from "@sentry/react"
+import * as Sentry from '@sentry/react'
 import { AnalyticsProvider } from './contexts/AnalyticsContext'
 import './index.css'
 import App from './App.jsx'
@@ -16,17 +16,17 @@ if (import.meta.env.VITE_ENABLE_SENTRY === 'true' && import.meta.env.VITE_SENTRY
     beforeSend(event) {
       // Filter out sensitive information
       if (event.extra) {
-        delete event.extra.props;
-        delete event.extra.state;
+        delete event.extra.props
+        delete event.extra.state
       }
       if (event.contexts && event.contexts.state) {
-        delete event.contexts.state;
+        delete event.contexts.state
       }
       // Only send errors in production unless debug mode is enabled
       if (import.meta.env.MODE === 'development' && import.meta.env.VITE_DEBUG_MODE !== 'true') {
-        return null;
+        return null
       }
-      return event;
+      return event
     },
     integrations: [
       Sentry.browserTracingIntegration({
@@ -46,7 +46,7 @@ if (import.meta.env.VITE_ENABLE_SENTRY === 'true' && import.meta.env.VITE_SENTRY
     replaysOnErrorSampleRate: 0.1, // Capture 10% of sessions with errors
     // Release tracking
     release: import.meta.env.VITE_APP_VERSION || '1.0.0',
-  });
+  })
 }
 
 const queryClient = new QueryClient({
@@ -67,5 +67,5 @@ createRoot(document.getElementById('root')).render(
         <App />
       </AnalyticsProvider>
     </QueryClientProvider>
-  </StrictMode>,
+  </StrictMode>
 )

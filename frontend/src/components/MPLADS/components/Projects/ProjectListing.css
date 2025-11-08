@@ -115,7 +115,7 @@
 
 .filter-group select,
 .filter-group input {
-  height: 36px;            /* consistent control height */
+  height: 36px; /* consistent control height */
   line-height: 36px;
   padding: 0.5rem;
   border: 1px solid #d1d5db;
@@ -441,8 +441,8 @@
     min-width: unset;
     max-width: none; /* Remove width constraint on mobile */
     align-items: stretch; /* Full width on mobile */
-    margin-top: 0.75rem;    /* Increase spacing on mobile */
-    margin-bottom: 1rem;    /* Increase spacing on mobile */
+    margin-top: 0.75rem; /* Increase spacing on mobile */
+    margin-bottom: 1rem; /* Increase spacing on mobile */
   }
 
   .projects-grid {

@@ -17,7 +17,9 @@
   border-radius: 1rem;
   padding: 3rem 2rem;
   text-align: center;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .not-found-code {
@@ -71,15 +73,15 @@
   .not-found-code {
     font-size: 4rem;
   }
-  
+
   .not-found-title {
     font-size: 1.5rem;
   }
-  
+
   .not-found-message {
     font-size: 1rem;
   }
-  
+
   .not-found-content {
     padding: 2rem 1.5rem;
   }

@@ -1,11 +1,6 @@
-import { FiInfo } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { FiInfo } from 'react-icons/fi'
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 /**
  * InfoTooltip - A wrapper around shadcn's Tooltip component
@@ -27,26 +22,26 @@ const InfoTooltip = ({
   position = 'top',
   className = '',
   size = 'small',
-  usePortal = false  // Legacy prop - shadcn uses portal by default via Radix UI
+  usePortal = false, // Legacy prop - shadcn uses portal by default via Radix UI
 }) => {
   // Map position prop to shadcn's side prop
   const sideMap = {
     top: 'top',
     bottom: 'bottom',
     left: 'left',
-    right: 'right'
-  };
+    right: 'right',
+  }
 
-  const side = sideMap[position] || 'top';
+  const side = sideMap[position] || 'top'
 
   // Map size to button dimensions
   const sizeClasses = {
     small: 'w-6 h-6 text-sm',
     medium: 'w-7 h-7 text-base',
-    large: 'w-8 h-8 text-lg'
-  };
+    large: 'w-8 h-8 text-lg',
+  }
 
-  const sizeClass = sizeClasses[size] || sizeClasses.small;
+  const sizeClass = sizeClasses[size] || sizeClasses.small
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -70,7 +65,7 @@ const InfoTooltip = ({
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
-};
+  )
+}
 
-export default InfoTooltip;
+export default InfoTooltip

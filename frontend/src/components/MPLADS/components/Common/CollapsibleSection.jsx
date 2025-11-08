@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
+import { useEffect } from 'react'
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi'
+import { Button } from '@/components/ui/button'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from '@/components/ui/accordion'
 
 const CollapsibleSection = ({
   title,
@@ -15,35 +15,35 @@ const CollapsibleSection = ({
   icon = null,
   subtitle = null,
   className = '',
-  headerActions = null
+  headerActions = null,
 }) => {
-  const defaultValue = defaultOpen ? 'item-1' : undefined;
+  const defaultValue = defaultOpen ? 'item-1' : undefined
 
   // When opening, trigger a resize so charts reflow from 0-size containers
   useEffect(() => {
     const handleAccordionChange = () => {
       requestAnimationFrame(() => {
         try {
-          window.dispatchEvent(new Event('resize'));
+          window.dispatchEvent(new Event('resize'))
         } catch {}
-      });
-    };
+      })
+    }
 
     // Listen for accordion state changes via DOM mutations
     const observer = new MutationObserver(() => {
-      handleAccordionChange();
-    });
+      handleAccordionChange()
+    })
 
-    const accordionElement = document.querySelector(`[data-title="${title}"]`);
+    const accordionElement = document.querySelector(`[data-title="${title}"]`)
     if (accordionElement) {
       observer.observe(accordionElement, {
         attributes: true,
-        attributeFilter: ['data-state']
-      });
+        attributeFilter: ['data-state'],
+      })
     }
 
-    return () => observer.disconnect();
-  }, [title]);
+    return () => observer.disconnect()
+  }, [title])
 
   return (
     <Accordion
@@ -57,12 +57,13 @@ const CollapsibleSection = ({
         value="item-1"
         className="collapsible-section border-0 bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-6 overflow-hidden transition-shadow hover:shadow-md"
       >
-        <AccordionTrigger
-          className="collapsible-header flex justify-between items-center p-6 cursor-pointer user-select-none transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 min-h-[80px] [&[data-state=open]]:border-b [&[data-state=open]]:border-gray-200 dark:[&[data-state=open]]:border-gray-700 hover:no-underline"
-        >
+        <AccordionTrigger className="collapsible-header flex justify-between items-center p-6 cursor-pointer user-select-none transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 min-h-[80px] [&[data-state=open]]:border-b [&[data-state=open]]:border-gray-200 dark:[&[data-state=open]]:border-gray-700 hover:no-underline">
           <div className="flex items-start gap-4 flex-1 py-2">
             {icon && (
-              <span className="collapsible-icon text-2xl text-blue-600 dark:text-blue-400 flex items-center justify-center mt-1 flex-shrink-0" aria-hidden="true">
+              <span
+                className="collapsible-icon text-2xl text-blue-600 dark:text-blue-400 flex items-center justify-center mt-1 flex-shrink-0"
+                aria-hidden="true"
+              >
                 {icon}
               </span>
             )}
@@ -80,10 +81,7 @@ const CollapsibleSection = ({
 
           <div className="collapsible-controls flex items-center gap-3 ml-4">
             {headerActions && (
-              <div
-                className="collapsible-actions flex gap-2"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="collapsible-actions flex gap-2" onClick={e => e.stopPropagation()}>
                 {headerActions}
               </div>
             )}
@@ -97,7 +95,7 @@ const CollapsibleSection = ({
         </AccordionContent>
       </AccordionItem>
     </Accordion>
-  );
-};
+  )
+}
 
-export default CollapsibleSection;
+export default CollapsibleSection

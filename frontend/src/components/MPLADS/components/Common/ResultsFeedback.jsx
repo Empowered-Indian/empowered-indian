@@ -1,7 +1,7 @@
-import { FiSearch, FiFilter, FiRefreshCw, FiX } from 'react-icons/fi';
-import { FilterLoadingState } from './LoadingState';
-import { Button } from '@/components/ui/button';
-import './ResultsFeedback.css';
+import { FiSearch, FiFilter, FiRefreshCw, FiX } from 'react-icons/fi'
+import { FilterLoadingState } from './LoadingState'
+import { Button } from '@/components/ui/button'
+import './ResultsFeedback.css'
 
 const ResultsFeedback = ({
   isLoading = false,
@@ -13,22 +13,22 @@ const ResultsFeedback = ({
   onClearFilters = null,
   onRetry = null,
   resultType = 'items',
-  showLoadingInline = true
+  showLoadingInline = true,
 }) => {
-  const activeFilterCount = activeFilters.length;
-  const hasSearch = Boolean(searchQuery);
-  const hasFilters = activeFilterCount > 0;
+  const activeFilterCount = activeFilters.length
+  const hasSearch = Boolean(searchQuery)
+  const hasFilters = activeFilterCount > 0
 
   // Loading state
   if (isLoading && showLoadingInline) {
     return (
       <div className="results-feedback results-loading">
-        <FilterLoadingState 
+        <FilterLoadingState
           filtersCount={activeFilterCount}
           message={hasSearch ? `Searching for "${searchQuery}"...` : 'Loading...'}
         />
       </div>
-    );
+    )
   }
 
   // No results state
@@ -38,40 +38,31 @@ const ResultsFeedback = ({
         <div className="results-empty-icon">
           <FiSearch />
         </div>
-        
-        <h3 className="results-empty-title">
-          No {resultType} found
-        </h3>
-        
+
+        <h3 className="results-empty-title">No {resultType} found</h3>
+
         <div className="results-empty-message">
           {hasSearch && hasFilters ? (
             <>
-              No {resultType} match your search for <strong>"{searchQuery}"</strong> with current filters.
+              No {resultType} match your search for <strong>"{searchQuery}"</strong> with current
+              filters.
             </>
           ) : hasSearch ? (
             <>
               No {resultType} match your search for <strong>"{searchQuery}"</strong>.
             </>
           ) : hasFilters ? (
-            <>
-              No {resultType} match your current filter criteria.
-            </>
+            <>No {resultType} match your current filter criteria.</>
           ) : (
-            <>
-              No {resultType} available at this time.
-            </>
+            <>No {resultType} available at this time.</>
           )}
         </div>
 
         <div className="results-empty-suggestions">
           <p>Try:</p>
           <ul>
-            {hasSearch && (
-              <li>Using different search terms</li>
-            )}
-            {hasFilters && (
-              <li>Removing some filters</li>
-            )}
+            {hasSearch && <li>Using different search terms</li>}
+            {hasFilters && <li>Removing some filters</li>}
             <li>Checking your spelling</li>
             <li>Using more general terms</li>
           </ul>
@@ -89,7 +80,7 @@ const ResultsFeedback = ({
               Clear Search
             </Button>
           )}
-          
+
           {hasFilters && onClearFilters && (
             <Button
               variant="outline"
@@ -101,7 +92,7 @@ const ResultsFeedback = ({
               Clear Filters
             </Button>
           )}
-          
+
           {onRetry && (
             <Button
               variant="default"
@@ -115,7 +106,7 @@ const ResultsFeedback = ({
           )}
         </div>
       </div>
-    );
+    )
   }
 
   // Results found state
@@ -127,7 +118,7 @@ const ResultsFeedback = ({
             {totalResults.toLocaleString()} {resultType}
             {hasSearch || hasFilters ? ' found' : ' available'}
           </span>
-          
+
           {(hasSearch || hasFilters) && (
             <div className="results-context">
               {hasSearch && (
@@ -135,7 +126,7 @@ const ResultsFeedback = ({
                   for "<strong>{searchQuery}</strong>"
                 </span>
               )}
-              
+
               {hasFilters && (
                 <span className="results-filter-context">
                   with {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
@@ -158,7 +149,7 @@ const ResultsFeedback = ({
                 <FiX />
               </Button>
             )}
-            
+
             {hasFilters && onClearFilters && (
               <Button
                 variant="ghost"
@@ -173,10 +164,10 @@ const ResultsFeedback = ({
           </div>
         )}
       </div>
-    );
+    )
   }
 
-  return null;
-};
+  return null
+}
 
-export default ResultsFeedback;
+export default ResultsFeedback

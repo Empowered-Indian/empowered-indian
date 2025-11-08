@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Slider } from '@/components/ui/slider';
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Slider } from '@/components/ui/slider'
 
 /**
  * RangeSlider Component
@@ -29,56 +29,60 @@ const RangeSlider = ({
   max = 100,
   value = [min, max],
   onChange,
-  format = (val) => val.toString(),
+  format = val => val.toString(),
   label = 'Range Slider',
   step = 1,
   disabled = false,
-  className = ''
+  className = '',
 }) => {
   // Internal state for immediate UI updates
-  const [internalValue, setInternalValue] = useState(value);
-  const debounceTimerRef = useRef(null);
+  const [internalValue, setInternalValue] = useState(value)
+  const debounceTimerRef = useRef(null)
 
   // Sync internal value with external value prop
   useEffect(() => {
-    setInternalValue(value);
-  }, [value]);
+    setInternalValue(value)
+  }, [value])
 
   // Debounced onChange function
-  const debouncedOnChange = useCallback((newValue) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      if (onChange) {
-        onChange(newValue);
+  const debouncedOnChange = useCallback(
+    newValue => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
       }
-    }, 300);
-  }, [onChange]);
+
+      debounceTimerRef.current = setTimeout(() => {
+        if (onChange) {
+          onChange(newValue)
+        }
+      }, 300)
+    },
+    [onChange]
+  )
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
+        clearTimeout(debounceTimerRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   // Handle value change from slider
-  const handleValueChange = useCallback((newValue) => {
-    setInternalValue(newValue);
-    debouncedOnChange(newValue);
-  }, [debouncedOnChange]);
+  const handleValueChange = useCallback(
+    newValue => {
+      setInternalValue(newValue)
+      debouncedOnChange(newValue)
+    },
+    [debouncedOnChange]
+  )
 
   return (
     <div className={`range-slider ${className}`}>
       {/* Value display */}
       <div className="range-slider__values flex justify-between items-center mb-3">
-        <div className="text-sm font-medium text-gray-700">
-          {label}
-        </div>
+        <div className="text-sm font-medium text-gray-700">{label}</div>
         <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
           <span>{format(internalValue[0])}</span>
           <span className="text-gray-400">-</span>
@@ -98,7 +102,7 @@ const RangeSlider = ({
         className="range-slider__container"
       />
     </div>
-  );
-};
+  )
+}
 
-export default RangeSlider;
+export default RangeSlider

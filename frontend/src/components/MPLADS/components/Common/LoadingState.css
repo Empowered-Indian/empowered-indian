@@ -75,7 +75,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
   animation: shimmer 1.5s infinite;
 }
 
@@ -222,22 +227,21 @@
   border-radius: inherit;
 }
 
-
 /* Enhanced Mobile optimizations */
 @media (max-width: 768px) {
   .loading-state {
     padding: var(--spacing-6) var(--spacing-4);
   }
-  
+
   .loading-large {
     padding: var(--spacing-8) var(--spacing-4);
     min-height: 180px;
   }
-  
+
   .loading-timeout {
     padding: var(--spacing-8) var(--spacing-4);
   }
-  
+
   .loading-timeout-content {
     padding: var(--spacing-6);
     max-width: 100%;
@@ -264,11 +268,11 @@
   .loading-state {
     padding: var(--spacing-4) var(--spacing-3);
   }
-  
+
   .loading-timeout-content {
     padding: var(--spacing-4);
   }
-  
+
   .loading-timeout-content h3 {
     font-size: var(--text-lg);
   }
@@ -301,7 +305,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

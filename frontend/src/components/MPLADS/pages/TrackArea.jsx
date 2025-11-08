@@ -1,37 +1,42 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { FiMap, FiSearch, FiFilter } from 'react-icons/fi';
-import { worksAPI } from '../../../services/api/works';
-import { CACHE_TIMES } from '../../../utils/constants/api';
-import ProjectListing from '../components/Projects/ProjectListing';
-import './TrackArea.css';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { FiMap, FiSearch, FiFilter } from 'react-icons/fi'
+import { worksAPI } from '../../../services/api/works'
+import { CACHE_TIMES } from '../../../utils/constants/api'
+import ProjectListing from '../components/Projects/ProjectListing'
+import './TrackArea.css'
+import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 
 const TrackArea = () => {
-  const [selectedConstituency, setSelectedConstituency] = useState('');
-  const [selectedState, setSelectedState] = useState('');
+  const [selectedConstituency, setSelectedConstituency] = useState('')
+  const [selectedState, setSelectedState] = useState('')
   // Fetch constituencies
   const { data: constituenciesData } = useQuery({
     queryKey: ['constituencies', selectedState],
     queryFn: () => worksAPI.getConstituencies({ state: selectedState }),
     staleTime: CACHE_TIMES.WORKS,
-  });
+  })
 
-  const constituencies = constituenciesData?.data?.constituencies || [];
-  const states = constituenciesData?.data?.states || [];
+  const constituencies = constituenciesData?.data?.constituencies || []
+  const states = constituenciesData?.data?.states || []
 
   const handleReset = () => {
-    setSelectedConstituency('');
-    setSelectedState('');
-  };
+    setSelectedConstituency('')
+    setSelectedState('')
+  }
 
   // Create a stable unique key for each constituency option
-  const makeOptionKey = (c, s) => `${c}|||${s}`;
-  const selectedKey = selectedConstituency && selectedState
-    ? makeOptionKey(selectedConstituency, selectedState)
-    : '';
+  const makeOptionKey = (c, s) => `${c}|||${s}`
+  const selectedKey =
+    selectedConstituency && selectedState ? makeOptionKey(selectedConstituency, selectedState) : ''
 
   return (
     <div className="page-container">
@@ -49,15 +54,15 @@ const TrackArea = () => {
           <div className="form-group">
             <Label htmlFor="state">State (Optional)</Label>
             <Select
-              value={selectedState || "all-states"}
-              onValueChange={(value) => setSelectedState(value === "all-states" ? "" : value)}
+              value={selectedState || 'all-states'}
+              onValueChange={value => setSelectedState(value === 'all-states' ? '' : value)}
             >
               <SelectTrigger id="state">
                 <SelectValue placeholder="All States" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all-states">All States</SelectItem>
-                {states.map((state) => (
+                {states.map(state => (
                   <SelectItem key={state} value={state}>
                     {state}
                   </SelectItem>
@@ -70,15 +75,15 @@ const TrackArea = () => {
             <Label htmlFor="constituency">Constituency *</Label>
             <Select
               value={selectedKey}
-              onValueChange={(value) => {
+              onValueChange={value => {
                 if (!value) {
-                  setSelectedConstituency('');
-                  return;
+                  setSelectedConstituency('')
+                  return
                 }
-                const [cons, state] = value.split('|||');
-                setSelectedConstituency(cons);
+                const [cons, state] = value.split('|||')
+                setSelectedConstituency(cons)
                 // Always set state from the selected option to disambiguate duplicates
-                setSelectedState(state || '');
+                setSelectedState(state || '')
               }}
               required
             >
@@ -86,7 +91,7 @@ const TrackArea = () => {
                 <SelectValue placeholder="Select Constituency" />
               </SelectTrigger>
               <SelectContent>
-                {constituencies.map((item) => (
+                {constituencies.map(item => (
                   <SelectItem
                     key={`${item.constituency}-${item.state}`}
                     value={makeOptionKey(item.constituency, item.state)}
@@ -98,7 +103,6 @@ const TrackArea = () => {
             </Select>
           </div>
         </div>
-
 
         <div className="form-actions">
           <Button type="button" onClick={handleReset} className="btn-secondary" variant="outline">
@@ -115,7 +119,10 @@ const TrackArea = () => {
               <FiSearch size={64} />
             </div>
             <h3>Select Your Constituency</h3>
-            <p>Choose your constituency from the dropdown above to discover all MPLADS projects in your area.</p>
+            <p>
+              Choose your constituency from the dropdown above to discover all MPLADS projects in
+              your area.
+            </p>
             <div className="features-list">
               <div className="feature-item">
                 <FiFilter size={20} />
@@ -134,7 +141,7 @@ const TrackArea = () => {
       {selectedConstituency && (
         <div className="results-section">
           <h2>Projects in {selectedConstituency}</h2>
-          <ProjectListing 
+          <ProjectListing
             key={`${selectedConstituency}|||${selectedState}`} // Force remount when constituency or state changes
             constituency={selectedConstituency}
             stateName={selectedState}
@@ -144,7 +151,7 @@ const TrackArea = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TrackArea;
+export default TrackArea
