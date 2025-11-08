@@ -21,7 +21,9 @@
 /* Reset / base */
 .home-page {
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica,
+    Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -142,7 +144,9 @@
   min-width: 180px;
   border: 1px solid rgba(11, 22, 42, 0.05);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
 }
@@ -370,7 +374,9 @@
 .home-status-icon {
   font-size: 2.5rem;
   margin-bottom: 16px;
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
   display: block;
   text-align: center;
 }
@@ -466,7 +472,6 @@
 
 /* accessibility: reduce motion */
 @media (prefers-reduced-motion: reduce) {
-
   .floating-particles,
   .header-pulse,
   .feature-card:hover,
@@ -529,7 +534,6 @@
     align-items: center;
     gap: 12px;
   }
-
 
   .features,
   .status-section {
@@ -686,6 +690,6 @@ a {
 
 a:focus,
 input:focus {
-  box-shadow: 0 0 0 4px rgba(43, 110, 246, 0.10);
+  box-shadow: 0 0 0 4px rgba(43, 110, 246, 0.1);
   border-radius: 8px;
 }

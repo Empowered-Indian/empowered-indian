@@ -1,54 +1,73 @@
-import React, { useState } from "react";
-import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
-import { FiDownload } from "react-icons/fi";
-import { Button } from '@/components/ui/button';
-import { formatINRCompact } from "./formatters";
-import { colors, createBaseStyles, createExtendedStyles, getExportButtonStyles, getDisabledButtonStyles, utilBarStyleFor } from "./pdfUIStyles";
-import { generateAndDownloadPdf } from "./pdfGenerator";
+import React, { useState } from 'react'
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
+import { FiDownload } from 'react-icons/fi'
+import { Button } from '@/components/ui/button'
+import { formatINRCompact } from './formatters'
+import {
+  colors,
+  createBaseStyles,
+  createExtendedStyles,
+  getExportButtonStyles,
+  getDisabledButtonStyles,
+  utilBarStyleFor,
+} from './pdfUIStyles'
+import { generateAndDownloadPdf } from './pdfGenerator'
 
-const baseStyles = createBaseStyles(StyleSheet);
-const extendedStyles = createExtendedStyles(StyleSheet);
-const styles = { ...baseStyles, ...extendedStyles };
+const baseStyles = createBaseStyles(StyleSheet)
+const extendedStyles = createExtendedStyles(StyleSheet)
+const styles = { ...baseStyles, ...extendedStyles }
 
 const MyDocument = ({ data = [], meta = {} }) => {
-  const timestamp = new Date().toLocaleString();
-  const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0);
-  const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0);
-  const totalWorksRecommended = data.reduce((sum, s) => sum + (s.recommendedWorksCount || 0), 0);
-  const totalWorks = data.reduce((sum, s) => sum + (s.totalWorksCompleted || 0), 0);
-  const topPerformers = [...data].sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0)).slice(0, 3);
-  const bottomPerformers = [...data].sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0)).slice(0, 3);
+  const timestamp = new Date().toLocaleString()
+  const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0)
+  const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0)
+  const totalWorksRecommended = data.reduce((sum, s) => sum + (s.recommendedWorksCount || 0), 0)
+  const totalWorks = data.reduce((sum, s) => sum + (s.totalWorksCompleted || 0), 0)
+  const topPerformers = [...data]
+    .sort((a, b) => (b.utilizationPercentage || 0) - (a.utilizationPercentage || 0))
+    .slice(0, 3)
+  const bottomPerformers = [...data]
+    .sort((a, b) => (a.utilizationPercentage || 0) - (b.utilizationPercentage || 0))
+    .slice(0, 3)
 
   // Additional insights
-  const avgUtilization = data.length > 0 ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length : 0;
-  const maxUtilization = Math.max(...data.map(s => s.utilizationPercentage || 0));
-  const minUtilization = Math.min(...data.map(s => s.utilizationPercentage || 0));
-  const highUtilStates = data.filter(s => (s.utilizationPercentage || 0) >= 80).length;
+  const avgUtilization =
+    data.length > 0
+      ? data.reduce((sum, s) => sum + (s.utilizationPercentage || 0), 0) / data.length
+      : 0
+  const maxUtilization = Math.max(...data.map(s => s.utilizationPercentage || 0))
+  const minUtilization = Math.min(...data.map(s => s.utilizationPercentage || 0))
+  const highUtilStates = data.filter(s => (s.utilizationPercentage || 0) >= 80).length
 
   // Helper function to chunk array into groups of n
   const chunkArray = (array, chunkSize) => {
-    const chunks = [];
+    const chunks = []
     for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
+      chunks.push(array.slice(i, i + chunkSize))
     }
-    return chunks;
-  };
+    return chunks
+  }
 
-  const stateChunks = chunkArray(data, 12);
+  const stateChunks = chunkArray(data, 12)
 
   return (
     <Document>
       {/* First Page - Summary, Insights, Chart */}
-      <Page size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
+      <Page size="A4" style={styles.page} orientation={meta.orientation || 'portrait'}>
         <View style={styles.header}>
           <View style={styles.headerGradient} />
           <View style={styles.headerAccent} />
           <View style={styles.headerRow}>
-            <Image style={styles.logo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+            <Image
+              style={styles.logo}
+              src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4"
+            />
             <View style={styles.titleBlock}>
               <Text style={styles.title}>Empowered Indian</Text>
               <Text style={styles.subtitle}>MPLADS State Performance Report</Text>
-              <Text style={[styles.smallText, { marginTop: 2 }]}>Transparent • Data-Driven • Impactful</Text>
+              <Text style={[styles.smallText, { marginTop: 2 }]}>
+                Transparent • Data-Driven • Impactful
+              </Text>
             </View>
             <View style={{ width: '135px' }}>
               <Text style={styles.timestamp}>{timestamp}</Text>
@@ -72,9 +91,14 @@ const MyDocument = ({ data = [], meta = {} }) => {
                 </View>
                 <View style={styles.summaryMetric}>
                   <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
-                  <Text style={styles.summaryMetricValue}>{formatINRCompact(totalExpenditure)}</Text>
+                  <Text style={styles.summaryMetricValue}>
+                    {formatINRCompact(totalExpenditure)}
+                  </Text>
                   <Text style={styles.summaryMetricSub}>
-                    {totalAllocated > 0 ? ((totalExpenditure / totalAllocated) * 100).toFixed(1) : 0}% of allocation
+                    {totalAllocated > 0
+                      ? ((totalExpenditure / totalAllocated) * 100).toFixed(1)
+                      : 0}
+                    % of allocation
                   </Text>
                 </View>
               </View>
@@ -84,12 +108,17 @@ const MyDocument = ({ data = [], meta = {} }) => {
                   <Text style={styles.summaryMetricLabel}>Total Works Completed</Text>
                   <Text style={styles.summaryMetricValue}>{totalWorks.toLocaleString()}</Text>
                   <Text style={styles.summaryMetricSub}>
-                    {totalWorksRecommended > 0 ? ((totalWorks / totalWorksRecommended) * 100).toFixed(1) : 0}% completion rate
+                    {totalWorksRecommended > 0
+                      ? ((totalWorks / totalWorksRecommended) * 100).toFixed(1)
+                      : 0}
+                    % completion rate
                   </Text>
                 </View>
                 <View style={styles.summaryMetric}>
                   <Text style={styles.summaryMetricLabel}>Total Works Recommended</Text>
-                  <Text style={styles.summaryMetricValue}>{totalWorksRecommended.toLocaleString()}</Text>
+                  <Text style={styles.summaryMetricValue}>
+                    {totalWorksRecommended.toLocaleString()}
+                  </Text>
                   <Text style={styles.summaryMetricSub}>Pending implementation</Text>
                 </View>
               </View>
@@ -99,7 +128,14 @@ const MyDocument = ({ data = [], meta = {} }) => {
               <View style={styles.performerCol}>
                 <Text style={styles.performerTitle}>★ Top Performers</Text>
                 {topPerformers.map((s, i) => (
-                  <Text key={i} style={i === topPerformers.length - 1 ? styles.performerItemLast : styles.performerItem}>
+                  <Text
+                    key={i}
+                    style={
+                      i === topPerformers.length - 1
+                        ? styles.performerItemLast
+                        : styles.performerItem
+                    }
+                  >
                     {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
                   </Text>
                 ))}
@@ -107,7 +143,14 @@ const MyDocument = ({ data = [], meta = {} }) => {
               <View style={styles.performerCol}>
                 <Text style={styles.performerTitle}>Areas for Improvement</Text>
                 {bottomPerformers.map((s, i) => (
-                  <Text key={i} style={i === bottomPerformers.length - 1 ? styles.performerItemLast : styles.performerItem}>
+                  <Text
+                    key={i}
+                    style={
+                      i === bottomPerformers.length - 1
+                        ? styles.performerItemLast
+                        : styles.performerItem
+                    }
+                  >
                     {i + 1}. {s.state} — {String((s.utilizationPercentage || 0).toFixed(1))}%
                   </Text>
                 ))}
@@ -147,8 +190,8 @@ const MyDocument = ({ data = [], meta = {} }) => {
             </View>
             <View style={styles.chartContainer}>
               {data.slice(0, 8).map((s, i) => {
-                const pct = s.utilizationPercentage || 0;
-                const height = Math.max(10, (pct / 100) * 100);
+                const pct = s.utilizationPercentage || 0
+                const height = Math.max(10, (pct / 100) * 100)
                 return (
                   <View key={i} style={styles.chartBar}>
                     <View style={[styles.chartBarFill, { height }]}>
@@ -156,7 +199,7 @@ const MyDocument = ({ data = [], meta = {} }) => {
                     </View>
                     <Text style={styles.chartLabel}>{s.state}</Text>
                   </View>
-                );
+                )
               })}
             </View>
           </View>
@@ -165,13 +208,19 @@ const MyDocument = ({ data = [], meta = {} }) => {
 
       {/* State Data Pages - 10 states per page in card view */}
       {stateChunks.map((chunk, pageIndex) => (
-        <Page key={pageIndex} size="A4" style={styles.page} orientation={meta.orientation || "portrait"}>
+        <Page
+          key={pageIndex}
+          size="A4"
+          style={styles.page}
+          orientation={meta.orientation || 'portrait'}
+        >
           <View style={styles.content}>
             <View style={styles.cardsContainer}>
               {chunk.map((s, i) => {
-                const pct = Number(s.utilizationPercentage || 0);
-                const fillStyle = utilBarStyleFor(pct, styles);
-                const utilColor = pct >= 80 ? colors.success : pct >= 50 ? colors.warning : colors.accent;
+                const pct = Number(s.utilizationPercentage || 0)
+                const fillStyle = utilBarStyleFor(pct, styles)
+                const utilColor =
+                  pct >= 80 ? colors.success : pct >= 50 ? colors.warning : colors.accent
                 return (
                   <View key={i} style={styles.card}>
                     <View style={styles.stateLeft}>
@@ -182,12 +231,16 @@ const MyDocument = ({ data = [], meta = {} }) => {
                     <View style={styles.metricsRight}>
                       <View style={styles.metricBlock}>
                         <Text style={styles.metricLabel}>ALLOCATED</Text>
-                        <Text style={styles.metricValue}>{formatINRCompact(s.totalAllocated ?? 0)}</Text>
+                        <Text style={styles.metricValue}>
+                          {formatINRCompact(s.totalAllocated ?? 0)}
+                        </Text>
                       </View>
 
                       <View style={styles.metricBlock}>
                         <Text style={styles.metricLabel}>EXPENDITURE</Text>
-                        <Text style={styles.metricValue}>{formatINRCompact(s.totalExpenditure ?? 0)}</Text>
+                        <Text style={styles.metricValue}>
+                          {formatINRCompact(s.totalExpenditure ?? 0)}
+                        </Text>
                       </View>
 
                       <View style={styles.utilBlock}>
@@ -196,7 +249,9 @@ const MyDocument = ({ data = [], meta = {} }) => {
                           {pct.toFixed(1)}%
                         </Text>
                         <View style={styles.utilBarOuter}>
-                          <View style={[fillStyle, { width: `${Math.max(0, Math.min(100, pct))}%` }]} />
+                          <View
+                            style={[fillStyle, { width: `${Math.max(0, Math.min(100, pct))}%` }]}
+                          />
                         </View>
                       </View>
 
@@ -211,7 +266,7 @@ const MyDocument = ({ data = [], meta = {} }) => {
                       </View>
                     </View>
                   </View>
-                );
+                )
               })}
             </View>
           </View>
@@ -219,9 +274,13 @@ const MyDocument = ({ data = [], meta = {} }) => {
           {pageIndex === stateChunks.length - 1 && (
             <View style={styles.footer}>
               <View style={styles.footerLeft}>
-                <Image style={styles.footerLogo} src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4" />
+                <Image
+                  style={styles.footerLogo}
+                  src="https://avatars.githubusercontent.com/u/230681844?s=200&v=4"
+                />
                 <Text style={[styles.smallText, { marginTop: 2, fontSize: 7 }]}>
-                  * Data sourced from official MPLADS records. For latest updates, visit empoweredindian.in
+                  * Data sourced from official MPLADS records. For latest updates, visit
+                  empoweredindian.in
                 </Text>
               </View>
             </View>
@@ -229,62 +288,55 @@ const MyDocument = ({ data = [], meta = {} }) => {
         </Page>
       ))}
     </Document>
-  );
-};
+  )
+}
 
-const ExportStatesListAsPdf = React.forwardRef(({ filteredStates = [], meta = {}, layout = "cards" }, ref) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentFilteredStates, setCurrentFilteredStates] = useState(filteredStates);
+const ExportStatesListAsPdf = React.forwardRef(
+  ({ filteredStates = [], meta = {}, layout = 'cards' }, ref) => {
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const [currentFilteredStates, setCurrentFilteredStates] = useState(filteredStates)
 
-  React.useEffect(() => {
-    setCurrentFilteredStates(filteredStates);
-  }, [filteredStates]);
+    React.useEffect(() => {
+      setCurrentFilteredStates(filteredStates)
+    }, [filteredStates])
 
-  React.useImperativeHandle(ref, () => ({
-    updateFilteredStates: (newStates) => {
-      setCurrentFilteredStates(newStates);
+    React.useImperativeHandle(ref, () => ({
+      updateFilteredStates: newStates => {
+        setCurrentFilteredStates(newStates)
+      },
+    }))
+
+    if (!currentFilteredStates || currentFilteredStates.length === 0) {
+      return (
+        <Button variant="outline" disabled className="gap-2">
+          <FiDownload /> No data to export
+        </Button>
+      )
     }
-  }));
 
-  if (!currentFilteredStates || currentFilteredStates.length === 0) {
+    const handleClick = async () => {
+      setError(null)
+      setLoading(true)
+      try {
+        const fileName = `empowered_indian_mplads_report_${meta.key || 'all'}_${new Date().toISOString().split('T')[0]}.pdf`
+        const docNode = <MyDocument data={currentFilteredStates} meta={meta} layout={layout} />
+        await generateAndDownloadPdf(docNode, fileName)
+      } catch (e) {
+        console.error('PDF generation failed', e)
+        setError('Failed to generate PDF')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     return (
-      <Button
-        variant="outline"
-        disabled
-        className="gap-2"
-      >
-        <FiDownload /> No data to export
+      <Button variant="default" onClick={handleClick} disabled={loading} className="gap-2">
+        <FiDownload />
+        {loading ? 'Generating PDF...' : error ? 'Export Failed' : 'Download Report'}
       </Button>
-    );
+    )
   }
+)
 
-  const handleClick = async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const fileName = `empowered_indian_mplads_report_${meta.key || "all"}_${new Date().toISOString().split('T')[0]}.pdf`;
-      const docNode = <MyDocument data={currentFilteredStates} meta={meta} layout={layout} />;
-      await generateAndDownloadPdf(docNode, fileName);
-    } catch (e) {
-      console.error("PDF generation failed", e);
-      setError("Failed to generate PDF");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Button
-      variant="default"
-      onClick={handleClick}
-      disabled={loading}
-      className="gap-2"
-    >
-      <FiDownload />
-      {loading ? "Generating PDF..." : error ? "Export Failed" : "Download Report"}
-    </Button>
-  );
-});
-
-export default ExportStatesListAsPdf;
+export default ExportStatesListAsPdf

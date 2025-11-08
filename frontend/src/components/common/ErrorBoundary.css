@@ -13,7 +13,9 @@
   background: white;
   padding: 0;
   border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   border: 1px solid #e2e8f0;
 }
@@ -226,44 +228,44 @@
     padding: 1rem;
     min-height: 50vh;
   }
-  
+
   .error-boundary-content {
     max-width: 100%;
   }
-  
+
   .error-boundary-header {
     padding: 1.5rem 1rem;
   }
-  
+
   .error-boundary-details {
     padding: 1.5rem 1rem;
   }
-  
+
   .error-actions {
     padding: 1.5rem 1rem;
     flex-direction: column;
   }
-  
+
   .error-action-primary,
   .error-action-secondary,
   .error-action-utility {
     width: 100%;
     justify-content: center;
   }
-  
+
   .error-icon {
     font-size: 2.5rem;
   }
-  
+
   .error-boundary-header h1 {
     font-size: 1.25rem;
   }
-  
+
   .error-suggestion {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .error-suggestion ul {
     text-align: left;
   }

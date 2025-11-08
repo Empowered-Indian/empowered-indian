@@ -1,4 +1,4 @@
-import { Svg, Path, Circle } from "@react-pdf/renderer";
+import { Svg, Path, Circle } from '@react-pdf/renderer'
 
 export const PaymentIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 24 24">
@@ -10,21 +10,18 @@ export const PaymentIcon = () => (
     <Circle cx="12" cy="10" r="1" fill="#34C759" />
     <Circle cx="16" cy="10" r="1" fill="#34C759" />
   </Svg>
-);
+)
 
 export const CompletedWorkIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 24 24">
-    <Path
-      d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-      fill="#30D158"
-    />
+    <Path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#30D158" />
     <Path
       d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
       fill="#30D158"
       opacity="0.3"
     />
   </Svg>
-);
+)
 
 export const RecommendedWorkIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 24 24">
@@ -38,7 +35,7 @@ export const RecommendedWorkIcon = () => (
       opacity="0.3"
     />
   </Svg>
-);
+)
 
 export const ChartIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 24 24">
@@ -47,7 +44,7 @@ export const ChartIcon = () => (
       fill="#FF3B30"
     />
   </Svg>
-);
+)
 
 export const MPIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 24 24">
@@ -56,4 +53,4 @@ export const MPIcon = () => (
       fill="#007AFF"
     />
   </Svg>
-);
+)

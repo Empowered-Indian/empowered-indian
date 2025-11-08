@@ -1,48 +1,50 @@
-import { useEffect, useState } from 'react';
-import { useLocation, useParams, Link } from 'react-router-dom';
-import { FiCheckCircle, FiHome, FiMail, FiLoader } from 'react-icons/fi';
-import './UnsubscribeSuccess.css';
+import { useEffect, useState } from 'react'
+import { useLocation, useParams, Link } from 'react-router-dom'
+import { FiCheckCircle, FiHome, FiMail, FiLoader } from 'react-icons/fi'
+import './UnsubscribeSuccess.css'
 
 const UnsubscribeSuccess = () => {
-  const location = useLocation();
-  const { token } = useParams();
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const location = useLocation()
+  const { token } = useParams()
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     // If we have a token in the URL, process the unsubscribe
     if (token) {
-      handleUnsubscribe(token);
+      handleUnsubscribe(token)
     } else {
       // Otherwise, just get email from query params (redirected from backend)
-      const params = new URLSearchParams(location.search);
-      const emailParam = params.get('email');
+      const params = new URLSearchParams(location.search)
+      const emailParam = params.get('email')
       if (emailParam) {
-        setEmail(decodeURIComponent(emailParam));
+        setEmail(decodeURIComponent(emailParam))
       }
     }
-  }, [location, token]);
+  }, [location, token])
 
-  const handleUnsubscribe = async (unsubscribeToken) => {
-    setLoading(true);
+  const handleUnsubscribe = async unsubscribeToken => {
+    setLoading(true)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/mailing-list/unsubscribe/${unsubscribeToken}`);
-      
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/mailing-list/unsubscribe/${unsubscribeToken}`
+      )
+
       if (response.ok) {
-        const result = await response.json();
-        setEmail(result.email || '');
+        const result = await response.json()
+        setEmail(result.email || '')
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to unsubscribe');
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to unsubscribe')
       }
     } catch (err) {
-      console.error('Unsubscribe error:', err);
-      setError('Network error. Please try again.');
+      console.error('Unsubscribe error:', err)
+      setError('Network error. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   if (loading) {
     return (
@@ -55,16 +57,14 @@ const UnsubscribeSuccess = () => {
           <p>Please wait while we process your request.</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (error) {
     return (
       <div className="unsubscribe-success">
         <div className="unsubscribe-container">
-          <div className="error-icon">
-            ❌
-          </div>
+          <div className="error-icon">❌</div>
           <h1>Unsubscribe Failed</h1>
           <p className="error-message">{error}</p>
           <div className="action-buttons">
@@ -75,7 +75,7 @@ const UnsubscribeSuccess = () => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -84,22 +84,25 @@ const UnsubscribeSuccess = () => {
         <div className="success-icon">
           <FiCheckCircle />
         </div>
-        
+
         <h1>Successfully Unsubscribed</h1>
-        
+
         {email && (
           <p className="email-confirmation">
             <FiMail />
             {email} has been removed from our mailing list
           </p>
         )}
-        
+
         <div className="success-content">
           <p>You have been successfully unsubscribed from Empowered Indian updates.</p>
           <p>You will no longer receive newsletters or notifications from us.</p>
-          <p>We're sorry to see you go! If you change your mind, you can always subscribe again on our website.</p>
+          <p>
+            We're sorry to see you go! If you change your mind, you can always subscribe again on
+            our website.
+          </p>
         </div>
-        
+
         <div className="action-buttons">
           <Link to="/" className="btn btn-primary">
             <FiHome />
@@ -109,10 +112,10 @@ const UnsubscribeSuccess = () => {
             Explore MPLADS Data
           </Link>
         </div>
-        
+
         <div className="feedback-section">
           <p className="feedback-text">
-            Have feedback about why you unsubscribed? 
+            Have feedback about why you unsubscribed?
             <a href="https://twitter.com/roshanasingh6" target="_blank" rel="noopener noreferrer">
               Let us know on Twitter
             </a>
@@ -120,7 +123,7 @@ const UnsubscribeSuccess = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UnsubscribeSuccess;
+export default UnsubscribeSuccess

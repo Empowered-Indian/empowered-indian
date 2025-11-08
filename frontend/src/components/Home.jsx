@@ -1,6 +1,16 @@
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
-import { IndianRupee, Landmark, Map, FileStack, BarChart3, Construction, Search, TrendingUp, Users } from 'lucide-react'
+import {
+  IndianRupee,
+  Landmark,
+  Map,
+  FileStack,
+  BarChart3,
+  Construction,
+  Search,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 import './Home.css'
 import MailingListForm from './MPLADS/components/Common/MailingListForm'
 import SiteFooter from './common/SiteFooter'
@@ -8,10 +18,10 @@ import { Button } from '@/components/ui/button'
 
 function Home() {
   useEffect(() => {
-    const formatNumber = (n) => n.toLocaleString('en-IN')
+    const formatNumber = n => n.toLocaleString('en-IN')
     const counters = Array.from(document.querySelectorAll('.counter'))
 
-    const animateCounter = (counter) => {
+    const animateCounter = counter => {
       const target = Number(counter.getAttribute('data-target')) || 0
       const duration = 1200
       const fps = 60
@@ -30,16 +40,19 @@ function Home() {
     }
 
     // Intersection Observer for counters and reveal animations
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const el = entry.target
-        if (entry.isIntersecting) {
-          if (el.classList.contains('counter')) animateCounter(el)
-          el.classList.add('is-visible')
-          io.unobserve(el)
-        }
-      })
-    }, { threshold: 0.4 })
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const el = entry.target
+          if (entry.isIntersecting) {
+            if (el.classList.contains('counter')) animateCounter(el)
+            el.classList.add('is-visible')
+            io.unobserve(el)
+          }
+        })
+      },
+      { threshold: 0.4 }
+    )
 
     counters.forEach(c => {
       c.setAttribute('role', 'status')
@@ -55,7 +68,6 @@ function Home() {
     return () => io.disconnect()
   }, [])
 
-
   return (
     <div className="home-page">
       <section className="hero" role="banner" aria-label="MPLADS overview">
@@ -65,44 +77,61 @@ function Home() {
               <span className="badge-text">Transparency in Action</span>
             </div>
             <h1 className="hero-title">
-              <span className="hero-title-main">
-                Empowered Indian
-              </span>
+              <span className="hero-title-main">Empowered Indian</span>
             </h1>
             <span className="hero-title-sub">
               Making government data accessible, understandable, and actionable
             </span>
 
             <p className="hero-description">
-              Track fund utilization, monitor project progress, and hold our representatives accountable.
+              Track fund utilization, monitor project progress, and hold our representatives
+              accountable.
             </p>
 
             <div className="hero-stats">
               <div className="stats-item">
-                <div className="stats-icon"><IndianRupee size={32} /></div>
+                <div className="stats-icon">
+                  <IndianRupee size={32} />
+                </div>
                 <div className="stats-number">
-                  <span className="counter" data-target="5000">5000</span>+ Cr
+                  <span className="counter" data-target="5000">
+                    5000
+                  </span>
+                  + Cr
                 </div>
                 <div className="stats-label">Funds Tracked</div>
               </div>
               <div className="stats-item">
-                <div className="stats-icon"><Landmark size={32} /></div>
+                <div className="stats-icon">
+                  <Landmark size={32} />
+                </div>
                 <div className="stats-number">
-                  <span className="counter" data-target="543">543</span>
+                  <span className="counter" data-target="543">
+                    543
+                  </span>
                 </div>
                 <div className="stats-label">MPs Monitored</div>
               </div>
               <div className="stats-item" role="group" aria-label="States/UTs covered">
-                <div className="stats-icon"><Map size={32} /></div>
+                <div className="stats-icon">
+                  <Map size={32} />
+                </div>
                 <div className="stats-number">
-                  <span className="counter" data-target="38">38</span>
+                  <span className="counter" data-target="38">
+                    38
+                  </span>
                 </div>
                 <div className="stats-label">States/UTs Covered</div>
               </div>
               <div className="stats-item" role="group" aria-label="Projects tracked">
-                <div className="stats-icon"><FileStack size={32} /></div>
+                <div className="stats-icon">
+                  <FileStack size={32} />
+                </div>
                 <div className="stats-number">
-                  <span className="counter" data-target="10000">10000</span>+
+                  <span className="counter" data-target="10000">
+                    10000
+                  </span>
+                  +
                 </div>
                 <div className="stats-label">Projects Tracked</div>
               </div>
@@ -119,23 +148,32 @@ function Home() {
               </div>
               <div className="status-indicators">
                 <div className="status-card available">
-                  <div className="home-status-icon"><BarChart3 size={48} /></div>
+                  <div className="home-status-icon">
+                    <BarChart3 size={48} />
+                  </div>
                   <h3>MPLADS Dashboard</h3>
                   <p className="status-description">
-                    Track MP fund utilization, project progress, and expenditure patterns across constituencies.
+                    Track MP fund utilization, project progress, and expenditure patterns across
+                    constituencies.
                   </p>
                   <Link to="/mplads">
-                    <Button variant="default" className="mt-4 bg-blue-600 text-white hover:bg-blue-700">
+                    <Button
+                      variant="default"
+                      className="mt-4 bg-blue-600 text-white hover:bg-blue-700"
+                    >
                       View Dashboard
                     </Button>
                   </Link>
                 </div>
 
                 <div className="status-card wip">
-                  <div className="home-status-icon"><Construction size={48} /></div>
+                  <div className="home-status-icon">
+                    <Construction size={48} />
+                  </div>
                   <h3>MLALADS Dashboard</h3>
                   <p className="status-description">
-                    MLA Local Area Development fund tracking - coming soon to provide state-level transparency.
+                    MLA Local Area Development fund tracking - coming soon to provide state-level
+                    transparency.
                   </p>
                   <p className="status-label">Work in Progress</p>
                 </div>
@@ -153,21 +191,36 @@ function Home() {
           </p>
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon"><BarChart3 size={40} /></div>
+              <div className="feature-icon">
+                <BarChart3 size={40} />
+              </div>
               <h3>Real-time Analytics</h3>
-              <p>Track fund utilization, project status, and expenditure patterns with interactive charts and visualizations.</p>
+              <p>
+                Track fund utilization, project status, and expenditure patterns with interactive
+                charts and visualizations.
+              </p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon"><Search size={40} /></div>
+              <div className="feature-icon">
+                <Search size={40} />
+              </div>
               <h3>Advanced Search</h3>
-              <p>Find specific MPs, constituencies, or projects with powerful search and filtering capabilities.</p>
+              <p>
+                Find specific MPs, constituencies, or projects with powerful search and filtering
+                capabilities.
+              </p>
             </div>
 
             <div className="feature-card">
-              <div className="feature-icon"><TrendingUp size={40} /></div>
+              <div className="feature-icon">
+                <TrendingUp size={40} />
+              </div>
               <h3>Performance Insights</h3>
-              <p>Understand spending patterns, project completion rates, and fund utilization efficiency.</p>
+              <p>
+                Understand spending patterns, project completion rates, and fund utilization
+                efficiency.
+              </p>
             </div>
           </div>
         </div>
@@ -178,22 +231,29 @@ function Home() {
           <div className="mission-content">
             <h2>Our Mission</h2>
             <p>
-              To create a platform that makes government data accessible, understandable, and actionable for every Indian citizen.
-              We believe in transparency, accountability, and the power of informed citizens to drive positive change.
+              To create a platform that makes government data accessible, understandable, and
+              actionable for every Indian citizen. We believe in transparency, accountability, and
+              the power of informed citizens to drive positive change.
             </p>
             <div className="mission-values">
               <div className="value-item">
-                <div className="value-icon"><Search size={36} /></div>
+                <div className="value-icon">
+                  <Search size={36} />
+                </div>
                 <h4>Transparency</h4>
                 <p>Making government spending visible and trackable</p>
               </div>
               <div className="value-item">
-                <div className="value-icon"><BarChart3 size={36} /></div>
+                <div className="value-icon">
+                  <BarChart3 size={36} />
+                </div>
                 <h4>Accountability</h4>
                 <p>Holding representatives accountable for fund utilization</p>
               </div>
               <div className="value-item">
-                <div className="value-icon"><Users size={36} /></div>
+                <div className="value-icon">
+                  <Users size={36} />
+                </div>
                 <h4>Accessibility</h4>
                 <p>Democratizing access to government data</p>
               </div>
@@ -208,8 +268,8 @@ function Home() {
           <div className="newsletter-content">
             <h2>Stay Updated</h2>
             <p>
-              Get the latest insights on government transparency and fund utilization.
-              Subscribe to receive updates on new features and important data releases.
+              Get the latest insights on government transparency and fund utilization. Subscribe to
+              receive updates on new features and important data releases.
             </p>
             <MailingListForm />
           </div>
@@ -221,4 +281,4 @@ function Home() {
   )
 }
 
-export default Home;
+export default Home

@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { AuthContext } from './AuthContextDef';
-import { API_BASE_URL } from '../utils/constants/api';
-import { apiRequest, cancelAllRequests } from '../utils/apiClient';
+import { useState, useEffect } from 'react'
+import { AuthContext } from './AuthContextDef'
+import { API_BASE_URL } from '../utils/constants/api'
+import { apiRequest, cancelAllRequests } from '../utils/apiClient'
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('authToken'));
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [token, setToken] = useState(localStorage.getItem('authToken'))
 
   // Check if user is authenticated on app load
   useEffect(() => {
@@ -15,29 +15,29 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await apiRequest(`${API_BASE_URL}/auth/verify`, {
             headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          
+              Authorization: `Bearer ${token}`,
+            },
+          })
+
           if (response.ok) {
-            const data = await response.json();
-            setUser(data.data.user);
+            const data = await response.json()
+            setUser(data.data.user)
           } else {
             // Token is invalid, remove it
-            localStorage.removeItem('authToken');
-            setToken(null);
+            localStorage.removeItem('authToken')
+            setToken(null)
           }
         } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('authToken');
-          setToken(null);
+          console.error('Auth check failed:', error)
+          localStorage.removeItem('authToken')
+          setToken(null)
         }
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    checkAuth();
-  }, [token]);
+    checkAuth()
+  }, [token])
 
   // Login function
   const login = async (email, password) => {
@@ -45,51 +45,55 @@ export const AuthProvider = ({ children }) => {
       const response = await apiRequest(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password })
-      });
+        body: JSON.stringify({ email, password }),
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success) {
-        const { user, token } = data.data;
-        localStorage.setItem('authToken', token);
-        setToken(token);
-        setUser(user);
-        return { success: true };
+        const { user, token } = data.data
+        localStorage.setItem('authToken', token)
+        setToken(token)
+        setUser(user)
+        return { success: true }
       } else {
-        return { success: false, message: data.message };
+        return { success: false, message: data.message }
       }
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: 'Login failed. Please try again.' };
+      console.error('Login error:', error)
+      return { success: false, message: 'Login failed. Please try again.' }
     }
-  };
+  }
 
   // Logout function
   const logout = () => {
     // Cancel in-flight requests to prevent stale token usage
-    try { cancelAllRequests(); } catch { /* no-op */ }
-    localStorage.removeItem('authToken');
-    setToken(null);
-    setUser(null);
-  };
+    try {
+      cancelAllRequests()
+    } catch {
+      /* no-op */
+    }
+    localStorage.removeItem('authToken')
+    setToken(null)
+    setUser(null)
+  }
 
   // Check if user is admin
   const isAdmin = () => {
-    return user && user.role === 'admin';
-  };
+    return user && user.role === 'admin'
+  }
 
   // Check if user is authenticated
   const isAuthenticated = () => {
-    return !!user && !!token;
-  };
+    return !!user && !!token
+  }
 
   // Get auth headers for API requests
   const getAuthHeaders = () => {
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
-  };
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
 
   const value = {
     user,
@@ -99,12 +103,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAdmin,
     isAuthenticated,
-    getAuthHeaders
-  };
+    getAuthHeaders,
+  }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}

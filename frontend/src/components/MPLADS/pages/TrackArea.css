@@ -35,7 +35,9 @@
   padding: 24px;
   border-radius: 8px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
 }
 
@@ -313,11 +315,11 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .cost-range {
     align-items: stretch; /* Full width on mobile */
   }
-  
+
   .cost-range .cost-range-slider .range-slider-container {
     max-width: none; /* Remove width constraint on mobile */
   }

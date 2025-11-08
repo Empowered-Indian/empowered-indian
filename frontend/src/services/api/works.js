@@ -1,5 +1,5 @@
-import apiClient from './apiClient';
-import { API_ENDPOINTS } from '../../utils/constants/api';
+import apiClient from './apiClient'
+import { API_ENDPOINTS } from '../../utils/constants/api'
 
 export const worksAPI = {
   // Get completed works with filters
@@ -19,7 +19,7 @@ export const worksAPI = {
       max_cost,
       sort,
       search,
-    } = params;
+    } = params
 
     // Filter out empty string values
     const cleanParams = {
@@ -37,11 +37,11 @@ export const worksAPI = {
       ...(max_cost !== undefined && max_cost !== '' && { max_cost }),
       ...(sort && { sort }),
       ...(search && { search }),
-    };
+    }
 
     return apiClient.get(API_ENDPOINTS.WORKS_COMPLETED, {
       params: cleanParams,
-    });
+    })
   },
 
   // Get recommended works with filters
@@ -63,7 +63,7 @@ export const worksAPI = {
       sort,
       search,
       has_payments,
-    } = params;
+    } = params
 
     // Filter out empty string values
     const cleanParams = {
@@ -83,33 +83,33 @@ export const worksAPI = {
       ...(sort && { sort }),
       ...(search && { search }),
       ...(has_payments !== undefined && has_payments !== '' && { has_payments }),
-    };
+    }
 
     return apiClient.get(API_ENDPOINTS.WORKS_RECOMMENDED, {
       params: cleanParams,
-    });
+    })
   },
 
   // Get work categories
   getWorkCategories: async () => {
-    return apiClient.get(API_ENDPOINTS.WORKS_CATEGORIES);
+    return apiClient.get(API_ENDPOINTS.WORKS_CATEGORIES)
   },
 
   // Get constituencies
   getConstituencies: async (params = {}) => {
-    const { state } = params;
+    const { state } = params
     return apiClient.get(API_ENDPOINTS.WORKS_CONSTITUENCIES, {
       params: { state },
-    });
+    })
   },
 
   // Get payment details for a specific work
-  getWorkPayments: async (workId) => {
-    return apiClient.get(`/works/${workId}/payments`);
+  getWorkPayments: async workId => {
+    return apiClient.get(`/works/${workId}/payments`)
   },
 
   // Get payment details for a specific recommendation
-  getRecommendationPayments: async (recommendationId) => {
-    return apiClient.get(`/works/recommendations/${recommendationId}/payments`);
+  getRecommendationPayments: async recommendationId => {
+    return apiClient.get(`/works/recommendations/${recommendationId}/payments`)
   },
-};
+}

@@ -34,91 +34,75 @@ class User {
 
   // Create new user
   static async create(userData) {
-    try {
-      const usersCollection = await getCollection('users');
-      
-      // Check if user already exists
-      const existingUser = await usersCollection.findOne({ email: userData.email.toLowerCase() });
-      if (existingUser) {
-        throw new Error('User with this email already exists');
-      }
+    const usersCollection = await getCollection('users');
 
-      // Create new user instance
-      const user = new User({
-        ...userData,
-        email: userData.email.toLowerCase()
-      });
-
-      // Hash password
-      await user.hashPassword();
-
-      // Insert user into database
-      const result = await usersCollection.insertOne({
-        email: user.email,
-        password: user.password,
-        role: user.role,
-        name: user.name,
-        isActive: user.isActive,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        lastLogin: user.lastLogin
-      });
-
-      // Return user without password
-      const { password, ...userWithoutPassword } = user;
-      return {
-        _id: result.insertedId,
-        ...userWithoutPassword
-      };
-    } catch (error) {
-      throw error;
+    // Check if user already exists
+    const existingUser = await usersCollection.findOne({ email: userData.email.toLowerCase() });
+    if (existingUser) {
+      throw new Error('User with this email already exists');
     }
+
+    // Create new user instance
+    const user = new User({
+      ...userData,
+      email: userData.email.toLowerCase()
+    });
+
+    // Hash password
+    await user.hashPassword();
+
+    // Insert user into database
+    const result = await usersCollection.insertOne({
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      name: user.name,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      lastLogin: user.lastLogin
+    });
+
+    // Return user without password
+    const { password: _password, ...userWithoutPassword } = user;
+    return {
+      _id: result.insertedId,
+      ...userWithoutPassword
+    };
   }
 
   // Find user by email
   static async findByEmail(email) {
-    try {
-      const usersCollection = await getCollection('users');
-      const user = await usersCollection.findOne({ 
-        email: email.toLowerCase(),
-        isActive: true 
-      });
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const usersCollection = await getCollection('users');
+    const user = await usersCollection.findOne({
+      email: email.toLowerCase(),
+      isActive: true
+    });
+    return user;
   }
 
   // Find user by ID
   static async findById(id) {
-    try {
-      const usersCollection = await getCollection('users');
-      const user = await usersCollection.findOne({ 
-        _id: new ObjectId(id),
-        isActive: true 
-      });
-      return user;
-    } catch (error) {
-      throw error;
-    }
+    const usersCollection = await getCollection('users');
+    const user = await usersCollection.findOne({
+      _id: new ObjectId(id),
+      isActive: true
+    });
+    return user;
   }
 
   // Update last login
   static async updateLastLogin(userId) {
-    try {
-      const usersCollection = await getCollection('users');
-      await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { 
-          $set: { 
-            lastLogin: new Date(),
-            updatedAt: new Date()
-          }
+    const usersCollection = await getCollection('users');
+    await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          lastLogin: new Date(),
+          updatedAt: new Date()
         }
-      );
-    } catch (error) {
-      throw error;
-    }
+      }
+    );
   }
 
   // Check if user is admin
@@ -128,35 +112,27 @@ class User {
 
   // Get all users (admin only)
   static async findAll(filters = {}) {
-    try {
-      const usersCollection = await getCollection('users');
-      const users = await usersCollection
-        .find(filters)
-        .project({ password: 0 }) // Exclude password field
-        .toArray();
-      return users;
-    } catch (error) {
-      throw error;
-    }
+    const usersCollection = await getCollection('users');
+    const users = await usersCollection
+      .find(filters)
+      .project({ password: 0 }) // Exclude password field
+      .toArray();
+    return users;
   }
 
   // Update user role (admin only)
   static async updateRole(userId, role) {
-    try {
-      const usersCollection = await getCollection('users');
-      const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { 
-          $set: { 
-            role,
-            updatedAt: new Date()
-          }
+    const usersCollection = await getCollection('users');
+    const result = await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          role,
+          updatedAt: new Date()
         }
-      );
-      return result.matchedCount > 0;
-    } catch (error) {
-      throw error;
-    }
+      }
+    );
+    return result.matchedCount > 0;
   }
 }
 

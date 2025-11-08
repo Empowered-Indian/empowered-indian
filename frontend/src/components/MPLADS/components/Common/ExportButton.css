@@ -4,7 +4,6 @@
   display: inline-block;
 }
 
-
 .dropdown-arrow {
   transition: transform 0.2s ease;
 }
@@ -26,7 +25,6 @@
   z-index: 100;
   overflow: hidden;
 }
-
 
 /* Dashboard Controls Layout */
 .dashboard-controls {
@@ -53,15 +51,15 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .dashboard-search {
     max-width: none;
   }
-  
+
   .dashboard-actions {
     justify-content: center;
   }
-  
+
   .export-dropdown-menu {
     right: auto;
     left: 0;

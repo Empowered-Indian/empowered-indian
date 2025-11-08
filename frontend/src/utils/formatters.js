@@ -6,36 +6,36 @@ export function formatINRCompact(amount, options = {}) {
     minimumFractionDigits = 0,
     includeRupeeSymbol = false,
     uppercaseUnits = true,
-  } = options;
+  } = options
 
-  const normalized = Number(amount);
+  const normalized = Number(amount)
   if (!Number.isFinite(normalized)) {
-    return '0';
+    return '0'
   }
 
-  const abs = Math.abs(normalized);
+  const abs = Math.abs(normalized)
 
-  let value = normalized;
-  let unit = '';
+  let value = normalized
+  let unit = ''
 
   if (abs >= 1e7) {
-    value = normalized / 1e7; // Crore
-    unit = uppercaseUnits ? 'CR' : 'Cr';
+    value = normalized / 1e7 // Crore
+    unit = uppercaseUnits ? 'CR' : 'Cr'
   } else if (abs >= 1e5) {
-    value = normalized / 1e5; // Lakh
-    unit = uppercaseUnits ? 'L' : 'L';
+    value = normalized / 1e5 // Lakh
+    unit = uppercaseUnits ? 'L' : 'L'
   } else if (abs >= 1e3) {
-    value = normalized / 1e3; // Thousand
-    unit = uppercaseUnits ? 'K' : 'k';
+    value = normalized / 1e3 // Thousand
+    unit = uppercaseUnits ? 'K' : 'k'
   }
 
   if (unit) {
     const number = new Intl.NumberFormat('en-IN', {
       minimumFractionDigits,
       maximumFractionDigits,
-    }).format(value);
-    const prefix = includeRupeeSymbol ? '₹' : '';
-    return `${prefix}${number} ${unit}`.trim();
+    }).format(value)
+    const prefix = includeRupeeSymbol ? '₹' : ''
+    return `${prefix}${number} ${unit}`.trim()
   }
 
   // For values below 1 lakh, just format with Indian grouping
@@ -44,21 +44,19 @@ export function formatINRCompact(amount, options = {}) {
       style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(normalized);
+    }).format(normalized)
   }
 
-  return new Intl.NumberFormat('en-IN').format(normalized);
+  return new Intl.NumberFormat('en-IN').format(normalized)
 }
 
 // Full currency formatter (non-compact) for convenience
 export function formatINRCurrency(amount, maximumFractionDigits = 0) {
-  const normalized = Number(amount);
-  if (!Number.isFinite(normalized)) return '₹0';
+  const normalized = Number(amount)
+  if (!Number.isFinite(normalized)) return '₹0'
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits,
-  }).format(normalized);
+  }).format(normalized)
 }
-
-

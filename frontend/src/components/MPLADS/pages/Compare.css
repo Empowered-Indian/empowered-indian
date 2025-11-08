@@ -133,7 +133,8 @@
   font-weight: 600;
 }
 
-.compare-cta[disabled], .compare-cta[aria-disabled="true"] {
+.compare-cta[disabled],
+.compare-cta[aria-disabled='true'] {
   background: #93c5fd;
   cursor: not-allowed;
 }
@@ -178,8 +179,14 @@
   color: #6b7280;
 }
 
-.inline-step.active { background: #eff6ff; color: #1d4ed8; }
-.inline-step.complete { background: #ecfdf5; color: #047857; }
+.inline-step.active {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.inline-step.complete {
+  background: #ecfdf5;
+  color: #047857;
+}
 
 .mp-selector h3 {
   margin: 0 0 16px 0;
@@ -288,14 +295,14 @@
     align-items: flex-start;
     padding-top: 20px;
   }
-  
+
   .modal-content {
     max-height: 90vh;
     width: 100%;
     max-width: 100%;
     margin: 0;
   }
-  
+
   .search-input {
     font-size: 16px; /* Prevent zoom on iOS */
   }
@@ -380,7 +387,7 @@
   border-color: #3b82f6;
   background: #f8fafc;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .mp-search-result.already-selected {
@@ -390,7 +397,7 @@
 }
 
 .mp-search-result.already-selected::after {
-  content: "✓ Selected";
+  content: '✓ Selected';
   position: absolute;
   top: 8px;
   right: 12px;
@@ -631,7 +638,6 @@
   font-size: 16px;
   color: var(--text-secondary);
 }
-
 
 /* Mobile-First Design Enhancements */
 
@@ -949,7 +955,7 @@
   .mobile-mp-comparison-card:hover {
     transform: none;
   }
-  
+
   .dot.active::before {
     transform: translate(-50%, -50%) scale(1);
   }
@@ -960,20 +966,20 @@
   .compare-page {
     padding: 12px;
   }
-  
+
   .carousel-header {
     padding: 0.75rem;
   }
-  
+
   .mobile-selected-mp-card {
     padding: 1rem;
     min-height: 100px;
   }
-  
+
   .mobile-mp-comparison-card {
     padding: 1rem;
   }
-  
+
   .metric-row {
     grid-template-columns: 1fr;
     gap: 0.75rem;
@@ -984,34 +990,34 @@
   .compare-page {
     padding: 16px;
   }
-  
+
   .selected-mps {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .selected-mp-card {
     min-width: unset;
   }
-  
+
   .summary-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .insights-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .table-container {
     font-size: 12px;
   }
-  
+
   /* Hide desktop elements */
   .comparison-data-table,
   .chart-section {
     display: none;
   }
-  
+
   /* Show mobile elements */
   .mobile-comparison-section {
     display: flex;

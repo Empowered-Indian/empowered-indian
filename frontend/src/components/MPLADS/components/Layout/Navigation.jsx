@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom'
 import {
   FiHome,
   FiMap,
@@ -8,35 +8,35 @@ import {
   FiMenu,
   FiX,
   FiMapPin,
-  FiUsers
-} from 'react-icons/fi';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import './Navigation.css';
+  FiUsers,
+} from 'react-icons/fi'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Button } from '@/components/ui/button'
+import './Navigation.css'
 
 const Navigation = () => {
-  const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const menuRef = useRef(null);
-  const toggleButtonRef = useRef(null);
-  const lastFocusedElement = useRef(null);
+  const location = useLocation()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const menuRef = useRef(null)
+  const toggleButtonRef = useRef(null)
+  const lastFocusedElement = useRef(null)
 
   // Detect mobile screen size
   useEffect(() => {
     const checkMobile = () => {
-      const isMobileView = window.innerWidth <= 768;
-      setIsMobile(isMobileView);
+      const isMobileView = window.innerWidth <= 768
+      setIsMobile(isMobileView)
       // Close menu if switching from mobile to desktop
       if (window.innerWidth > 768 && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
+        setIsMobileMenuOpen(false)
       }
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [isMobileMenuOpen]);
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [isMobileMenuOpen])
 
   const navItems = [
     {
@@ -44,188 +44,192 @@ const Navigation = () => {
       path: '/mplads',
       icon: <FiHome />,
       description: 'Key metrics and insights',
-      category: 'primary'
+      category: 'primary',
     },
     {
       title: 'Find Projects',
       path: '/mplads/track-area',
       icon: <FiMap />,
       description: 'Search projects by area',
-      category: 'primary'
+      category: 'primary',
     },
     {
       title: 'Browse States',
       path: '/mplads/states',
       icon: <FiMapPin />,
       description: 'States & UTs data',
-      category: 'secondary'
+      category: 'secondary',
     },
     {
       title: 'Browse MPs',
       path: '/mplads/mps',
       icon: <FiUsers />,
       description: 'MP performance data',
-      category: 'secondary'
+      category: 'secondary',
     },
     {
       title: 'Compare',
       path: '/mplads/compare',
       icon: <FiBarChart2 />,
       description: 'Side-by-side analysis',
-      category: 'secondary'
+      category: 'secondary',
     },
     {
       title: 'Feedback',
       path: '/mplads/report',
       icon: <FiMessageCircle />,
       description: 'Report issues',
-      category: 'utility'
-    }
-  ];
+      category: 'utility',
+    },
+  ]
 
   // Group navigation items by category for better organization
-  const primaryItems = navItems.filter(item => item.category === 'primary');
-  const secondaryItems = navItems.filter(item => item.category === 'secondary');
-  const utilityItems = navItems.filter(item => item.category === 'utility');
+  const primaryItems = navItems.filter(item => item.category === 'primary')
+  const secondaryItems = navItems.filter(item => item.category === 'secondary')
+  const utilityItems = navItems.filter(item => item.category === 'utility')
 
-  const isActive = (path) => {
+  const isActive = path => {
     // Exact match for the path
     if (location.pathname === path) {
-      return true;
+      return true
     }
-    
+
     // For nested routes, ensure it's not matching parent paths incorrectly
     // Only match if the current path starts with the nav path followed by a slash
     // and there are no other nav items that are a better match
-    const allPaths = navItems.map(item => item.path);
-    const exactMatches = allPaths.filter(navPath => location.pathname === navPath);
-    
+    const allPaths = navItems.map(item => item.path)
+    const exactMatches = allPaths.filter(navPath => location.pathname === navPath)
+
     // If there's an exact match, don't highlight parent paths
     if (exactMatches.length > 0) {
-      return false;
+      return false
     }
-    
+
     // Check for nested path match, but exclude parent matches
     if (location.pathname.startsWith(path + '/')) {
       // Make sure this isn't a false positive where a longer path should match instead
-      const longerMatches = allPaths.filter(navPath => 
-        navPath !== path && 
-        navPath.startsWith(path) && 
-        location.pathname.startsWith(navPath)
-      );
-      return longerMatches.length === 0;
+      const longerMatches = allPaths.filter(
+        navPath =>
+          navPath !== path && navPath.startsWith(path) && location.pathname.startsWith(navPath)
+      )
+      return longerMatches.length === 0
     }
-    
-    return false;
-  };
 
-  const handleMenuToggle = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!isMobileMenuOpen) {
-      lastFocusedElement.current = document.activeElement;
-    }
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  }, [isMobileMenuOpen]);
+    return false
+  }
+
+  const handleMenuToggle = useCallback(
+    e => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      if (!isMobileMenuOpen) {
+        lastFocusedElement.current = document.activeElement
+      }
+      setIsMobileMenuOpen(!isMobileMenuOpen)
+    },
+    [isMobileMenuOpen]
+  )
 
   const closeMenu = useCallback(() => {
-    setIsMobileMenuOpen(false);
+    setIsMobileMenuOpen(false)
     // Return focus to the toggle button after closing
     setTimeout(() => {
       if (lastFocusedElement.current) {
-        lastFocusedElement.current.focus();
+        lastFocusedElement.current.focus()
       } else {
-        toggleButtonRef.current?.focus();
+        toggleButtonRef.current?.focus()
       }
-    }, 100);
-  }, []);
+    }, 100)
+  }, [])
 
   // Handle keyboard navigation and focus management
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = e => {
       if (e.key === 'Escape' && isMobileMenuOpen) {
-        closeMenu();
-        return;
+        closeMenu()
+        return
       }
 
       // Handle tab navigation within mobile menu
       if (isMobileMenuOpen && e.key === 'Tab') {
         const focusableElements = menuRef.current?.querySelectorAll(
           'a[href], button, [tabindex]:not([tabindex="-1"])'
-        );
-        
+        )
+
         if (focusableElements?.length > 0) {
-          const firstElement = focusableElements[0];
-          const lastElement = focusableElements[focusableElements.length - 1];
+          const firstElement = focusableElements[0]
+          const lastElement = focusableElements[focusableElements.length - 1]
 
           if (e.shiftKey && document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
+            e.preventDefault()
+            lastElement.focus()
           } else if (!e.shiftKey && document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
+            e.preventDefault()
+            firstElement.focus()
           }
         }
       }
-    };
+    }
 
-    const handleClickOutside = (e) => {
-      if (isMobileMenuOpen && 
-          menuRef.current && 
-          !menuRef.current.contains(e.target) && 
-          !toggleButtonRef.current?.contains(e.target)) {
-        closeMenu();
+    const handleClickOutside = e => {
+      if (
+        isMobileMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        !toggleButtonRef.current?.contains(e.target)
+      ) {
+        closeMenu()
       }
-    };
+    }
 
     if (isMobileMenuOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-      
+      document.addEventListener('keydown', handleKeyDown)
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
+
       // Prevent body scroll on mobile
-      document.body.style.overflow = 'hidden';
-      
+      document.body.style.overflow = 'hidden'
+
       // Focus first menu item after animation
       setTimeout(() => {
         const focusableElements = menuRef.current?.querySelectorAll(
           'a[href], button, [tabindex]:not([tabindex="-1"])'
-        );
-        
+        )
+
         if (focusableElements?.length > 0) {
-          focusableElements[0].focus();
+          focusableElements[0].focus()
         }
-      }, 100);
+      }, 100)
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen, closeMenu]);
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+      document.body.style.overflow = ''
+    }
+  }, [isMobileMenuOpen, closeMenu])
 
   // Force update menu position when state changes
   useEffect(() => {
     if (menuRef.current && isMobile) {
       if (isMobileMenuOpen) {
-        menuRef.current.style.left = '0';
+        menuRef.current.style.left = '0'
       } else {
-        menuRef.current.style.left = '-100%';
+        menuRef.current.style.left = '-100%'
       }
     }
-  }, [isMobileMenuOpen, isMobile]);
+  }, [isMobileMenuOpen, isMobile])
 
   // Close menu on route change and manage focus
   useEffect(() => {
     if (isMobileMenuOpen) {
-      closeMenu();
+      closeMenu()
     }
-  }, [location, closeMenu, isMobileMenuOpen]);
+  }, [location, closeMenu, isMobileMenuOpen])
 
   return (
     <>
@@ -252,7 +256,7 @@ const Navigation = () => {
 
           {/* Mobile menu backdrop */}
           {isMobile && isMobileMenuOpen && (
-            <div 
+            <div
               className="mobile-menu-backdrop"
               onClick={closeMenu}
               style={{
@@ -262,12 +266,12 @@ const Navigation = () => {
                 right: 0,
                 bottom: 0,
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 1000
+                zIndex: 1000,
               }}
             />
           )}
 
-          <div 
+          <div
             ref={menuRef}
             id="navigation-menu"
             className={`nav-menu ${isMobileMenuOpen ? 'nav-menu-active' : ''}`}
@@ -281,7 +285,7 @@ const Navigation = () => {
               <>
                 <div className="nav-group nav-group-primary">
                   <div className="nav-group-label">Quick Access</div>
-                  {primaryItems.map((item) => (
+                  {primaryItems.map(item => (
                     <Link
                       key={item.path}
                       to={item.path}
@@ -290,7 +294,9 @@ const Navigation = () => {
                       aria-current={isActive(item.path) ? 'page' : undefined}
                       role="menuitem"
                     >
-                      <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                      <span className="nav-icon" aria-hidden="true">
+                        {item.icon}
+                      </span>
                       <div className="nav-text">
                         <span className="nav-title">{item.title}</span>
                         <span className="nav-description">{item.description}</span>
@@ -298,10 +304,10 @@ const Navigation = () => {
                     </Link>
                   ))}
                 </div>
-                
+
                 <div className="nav-group nav-group-secondary">
                   <div className="nav-group-label">Explore</div>
-                  {secondaryItems.map((item) => (
+                  {secondaryItems.map(item => (
                     <Link
                       key={item.path}
                       to={item.path}
@@ -310,7 +316,9 @@ const Navigation = () => {
                       aria-current={isActive(item.path) ? 'page' : undefined}
                       role="menuitem"
                     >
-                      <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                      <span className="nav-icon" aria-hidden="true">
+                        {item.icon}
+                      </span>
                       <div className="nav-text">
                         <span className="nav-title">{item.title}</span>
                         <span className="nav-description">{item.description}</span>
@@ -318,11 +326,11 @@ const Navigation = () => {
                     </Link>
                   ))}
                 </div>
-                
+
                 {utilityItems.length > 0 && (
                   <div className="nav-group nav-group-utility">
                     <div className="nav-group-label">Help</div>
-                    {utilityItems.map((item) => (
+                    {utilityItems.map(item => (
                       <Link
                         key={item.path}
                         to={item.path}
@@ -331,7 +339,9 @@ const Navigation = () => {
                         aria-current={isActive(item.path) ? 'page' : undefined}
                         role="menuitem"
                       >
-                        <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                        <span className="nav-icon" aria-hidden="true">
+                          {item.icon}
+                        </span>
                         <div className="nav-text">
                           <span className="nav-title">{item.title}</span>
                           <span className="nav-description">{item.description}</span>
@@ -344,7 +354,7 @@ const Navigation = () => {
             ) : (
               // Desktop: Show all 5 navigation items
               <>
-                {[...primaryItems, ...secondaryItems, ...utilityItems].map((item) => (
+                {[...primaryItems, ...secondaryItems, ...utilityItems].map(item => (
                   <Link
                     key={item.path}
                     to={item.path}
@@ -353,7 +363,9 @@ const Navigation = () => {
                     aria-current={isActive(item.path) ? 'page' : undefined}
                     tabIndex={0}
                   >
-                    <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                    <span className="nav-icon" aria-hidden="true">
+                      {item.icon}
+                    </span>
                     <div className="nav-text">
                       <span className="nav-title">{item.title}</span>
                       <span className="nav-description">{item.description}</span>
@@ -373,18 +385,23 @@ const Navigation = () => {
             <li className="breadcrumb-item">
               <Link to="/">Home</Link>
             </li>
-            <li className="breadcrumb-separator" aria-hidden="true">/</li>
+            <li className="breadcrumb-separator" aria-hidden="true">
+              /
+            </li>
             <li className="breadcrumb-item">
               <Link to="/mplads">MPLADS</Link>
             </li>
             {location.pathname !== '/mplads' && (
               <>
-                <li className="breadcrumb-separator" aria-hidden="true">/</li>
+                <li className="breadcrumb-separator" aria-hidden="true">
+                  /
+                </li>
                 <li className="breadcrumb-item breadcrumb-current" aria-current="page">
                   {(() => {
-                    const currentItem = [...primaryItems, ...secondaryItems, ...utilityItems]
-                      .find(item => isActive(item.path));
-                    return currentItem?.title || 'Page';
+                    const currentItem = [...primaryItems, ...secondaryItems, ...utilityItems].find(
+                      item => isActive(item.path)
+                    )
+                    return currentItem?.title || 'Page'
                   })()}
                 </li>
               </>
@@ -393,7 +410,7 @@ const Navigation = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default Navigation;
+export default Navigation

@@ -28,7 +28,7 @@ const getMPDetails = async (req, res, next) => {
     }
     
     // Use summary data if available, otherwise use MP data
-    const mpData = mpSummary || mp;
+    const _mpData = mpSummary || mp;
     const mpId = mp ? mp._id.toString() : null;
     const mpName = mpSummary ? mpSummary.mpName : mp.name;
     const mpConstituency = mpSummary ? mpSummary.constituency : mp.constituency;
@@ -285,7 +285,7 @@ const getMPWorks = async (req, res, next) => {
     const mpConstituency = mpSummary ? mpSummary.constituency : mp.constituency;
     const mpHouse = mpSummary ? mpSummary.house : mp?.house;
     const lsSel = getLsTermSelection(req);
-    const mpId = mp ? mp._id.toString() : null;
+    const _mpId = mp ? mp._id.toString() : null;
 
     // Validate and sanitize pagination
     const { page, limit, skip } = validatePagination(req.query.page || 1, req.query.limit || 50000);
@@ -727,7 +727,7 @@ const searchMPs = async (req, res, next) => {
 
     // Compute total count avoiding duplicates
     // Get all Summary entities first to build deduplication set
-    const [summaryCount, allSummaryEntities, mpCount] = await Promise.all([
+    const [summaryCount, allSummaryEntities, _mpCount] = await Promise.all([
       Summary.countDocuments(summaryQuery),
       Summary.find(summaryQuery).select('mpName constituency state').lean(),
       MP.countDocuments(mpQuery)

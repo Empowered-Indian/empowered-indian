@@ -32,8 +32,13 @@
 }
 
 @keyframes successPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .loading-icon {
@@ -69,8 +74,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .unsubscribe-container h1 {
@@ -138,15 +147,15 @@
   .unsubscribe-success {
     padding: 1rem;
   }
-  
+
   .unsubscribe-container {
     padding: 2rem;
   }
-  
+
   .unsubscribe-container h1 {
     font-size: 1.5rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     align-items: stretch;

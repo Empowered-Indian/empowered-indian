@@ -29,7 +29,6 @@
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 0.8;
@@ -93,7 +92,7 @@
 }
 
 .error-suggestions li::before {
-  content: "•";
+  content: '•';
   position: absolute;
   left: 0;
   color: var(--primary-color);
@@ -108,13 +107,11 @@
   margin-top: var(--spacing-2);
 }
 
-
 .error-details {
   margin-top: var(--spacing-8);
   width: 100%;
   text-align: left;
 }
-
 
 .error-details summary {
   cursor: pointer;

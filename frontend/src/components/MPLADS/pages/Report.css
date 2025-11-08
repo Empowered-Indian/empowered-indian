@@ -195,8 +195,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
@@ -204,30 +208,30 @@
   .report-page {
     padding: 16px;
   }
-  
+
   .feedback-form,
   .data-issue-form {
     padding: 24px;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .info-steps {
     gap: 20px;
   }
-  
+
   .info-step {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .step-icon {
     margin-top: 0;
   }
-  
+
   .report-info {
     padding: 24px;
   }

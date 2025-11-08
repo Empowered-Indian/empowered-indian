@@ -462,8 +462,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive Design */
@@ -471,12 +475,12 @@
   .mps-page {
     padding: 16px;
   }
-  
+
   .national-stats {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     padding: 16px;
   }
-  
+
   .mps-grid {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
@@ -486,36 +490,36 @@
   .mps-header h1 {
     font-size: 24px;
   }
-  
+
   .control-buttons {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-controls {
     justify-content: space-between;
   }
-  
+
   .filter-group {
     flex-direction: column;
     align-items: stretch;
     gap: 4px;
   }
-  
+
   .content-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .mps-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .pagination {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .insights-grid {
     grid-template-columns: 1fr;
   }
@@ -527,11 +531,11 @@
     gap: 12px;
     padding: 12px;
   }
-  
+
   .stat-value {
     font-size: 20px;
   }
-  
+
   .mps-controls {
     padding: 16px;
   }

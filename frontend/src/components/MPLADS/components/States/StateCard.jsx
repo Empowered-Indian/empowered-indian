@@ -1,50 +1,51 @@
-import { Link } from 'react-router-dom';
-import { FiUsers, FiTrendingUp, FiCheckCircle, FiMapPin, FiInfo } from 'react-icons/fi';
-import InfoTooltip from '../Common/InfoTooltip';
-import './StateCard.css';
-import { formatINRCompact } from '../../../../utils/formatters';
+import { Link } from 'react-router-dom'
+import { FiUsers, FiTrendingUp, FiCheckCircle, FiMapPin, FiInfo } from 'react-icons/fi'
+import InfoTooltip from '../Common/InfoTooltip'
+import './StateCard.css'
+import { formatINRCompact } from '../../../../utils/formatters'
 
 const StateCard = ({ state }) => {
   // Extract data from state object with proper fallbacks
-  const name = state.name || state.state || 'Unknown State';
-  const totalMPs = state.totalMPs || state.mpCount || 0;
-  const totalAllocated = state.totalAllocated || 0;
-  const totalExpenditure = state.totalExpenditure || 0;
-  const utilizationPercentage = state.utilizationPercentage || 0;
-  const totalWorksCompleted = state.totalWorksCompleted || state.completedWorksCount || 0;
-  const totalWorksRecommended = state.totalWorksRecommended || state.recommendedWorksCount || 0;
-  const rank = state.rank || 0;
-  const totalStates = state.totalStates || 0;
+  const name = state.name || state.state || 'Unknown State'
+  const totalMPs = state.totalMPs || state.mpCount || 0
+  const totalAllocated = state.totalAllocated || 0
+  const totalExpenditure = state.totalExpenditure || 0
+  const utilizationPercentage = state.utilizationPercentage || 0
+  const totalWorksCompleted = state.totalWorksCompleted || state.completedWorksCount || 0
+  const totalWorksRecommended = state.totalWorksRecommended || state.recommendedWorksCount || 0
+  const rank = state.rank || 0
+  const totalStates = state.totalStates || 0
 
-  const formatCurrency = (amount) => formatINRCompact(amount);
+  const formatCurrency = amount => formatINRCompact(amount)
 
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat('en-IN', { notation: 'compact' }).format(num || 0);
-  };
+  const formatNumber = num => {
+    return new Intl.NumberFormat('en-IN', { notation: 'compact' }).format(num || 0)
+  }
 
-  const getUtilizationClass = (percentage) => {
-    if (percentage >= 90) return 'high';
-    if (percentage >= 70) return 'medium';
-    return 'low';
-  };
+  const getUtilizationClass = percentage => {
+    if (percentage >= 90) return 'high'
+    if (percentage >= 70) return 'medium'
+    return 'low'
+  }
 
-  const completionRate = totalWorksRecommended > 0 
-    ? ((totalWorksCompleted / totalWorksRecommended) * 100).toFixed(1)
-    : 0;
+  const completionRate =
+    totalWorksRecommended > 0 ? ((totalWorksCompleted / totalWorksRecommended) * 100).toFixed(1) : 0
 
-  const stateName = name || 'Unknown State';
-  const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
+  const stateName = name || 'Unknown State'
+  const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-')
 
   return (
     <Link to={`/mplads/states/${stateSlug}`} className="state-card">
       <div className="state-card-header">
         <div className="state-info">
-          <h3 className="state-name" title={stateName}>{stateName}</h3>
+          <h3 className="state-name" title={stateName}>
+            {stateName}
+          </h3>
           <div className="state-meta">
             <span className="state-mps">
               <FiUsers />
               {totalMPs} MPs
-              <InfoTooltip 
+              <InfoTooltip
                 content="Includes current and recent MPs with active MPLADS projects. Count may exceed current parliamentary seats due to ongoing multi-year projects from previous terms."
                 position="top"
                 size="small"
@@ -78,13 +79,15 @@ const StateCard = ({ state }) => {
         <div className="utilization-section">
           <div className="utilization-header">
             <span className="utilization-label">Fund Utilization</span>
-            <span className={`utilization-value utilization-${getUtilizationClass(utilizationPercentage)}`}>
+            <span
+              className={`utilization-value utilization-${getUtilizationClass(utilizationPercentage)}`}
+            >
               <FiTrendingUp />
               {utilizationPercentage.toFixed(1)}%
             </span>
           </div>
           <div className="utilization-bar">
-            <div 
+            <div
               className={`utilization-fill utilization-${getUtilizationClass(utilizationPercentage)}`}
               style={{ width: `${utilizationPercentage}%` }}
             />
@@ -110,7 +113,7 @@ const StateCard = ({ state }) => {
         <span className="view-details">View Details →</span>
       </div>
     </Link>
-  );
-};
+  )
+}
 
-export default StateCard;
+export default StateCard

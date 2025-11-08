@@ -22,18 +22,18 @@ const createRateLimitMessage = (category, windowMs) => ({
 
 /**
  * Custom skip function for development environment
- * @param {Object} req - Express request object
+ * @param {Object} _req - Express request object
  * @returns {boolean} Whether to skip rate limiting
  */
-const skipDevelopment = (req) => {
-  return process.env.NODE_ENV !== 'production' && 
+const skipDevelopment = (_req) => {
+  return process.env.NODE_ENV !== 'production' &&
          process.env.ENABLE_RATE_LIMIT !== 'true';
 };
 
 /**
  * Enhanced rate limit store with IP tracking
  */
-const createStore = () => {
+const _createStore = () => {
   const hits = new Map();
   const resetTime = new Map();
   
