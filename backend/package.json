@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "private": true,
   "main": "server.js",
   "scripts": {
     "start": "node --max-old-space-size=512 server.js",
@@ -16,6 +17,9 @@
   "author": "",
   "license": "AGPL-3.0",
   "description": "Empowered Indian backend API (Node/Express + MongoDB)",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@sentry/node": "^10.3.0",
     "bcryptjs": "^3.0.2",
@@ -41,10 +45,6 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2",
-    "supertest": "^7.1.4",
-    "@eslint/js": "^9.30.1",
-    "eslint": "^9.30.1",
-    "globals": "^16.3.0"
+    "supertest": "^7.1.4"
   }
 }
