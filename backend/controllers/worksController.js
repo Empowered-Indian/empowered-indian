@@ -34,7 +34,7 @@ const getCompletedWorks = async (req, res, next) => {
         if (mp) {
           matchConditions.mpName = mp.name;
         }
-      } catch (error) {
+      } catch {
         // If mp_id is not a valid ObjectId, treat it as mpName directly
         matchConditions.mpName = mp_id;
       }
@@ -101,7 +101,7 @@ const getCompletedWorks = async (req, res, next) => {
 
     // Apply Lok Sabha term selection (default 18) for mixed-house queries
     const lsSelR = getLsTermSelection(req);
-    const lsGateR = { $or: [ { house: 'Rajya Sabha' }, { house: 'Lok Sabha', lsTerm: lsSelR === 'both' ? { $in: [17, 18] } : parseInt(lsSelR, 10) } ] };
+    const _lsGateR = { $or: [ { house: 'Rajya Sabha' }, { house: 'Lok Sabha', lsTerm: lsSelR === 'both' ? { $in: [17, 18] } : parseInt(lsSelR, 10) } ] };
 
     // Sort configuration
     const sortConfig = {};
@@ -271,7 +271,7 @@ const getRecommendedWorks = async (req, res, next) => {
         if (mp) {
           matchConditions.mpName = mp.name;
         }
-      } catch (error) {
+      } catch {
         // If mp_id is not a valid ObjectId, treat it as mpName directly
         matchConditions.mpName = mp_id;
       }
@@ -420,7 +420,7 @@ const getRecommendedWorks = async (req, res, next) => {
             { $count: 'total' }
           ]);
           approxTotal = approxAgg[0]?.total || 0;
-        } catch (_) {
+        } catch {
           approxTotal = 0;
         }
 
@@ -447,7 +447,7 @@ const getRecommendedWorks = async (req, res, next) => {
             lastUpdated: new Date().toISOString()
           }
         });
-      } catch (e) {
+      } catch {
         // fall through to heavy pipeline
       }
     }
@@ -565,7 +565,7 @@ const getRecommendedWorks = async (req, res, next) => {
     let recommendedWorks = [];
     try {
       recommendedWorks = await WorksRecommended.aggregate(pipeline).option({ allowDiskUse: true, maxTimeMS: 5000 });
-    } catch (e) {
+    } catch {
       // Fallback: return empty page quickly if heavy pipeline times out
       recommendedWorks = [];
     }
@@ -639,7 +639,7 @@ const getRecommendedWorks = async (req, res, next) => {
     try {
       const totalCountAgg = await WorksRecommended.aggregate(totalCountPipeline).option({ allowDiskUse: true, maxTimeMS: 5000 });
       totalCount = totalCountAgg[0]?.total || 0;
-    } catch (e) {
+    } catch {
       // Approximate fallback without exclude-completed (fast)
       totalCount = await WorksRecommended.countDocuments({ $and: [matchConditions, lsGateR] });
     }
@@ -726,7 +726,7 @@ const getRecommendedWorks = async (req, res, next) => {
     let summaryArr = [];
     try {
       summaryArr = await WorksRecommended.aggregate(summaryPipeline).option({ allowDiskUse: true, maxTimeMS: 5000 });
-    } catch (e) {
+    } catch {
       summaryArr = [];
     }
     const [summary] = summaryArr;
@@ -805,7 +805,7 @@ const getRecommendedWorks = async (req, res, next) => {
     let statusDistribution = [];
     try {
       statusDistribution = await WorksRecommended.aggregate(statusDistributionPipeline).option({ allowDiskUse: true, maxTimeMS: 5000 });
-    } catch (e) {
+    } catch {
       statusDistribution = [];
     }
 

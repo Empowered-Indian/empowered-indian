@@ -148,7 +148,7 @@ const getProfile = async (req, res) => {
     }
 
     // Remove password from response
-    const { password, ...userWithoutPassword } = user;
+    const { password: _password, ...userWithoutPassword } = user;
 
     res.json({
       success: true,

@@ -27,7 +27,7 @@ const validateFeedback = [
     body('title')
         .isLength({ min: 5, max: 100 })
         .withMessage('Title must be between 5-100 characters')
-        .matches(/^[a-zA-Z0-9\s\-\.\_\,\!\?]+$/)
+        .matches(/^[a-zA-Z0-9\s._,!?-]+$/)
         .withMessage('Title contains invalid characters')
         .escape(),
     body('description')

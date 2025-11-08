@@ -5,7 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
-const rateLimit = require('express-rate-limit');
 const Sentry = require("@sentry/node");
 require('dotenv').config();
 
@@ -15,14 +14,12 @@ const errorHandler = require('./middleware/errorHandler');
 const routes = require('./routes');
 const { secureLogger } = require('./utils/logger');
 const { requestLogger, bodySizeLogger, slowRequestLogger, errorRequestLogger } = require('./middleware/requestLogger');
-const { monitorMemory } = require('./utils/memoryMonitor');
 
 // Import enhanced security middleware
-const { 
-  securityStack, 
+const {
   securityLogger,
   parameterPollutionProtection,
-  noSQLInjectionProtection 
+  noSQLInjectionProtection
 } = require('./middleware/sanitization');
 const { 
   generalApiLimiter, 

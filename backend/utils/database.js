@@ -56,7 +56,9 @@ const closeConnection = async () => {
       type: 'mongo_client_close_noop',
       timestamp: new Date().toISOString()
     });
-  } catch (_) {}
+  } catch {
+    // Ignore logging errors
+  }
 };
 
 module.exports = {

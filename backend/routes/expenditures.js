@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { validate, schemas } = require('../middleware/validation');
+const { validate } = require('../middleware/validation');
 const { cacheMiddleware } = require('../middleware/cache');
 const { getExpenditures, getExpenditureCategories } = require('../controllers/expenditureController');
 

@@ -1,6 +1,6 @@
 const { secureLogger } = require('../utils/logger');
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   const correlationId = req.correlationId || 'unknown';
   const statusCode = err.status || err.statusCode || 500;
   
