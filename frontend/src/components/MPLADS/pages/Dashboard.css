@@ -337,8 +337,12 @@
 
 .action-btn-wrapper {
   display: flex;
-  flex-direction: column;
-  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn-wrapper .tooltip {
+  padding: 5px;
 }
 
 .action-btn-wrapper .action-btn {

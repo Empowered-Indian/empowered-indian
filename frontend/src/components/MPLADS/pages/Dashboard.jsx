@@ -293,6 +293,7 @@ const Dashboard = () => {
                 <InfoTooltip
                   content="Top Performers feature is being worked on with very high priority and will be live soon!"
                   position="top"
+                  className="tooltip"
                   size="small"
                 />
               </div>
@@ -303,6 +304,7 @@ const Dashboard = () => {
                 <InfoTooltip
                   content="Report generation is coming soon. You'll be able to download comprehensive MPLADS reports in PDF format."
                   position="top"
+                  className="tooltip"
                   size="small"
                 />
               </div>
