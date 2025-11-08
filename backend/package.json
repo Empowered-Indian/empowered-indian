@@ -18,7 +18,7 @@
   "license": "AGPL-3.0",
   "description": "Empowered Indian backend API (Node/Express + MongoDB)",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@sentry/node": "^10.3.0",
