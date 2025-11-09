@@ -1,27 +1,11 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import node from 'eslint-config/node'
+import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['node_modules', 'logs']),
+  ...node,
   {
-    files: ['**/*.js'],
-    ignores: ['node_modules/**', 'logs/**'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'commonjs',
-      globals: {
-        ...globals.node,
-      },
-    },
-    plugins: {},
-    rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
-      'eqeqeq': ['error', 'always'],
-      'no-undef': 'error'
-    },
-    extends: [js.configs.recommended],
+    // Backend-specific ignores (already in node config, but can add more if needed)
+    ignores: ['logs/**'],
   },
 ])
 

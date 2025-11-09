@@ -1,26 +1,17 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import node from 'eslint-config/node'
+import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['node_modules', 'logs', 'data', 'mplads-image-extractor']),
+  ...node,
   {
-    files: ['**/*.js'],
-    ignores: ['node_modules/**', 'logs/**', 'data/**', 'mplads-image-extractor/**'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'commonjs',
-      globals: {
-        ...globals.node,
-      },
-    },
+    // Upload-scripts specific ignores
+    ignores: ['data/**', 'mplads-image-extractor/**'],
+  },
+  {
+    // Override console rule to allow all console methods in scripts
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
-      'eqeqeq': ['error', 'always'],
-      'no-undef': 'error',
+      'no-console': 'off',
     },
-    extends: [js.configs.recommended],
   },
 ])
 
