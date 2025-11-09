@@ -6,7 +6,7 @@ export default defineConfig([
   {
     // Frontend-specific ignores
     ignores: [
-      '*.config.js',     // Vite, Tailwind, PostCSS configs
+      '*.config.js', // Vite, Tailwind, PostCSS configs
       '*.config.mjs',
       'dist/**',
     ],
