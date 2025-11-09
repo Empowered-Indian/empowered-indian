@@ -6,6 +6,7 @@
 .pnp.js
 /backend/node_modules
 /backend/dist
+/packages/**/*/node_modules
 
 # production
 /build
