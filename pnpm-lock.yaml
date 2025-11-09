@@ -12,15 +12,12 @@ importers:
         specifier: ^10.20.0
         version: 10.20.0
     devDependencies:
-      '@eslint/js':
-        specifier: ^9.30.1
-        version: 9.39.1
       eslint:
         specifier: ^9.30.1
         version: 9.39.1(jiti@1.21.7)
-      globals:
-        specifier: ^16.3.0
-        version: 16.5.0
+      eslint-config:
+        specifier: workspace:*
+        version: link:packages/eslint-config
       nodemon:
         specifier: ^3.0.2
         version: 3.1.10
@@ -177,7 +174,7 @@ importers:
         version: 7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       tailwind-merge:
         specifier: ^3.3.1
-        version: 3.3.1
+        version: 3.4.0
     devDependencies:
       '@vitejs/plugin-react':
         specifier: ^4.6.0
@@ -185,15 +182,6 @@ importers:
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
-      eslint-config-prettier:
-        specifier: ^9.1.0
-        version: 9.1.2(eslint@9.39.1(jiti@1.21.7))
-      eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.39.1(jiti@1.21.7))
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.20
-        version: 0.4.24(eslint@9.39.1(jiti@1.21.7))
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -206,6 +194,27 @@ importers:
       vite:
         specifier: ^7.0.4
         version: 7.2.2(@types/node@24.10.0)(jiti@1.21.7)
+
+  packages/eslint-config:
+    dependencies:
+      '@eslint/js':
+        specifier: ^9.30.1
+        version: 9.39.1
+      eslint:
+        specifier: ^9.30.1
+        version: 9.39.1(jiti@1.21.7)
+      eslint-config-prettier:
+        specifier: ^9.1.0
+        version: 9.1.2(eslint@9.39.1(jiti@1.21.7))
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.39.1(jiti@1.21.7))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.20
+        version: 0.4.24(eslint@9.39.1(jiti@1.21.7))
+      globals:
+        specifier: ^16.3.0
+        version: 16.5.0
 
   upload-scripts:
     dependencies:
@@ -3051,8 +3060,8 @@ packages:
   svg-arc-to-cubic-bezier@3.2.0:
     resolution: {integrity: sha512-djbJ/vZKZO+gPoSDThGNpKDO+o+bAeA4XQKovvkNCqnIS2t+S4qnLAGQhyyrulhCFRl1WWzAp0wUDV8PpTVU3g==}
 
-  tailwind-merge@3.3.1:
-    resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
 
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
@@ -3208,8 +3217,8 @@ packages:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
     hasBin: true
 
-  validator@13.15.20:
-    resolution: {integrity: sha512-KxPOq3V2LmfQPP4eqf3Mq/zrT0Dqp2Vmx2Bn285LwVahLc+CsxOM0crBHczm8ijlcjZ0Q5Xd6LW3z3odTPnlrw==}
+  validator@13.15.22:
+    resolution: {integrity: sha512-uT/YQjiyLJP7HSrv/dPZqK9L28xf8hsNca01HSz1dfmI0DgMfjopp1rO/z13NeGF1tVystF0Ejx3y4rUKPw+bQ==}
     engines: {node: '>= 0.10'}
 
   vary@1.1.2:
@@ -5103,7 +5112,7 @@ snapshots:
   express-validator@7.3.0:
     dependencies:
       lodash: 4.17.21
-      validator: 13.15.20
+      validator: 13.15.22
 
   express-winston@4.2.0(winston@3.18.3):
     dependencies:
@@ -6136,7 +6145,7 @@ snapshots:
 
   svg-arc-to-cubic-bezier@3.2.0: {}
 
-  tailwind-merge@3.3.1: {}
+  tailwind-merge@3.4.0: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.18):
     dependencies:
@@ -6286,7 +6295,7 @@ snapshots:
 
   uuid@11.1.0: {}
 
-  validator@13.15.20: {}
+  validator@13.15.22: {}
 
   vary@1.1.2: {}
 
