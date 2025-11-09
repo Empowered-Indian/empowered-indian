@@ -80,9 +80,9 @@ const StateCardList = ({ states = [], onSortedStatesChange }) => {
     const sorted = [...withBaseIds].sort((a, b) => {
       const va = a[sortKey]
       const vb = b[sortKey]
-      if (va == null && vb == null) return 0
-      if (va == null) return 1
-      if (vb == null) return -1
+      if (va === null && vb === null) return 0
+      if (va === null) return 1
+      if (vb === null) return -1
       if (typeof va === 'string') {
         return direction === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va)
       }
@@ -191,14 +191,14 @@ const StateCardList = ({ states = [], onSortedStatesChange }) => {
                 data-label={columns[3].label}
                 style={{ width: columns[3].width, minWidth: columns[3].minWidth }}
               >
-                {row.totalAllocated != null ? formatINRCompact(row.totalAllocated) : '—'}
+                {row.totalAllocated !== null ? formatINRCompact(row.totalAllocated) : '—'}
               </div>
               <div
                 className={`table-cell align-${columns[4].align}`}
                 data-label={columns[4].label}
                 style={{ width: columns[4].width, minWidth: columns[4].minWidth }}
               >
-                {row.totalExpenditure != null ? formatINRCompact(row.totalExpenditure) : '—'}
+                {row.totalExpenditure !== null ? formatINRCompact(row.totalExpenditure) : '—'}
               </div>
               <div
                 className="table-cell utilization-cell"
