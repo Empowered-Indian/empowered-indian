@@ -33,9 +33,7 @@
       "persistent": true
     },
     "lint": {
-      "outputs": [
-        ".eslintcache"
-      ]
+      "cache": false
     },
     "lint:fix": {
       "cache": false

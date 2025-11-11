@@ -3,3 +3,4 @@ packages:
   - "frontend"
   - "backend"
   - "upload-scripts"
+  - "packages/*"
