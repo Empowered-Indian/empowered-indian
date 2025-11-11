@@ -11,7 +11,9 @@
     "analyze-performance": "node scripts/analyzePerformance.js",
     "db-optimize": "npm run analyze-performance && npm run create-indexes && npm run analyze-performance",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -45,6 +47,8 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
+    "prettier-config": "workspace:*",
     "supertest": "^7.1.4"
-  }
+  },
+  "prettier": "prettier-config"
 }

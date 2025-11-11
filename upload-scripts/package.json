@@ -8,7 +8,9 @@
     "start": "node basic-api-uploader.js",
     "basic": "node basic-api-uploader.js",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [
     "mplads",
@@ -27,5 +29,9 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "devDependencies": {
+    "prettier-config": "workspace:*"
+  },
+  "prettier": "prettier-config"
 }

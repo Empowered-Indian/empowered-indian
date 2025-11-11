@@ -1,7 +1,7 @@
-const xss = require('xss');
-const mongoSanitize = require('express-mongo-sanitize');
-const hpp = require('hpp');
-const { secureLogger } = require('../utils/logger');
+const xss = require('xss')
+const mongoSanitize = require('express-mongo-sanitize')
+const hpp = require('hpp')
+const { secureLogger } = require('../utils/logger')
 
 /**
  * Comprehensive input sanitization middleware for security
@@ -17,13 +17,13 @@ const xssOptions = {
     strong: [],
     em: [],
     p: [],
-    br: []
+    br: [],
   },
   stripIgnoreTag: true,
   stripIgnoreTagBody: ['script', 'style'],
   allowCommentTag: false,
-  css: false // Disable CSS to prevent style-based attacks
-};
+  css: false, // Disable CSS to prevent style-based attacks
+}
 
 /**
  * Recursively sanitize an object's string values
@@ -34,39 +34,41 @@ const xssOptions = {
 function sanitizeObject(obj, allowHTML = false) {
   if (typeof obj === 'string') {
     // Trim whitespace
-    obj = obj.trim();
-    
+    obj = obj.trim()
+
     // Block dangerous protocols
-    const dangerousProtocols = /^\s*(javascript|vbscript|data|file|about):/i;
+    const dangerousProtocols = /^\s*(javascript|vbscript|data|file|about):/i
     if (dangerousProtocols.test(obj)) {
-      secureLogger.security.suspiciousActivity('unknown', 'dangerous_protocol_blocked', { protocol: obj });
-      return '';
+      secureLogger.security.suspiciousActivity('unknown', 'dangerous_protocol_blocked', {
+        protocol: obj,
+      })
+      return ''
     }
-    
+
     // Apply XSS protection
     if (allowHTML) {
-      return xss(obj, xssOptions);
+      return xss(obj, xssOptions)
     } else {
       // Strip all HTML for security-critical fields
-      return xss(obj, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true });
+      return xss(obj, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true })
     }
   }
-  
+
   if (Array.isArray(obj)) {
-    return obj.map(item => sanitizeObject(item, allowHTML));
+    return obj.map(item => sanitizeObject(item, allowHTML))
   }
-  
+
   if (obj !== null && typeof obj === 'object') {
-    const sanitized = {};
+    const sanitized = {}
     for (const [key, value] of Object.entries(obj)) {
       // Sanitize key names to prevent object pollution
-      const cleanKey = typeof key === 'string' ? key.replace(/[^a-zA-Z0-9_-]/g, '') : key;
-      sanitized[cleanKey] = sanitizeObject(value, allowHTML);
+      const cleanKey = typeof key === 'string' ? key.replace(/[^a-zA-Z0-9_-]/g, '') : key
+      sanitized[cleanKey] = sanitizeObject(value, allowHTML)
     }
-    return sanitized;
+    return sanitized
   }
-  
-  return obj;
+
+  return obj
 }
 
 /**
@@ -77,69 +79,74 @@ function sanitizeObject(obj, allowHTML = false) {
  * @returns {Function} Express middleware
  */
 const sanitizeInputs = (options = {}) => {
-  const { allowHTML = false, htmlFields = [] } = options;
-  
+  const { allowHTML = false, htmlFields = [] } = options
+
   return (req, res, next) => {
     try {
       // Sanitize query parameters (never allow HTML)
       if (req.query && typeof req.query === 'object') {
-        req.query = sanitizeObject(req.query, false);
+        req.query = sanitizeObject(req.query, false)
       }
-      
+
       // Sanitize URL parameters (never allow HTML)
       if (req.params && typeof req.params === 'object') {
-        req.params = sanitizeObject(req.params, false);
+        req.params = sanitizeObject(req.params, false)
       }
-      
+
       // Sanitize request body
       if (req.body && typeof req.body === 'object') {
         if (htmlFields.length > 0) {
           // Selective HTML sanitization for specific fields
-          const sanitized = {};
+          const sanitized = {}
           for (const [key, value] of Object.entries(req.body)) {
-            const shouldAllowHTML = htmlFields.includes(key);
-            sanitized[key] = sanitizeObject(value, shouldAllowHTML);
+            const shouldAllowHTML = htmlFields.includes(key)
+            sanitized[key] = sanitizeObject(value, shouldAllowHTML)
           }
-          req.body = sanitized;
+          req.body = sanitized
         } else {
           // Global HTML policy for entire body
-          req.body = sanitizeObject(req.body, allowHTML);
+          req.body = sanitizeObject(req.body, allowHTML)
         }
       }
-      
-      next();
+
+      next()
     } catch (error) {
-      secureLogger.error('Input sanitization error', {
-        category: 'security',
-        type: 'sanitization_error',
-        error: error.message,
-        url: req.url,
-        method: req.method,
-        ip: req.ip,
-        timestamp: new Date().toISOString()
-      }, req.correlationId);
+      secureLogger.error(
+        'Input sanitization error',
+        {
+          category: 'security',
+          type: 'sanitization_error',
+          error: error.message,
+          url: req.url,
+          method: req.method,
+          ip: req.ip,
+          timestamp: new Date().toISOString(),
+        },
+        req.correlationId
+      )
       return res.status(500).json({
         success: false,
-        error: 'Input processing error'
-      });
+        error: 'Input processing error',
+      })
     }
-  };
-};
+  }
+}
 
 /**
  * Strict sanitization for security-critical endpoints
  * No HTML allowed, aggressive cleaning
  */
-const strictSanitization = sanitizeInputs({ allowHTML: false });
+const strictSanitization = sanitizeInputs({ allowHTML: false })
 
 /**
  * Moderate sanitization for content endpoints
  * Minimal HTML allowed in specific fields
  */
-const moderateSanitization = (htmlFields = []) => sanitizeInputs({ 
-  allowHTML: false, 
-  htmlFields 
-});
+const moderateSanitization = (htmlFields = []) =>
+  sanitizeInputs({
+    allowHTML: false,
+    htmlFields,
+  })
 
 /**
  * NoSQL injection protection middleware
@@ -148,13 +155,18 @@ const moderateSanitization = (htmlFields = []) => sanitizeInputs({
 const noSQLInjectionProtection = mongoSanitize({
   replaceWith: '_', // Replace prohibited characters with underscore
   onSanitize: ({ req, key }) => {
-    secureLogger.security.suspiciousActivity(req.ip, 'nosql_injection_attempt', { 
-      key, 
-      url: req.url, 
-      method: req.method 
-    }, req.correlationId);
-  }
-});
+    secureLogger.security.suspiciousActivity(
+      req.ip,
+      'nosql_injection_attempt',
+      {
+        key,
+        url: req.url,
+        method: req.method,
+      },
+      req.correlationId
+    )
+  },
+})
 
 /**
  * HTTP Parameter Pollution protection
@@ -167,9 +179,9 @@ const parameterPollutionProtection = hpp({
     'state',
     'house',
     'status',
-    'sort'
-  ]
-});
+    'sort',
+  ],
+})
 
 /**
  * Security logging middleware
@@ -189,40 +201,45 @@ const securityLogger = (req, res, next) => {
     /\$lt/i,
     /eval\(/i,
     /union.*select/i,
-    /drop.*table/i
-  ];
-  
+    /drop.*table/i,
+  ]
+
   const checkForSuspiciousContent = (obj, path = '') => {
     if (typeof obj === 'string') {
       for (const pattern of suspiciousPatterns) {
         if (pattern.test(obj)) {
-          secureLogger.security.suspiciousActivity(req.ip, 'malicious_pattern_detected', {
-            pattern: pattern.toString(),
-            location: path || 'request',
-            content: obj.substring(0, 100), // First 100 chars for context
-            url: req.url,
-            method: req.method
-          }, req.correlationId);
-          return true;
+          secureLogger.security.suspiciousActivity(
+            req.ip,
+            'malicious_pattern_detected',
+            {
+              pattern: pattern.toString(),
+              location: path || 'request',
+              content: obj.substring(0, 100), // First 100 chars for context
+              url: req.url,
+              method: req.method,
+            },
+            req.correlationId
+          )
+          return true
         }
       }
     } else if (typeof obj === 'object' && obj !== null) {
       for (const [key, value] of Object.entries(obj)) {
         if (checkForSuspiciousContent(value, `${path}.${key}`)) {
-          return true;
+          return true
         }
       }
     }
-    return false;
-  };
-  
+    return false
+  }
+
   // Check all parts of the request
-  checkForSuspiciousContent(req.query, 'query');
-  checkForSuspiciousContent(req.body, 'body');
-  checkForSuspiciousContent(req.params, 'params');
-  
-  next();
-};
+  checkForSuspiciousContent(req.query, 'query')
+  checkForSuspiciousContent(req.body, 'body')
+  checkForSuspiciousContent(req.params, 'params')
+
+  next()
+}
 
 /**
  * Complete security middleware stack
@@ -232,8 +249,8 @@ const securityStack = [
   securityLogger,
   parameterPollutionProtection,
   noSQLInjectionProtection,
-  strictSanitization
-];
+  strictSanitization,
+]
 
 /**
  * Content security middleware for endpoints that handle user content
@@ -243,8 +260,8 @@ const contentSecurityStack = (htmlFields = []) => [
   securityLogger,
   parameterPollutionProtection,
   noSQLInjectionProtection,
-  moderateSanitization(htmlFields)
-];
+  moderateSanitization(htmlFields),
+]
 
 module.exports = {
   sanitizeInputs,
@@ -254,5 +271,5 @@ module.exports = {
   parameterPollutionProtection,
   securityLogger,
   securityStack,
-  contentSecurityStack
-};
+  contentSecurityStack,
+}
