@@ -31,6 +31,7 @@
   color: #e53e3e;
   margin-bottom: 1rem;
   display: block;
+  line-height: 1;
 }
 
 .error-boundary-header h1 {
@@ -60,14 +61,14 @@
   border: 1px solid #9ae6b4;
   border-radius: 8px;
   margin-bottom: 1.5rem;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .suggestion-icon {
   color: #38a169;
   font-size: 1.25rem;
-  margin-top: 0.125rem;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .error-suggestion h3 {

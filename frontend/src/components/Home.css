@@ -168,6 +168,10 @@
 .stats-icon {
   font-size: 2.5rem;
   justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .stats-number {
@@ -377,11 +381,13 @@
   transition:
     transform 0.3s ease,
     color 0.3s ease;
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
-.status-card:hover.home-status-icon {
+.status-card:hover .home-status-icon {
   transform: scale(1.1);
   color: var(--accent-1);
 }
@@ -448,6 +454,10 @@
   font-size: 1.5rem;
   margin-bottom: 16px;
   color: var(--accent-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 /* newsletter panel */
