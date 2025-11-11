@@ -64,7 +64,12 @@ const MailingListForm = () => {
           required
         />
       </div>
-      <Button type="submit" variant="default" className="mailing-submit" disabled={loading}>
+      <Button
+        type="submit"
+        variant="default"
+        className="mailing-submit bg-blue-600 text-white hover:bg-blue-700"
+        disabled={loading}
+      >
         {loading ? 'Submitting…' : 'Subscribe'}
       </Button>
       {alreadySubscribed && (
