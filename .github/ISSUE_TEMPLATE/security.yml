@@ -1,0 +1,89 @@
+name: Security Issue
+description: Report a security vulnerability (privately if needed)
+title: "[Security]: "
+labels: ["security"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Important Security Notice
+
+        If you've discovered a serious security vulnerability, please consider reporting it privately by emailing **roshan@empoweredindian.in** rather than creating a public issue.
+
+        For less critical security concerns, you may continue with this form.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: How severe is this security issue?
+      options:
+        - Low - Minor security concern
+        - Medium - Moderate security risk
+        - High - Significant security vulnerability
+        - Critical - Urgent security vulnerability (consider private disclosure)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Vulnerability Description
+      description: Describe the security issue (avoid sharing exploit details publicly)
+      placeholder: Describe the security concern...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could an attacker potentially do with this vulnerability?
+      placeholder: Describe the potential impact...
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected Components
+      description: Which parts of the application are affected?
+      placeholder: |
+        - Component/Feature: ...
+        - Version: ...
+        - Environment: ...
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: General steps to reproduce (avoid detailed exploit instructions in public issues)
+      placeholder: |
+        1. Navigate to...
+        2. Perform action...
+        3. Observe issue...
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: If you have suggestions for fixing this issue, please share them
+      placeholder: Possible ways to address this...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: Any additional details...
+
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Responsible Disclosure
+      description: Security disclosure agreement
+      options:
+        - label: I will not disclose this vulnerability publicly until it has been addressed
+          required: false
+        - label: I agree to follow this project's Code of Conduct
+          required: true

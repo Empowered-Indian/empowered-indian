@@ -1,0 +1,54 @@
+name: Question / Help
+description: Ask a question or get help with the project
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in Empowered Indian! Please ask your question below.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: Ask your question here...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context that might help us answer your question
+      placeholder: |
+        - What are you trying to accomplish?
+        - What have you already tried?
+        - Any relevant background information
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation Checked
+      description: Have you checked the documentation or existing issues?
+      placeholder: |
+        - [ ] I've checked the README
+        - [ ] I've searched existing issues
+        - [ ] I've looked for related discussions
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other information that might be helpful
+      placeholder: Screenshots, code snippets, etc.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
