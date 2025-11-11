@@ -1,7 +1,7 @@
-const { Expenditure } = require('../models');
-const { getLsTermSelection } = require('../utils/lsTerm');
-const { ObjectId } = require('mongodb');
-const { escapeRegex, validatePagination } = require('../utils/validators');
+const { Expenditure } = require('../models')
+const { getLsTermSelection } = require('../utils/lsTerm')
+const { ObjectId } = require('mongodb')
+const { escapeRegex, validatePagination } = require('../utils/validators')
 
 // GET /api/expenditures - Expenditure list with filters
 const getExpenditures = async (req, res, next) => {
@@ -16,77 +16,88 @@ const getExpenditures = async (req, res, next) => {
       min_amount,
       max_amount,
       category,
-      search
-    } = req.query;
+      search,
+    } = req.query
 
     // Sanitize pagination
-    const { page: safePage, limit: safeLimit, skip } = validatePagination(page, limit);
+    const { page: safePage, limit: safeLimit, skip } = validatePagination(page, limit)
 
     // Build match conditions
-    const plainMatch = {};
-    const andClauses = [];
-    
+    const plainMatch = {}
+    const andClauses = []
+
     if (mp_id) {
       // Support both string and ObjectId storage of mp_id
-      andClauses.push({ $or: [ { mp_id: mp_id }, { mp_id: new ObjectId(mp_id) } ] });
+      andClauses.push({ $or: [{ mp_id: mp_id }, { mp_id: new ObjectId(mp_id) }] })
     }
-    if (state) plainMatch.state = new RegExp(escapeRegex(state), 'i');
+    if (state) plainMatch.state = new RegExp(escapeRegex(state), 'i')
     // Defer year filter to after projection so it works for both expenditureDate/date fields
-    const yearVal = year ? parseInt(year) : null;
-    if (category) plainMatch.category = new RegExp(escapeRegex(category), 'i');
-    
+    const yearVal = year ? parseInt(year) : null
+    if (category) plainMatch.category = new RegExp(escapeRegex(category), 'i')
+
     // Amount range filter with validation – applied after projection on normalized amount
-    let normalizedAmountFilter = null;
+    let normalizedAmountFilter = null
     if (min_amount !== undefined || max_amount !== undefined) {
-      const amountFilter = {};
+      const amountFilter = {}
       if (min_amount !== undefined) {
-        const minVal = parseFloat(min_amount);
-        if (!isNaN(minVal) && minVal >= 0) amountFilter.$gte = minVal;
+        const minVal = parseFloat(min_amount)
+        if (!isNaN(minVal) && minVal >= 0) amountFilter.$gte = minVal
       }
       if (max_amount !== undefined) {
-        const maxVal = parseFloat(max_amount);
-        if (!isNaN(maxVal) && maxVal >= 0) amountFilter.$lte = maxVal;
+        const maxVal = parseFloat(max_amount)
+        if (!isNaN(maxVal) && maxVal >= 0) amountFilter.$lte = maxVal
       }
       if (Object.keys(amountFilter).length > 0) {
-        normalizedAmountFilter = amountFilter;
+        normalizedAmountFilter = amountFilter
       }
     }
 
     // Search in description or MP name - escape regex to prevent injection attacks
     if (search) {
-      const escapedSearch = escapeRegex(search.trim());
+      const escapedSearch = escapeRegex(search.trim())
       andClauses.push({
         $or: [
           { work: new RegExp(escapedSearch, 'i') },
           { vendor: new RegExp(escapedSearch, 'i') },
           { ida: new RegExp(escapedSearch, 'i') },
-          { mpName: new RegExp(escapedSearch, 'i') }
-        ]
-      });
+          { mpName: new RegExp(escapedSearch, 'i') },
+        ],
+      })
     }
 
     // Apply house/term gating
-    const house = req.query.house;
-    const lsSel = getLsTermSelection(req);
-    let houseGate;
+    const house = req.query.house
+    const lsSel = getLsTermSelection(req)
+    let houseGate
     if (house === 'Lok Sabha') {
-      houseGate = { house: 'Lok Sabha', lsTerm: lsSel === 'both' ? { $in: [17, 18] } : parseInt(lsSel, 10) };
+      houseGate = {
+        house: 'Lok Sabha',
+        lsTerm: lsSel === 'both' ? { $in: [17, 18] } : parseInt(lsSel, 10),
+      }
     } else if (house === 'Rajya Sabha') {
-      houseGate = { house: 'Rajya Sabha' };
+      houseGate = { house: 'Rajya Sabha' }
     } else {
       // Both Houses or unspecified: mix RS + LS(term)
-      houseGate = { $or: [ { house: 'Rajya Sabha' }, { house: 'Lok Sabha', lsTerm: lsSel === 'both' ? { $in: [17, 18] } : parseInt(lsSel, 10) } ] };
+      houseGate = {
+        $or: [
+          { house: 'Rajya Sabha' },
+          {
+            house: 'Lok Sabha',
+            lsTerm: lsSel === 'both' ? { $in: [17, 18] } : parseInt(lsSel, 10),
+          },
+        ],
+      }
     }
 
     // Sort configuration
-    const requestedSortField = sort.startsWith('-') ? sort.substring(1) : sort;
-    const requestedSortDir = sort.startsWith('-') ? -1 : 1;
+    const requestedSortField = sort.startsWith('-') ? sort.substring(1) : sort
+    const requestedSortDir = sort.startsWith('-') ? -1 : 1
     // Map sort by 'amount' to normalized field 'amountNorm'
-    const sortField = requestedSortField === 'amount' ? 'amountNorm' : requestedSortField;
-    const sortConfig = { [sortField]: requestedSortDir };
+    const sortField = requestedSortField === 'amount' ? 'amountNorm' : requestedSortField
+    const sortConfig = { [sortField]: requestedSortDir }
 
     // Consolidate plain and AND clauses
-    if (Object.keys(plainMatch).length > 0) andClauses.push(plainMatch);
+    if (Object.keys(plainMatch).length > 0) andClauses.push(plainMatch)
 
     const pipeline = [
       { $match: { $and: [...andClauses, houseGate] } },
@@ -95,14 +106,14 @@ const getExpenditures = async (req, res, next) => {
           from: 'mps',
           localField: 'mp_id',
           foreignField: '_id',
-          as: 'mp_details'
-        }
+          as: 'mp_details',
+        },
       },
       {
         $unwind: {
           path: '$mp_details',
-          preserveNullAndEmptyArrays: true
-        }
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $project: {
@@ -118,28 +129,33 @@ const getExpenditures = async (req, res, next) => {
             name: '$mp_details.name',
             name_hi: '$mp_details.name',
             constituency: '$mp_details.constituency',
-            state: '$mp_details.state'
-          }
-        }
+            state: '$mp_details.state',
+          },
+        },
       },
       ...(yearVal ? [{ $match: { year: yearVal } }] : []),
       ...(normalizedAmountFilter ? [{ $match: { amountNorm: normalizedAmountFilter } }] : []),
       { $sort: sortConfig },
       { $skip: skip },
-      { $limit: safeLimit }
-    ];
+      { $limit: safeLimit },
+    ]
 
-    const expenditures = await Expenditure.aggregate(pipeline);
+    const expenditures = await Expenditure.aggregate(pipeline)
     // Compute totalCount using same normalized amount filtering
     const countPipeline = [
       { $match: { $and: [...andClauses, houseGate] } },
-      { $project: { amountNorm: { $toDouble: { $ifNull: ['$amount', '$expenditureAmount'] } }, year: { $ifNull: ['$year', { $year: { $ifNull: ['$expenditureDate', '$date'] } }] } } },
+      {
+        $project: {
+          amountNorm: { $toDouble: { $ifNull: ['$amount', '$expenditureAmount'] } },
+          year: { $ifNull: ['$year', { $year: { $ifNull: ['$expenditureDate', '$date'] } }] },
+        },
+      },
       ...(yearVal ? [{ $match: { year: yearVal } }] : []),
       ...(normalizedAmountFilter ? [{ $match: { amountNorm: normalizedAmountFilter } }] : []),
-      { $count: 'total' }
-    ];
-    const countAgg = await Expenditure.aggregate(countPipeline);
-    const totalCount = countAgg[0]?.total || 0;
+      { $count: 'total' },
+    ]
+    const countAgg = await Expenditure.aggregate(countPipeline)
+    const totalCount = countAgg[0]?.total || 0
 
     // Get summary statistics for current filters
     const summaryPipeline = [
@@ -149,8 +165,8 @@ const getExpenditures = async (req, res, next) => {
           amountNorm: { $toDouble: { $ifNull: ['$amount', '$expenditureAmount'] } },
           category: 1,
           mp_id: 1,
-          year: { $ifNull: ['$year', { $year: { $ifNull: ['$expenditureDate', '$date'] } }] }
-        }
+          year: { $ifNull: ['$year', { $year: { $ifNull: ['$expenditureDate', '$date'] } }] },
+        },
       },
       ...(yearVal ? [{ $match: { year: yearVal } }] : []),
       ...(normalizedAmountFilter ? [{ $match: { amountNorm: normalizedAmountFilter } }] : []),
@@ -161,12 +177,12 @@ const getExpenditures = async (req, res, next) => {
           avgAmount: { $avg: '$amountNorm' },
           totalTransactions: { $sum: 1 },
           uniqueCategories: { $addToSet: '$category' },
-          uniqueMPs: { $addToSet: '$mp_id' }
-        }
-      }
-    ];
+          uniqueMPs: { $addToSet: '$mp_id' },
+        },
+      },
+    ]
 
-    const [summary] = await Expenditure.aggregate(summaryPipeline);
+    const [summary] = await Expenditure.aggregate(summaryPipeline)
 
     res.json({
       success: true,
@@ -176,15 +192,15 @@ const getExpenditures = async (req, res, next) => {
           currentPage: safePage,
           totalPages: Math.ceil(totalCount / safeLimit),
           totalCount,
-          hasNext: (safePage * safeLimit) < totalCount,
-          hasPrev: safePage > 1
+          hasNext: safePage * safeLimit < totalCount,
+          hasPrev: safePage > 1,
         },
         summary: summary || {
           totalAmount: 0,
           avgAmount: 0,
           totalTransactions: 0,
           uniqueCategories: [],
-          uniqueMPs: []
+          uniqueMPs: [],
         },
         filters: {
           mp_id,
@@ -193,15 +209,15 @@ const getExpenditures = async (req, res, next) => {
           min_amount,
           max_amount,
           category,
-          search
+          search,
         },
-        lastUpdated: new Date().toISOString()
-      }
-    });
+        lastUpdated: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 // GET /api/expenditures/categories - Get all expenditure categories
 const getExpenditureCategories = async (req, res, next) => {
@@ -212,8 +228,8 @@ const getExpenditureCategories = async (req, res, next) => {
           _id: '$category',
           totalAmount: { $sum: { $toDouble: { $ifNull: ['$amount', '$expenditureAmount'] } } },
           transactionCount: { $sum: 1 },
-          avgAmount: { $avg: { $toDouble: { $ifNull: ['$amount', '$expenditureAmount'] } } }
-        }
+          avgAmount: { $avg: { $toDouble: { $ifNull: ['$amount', '$expenditureAmount'] } } },
+        },
       },
       {
         $project: {
@@ -221,26 +237,26 @@ const getExpenditureCategories = async (req, res, next) => {
           category_hi: '$_id', // Placeholder
           totalAmount: { $round: ['$totalAmount', 2] },
           transactionCount: 1,
-          avgAmount: { $round: ['$avgAmount', 2] }
-        }
+          avgAmount: { $round: ['$avgAmount', 2] },
+        },
       },
-      { $sort: { totalAmount: -1 } }
-    ]);
+      { $sort: { totalAmount: -1 } },
+    ])
 
     res.json({
       success: true,
       data: {
         categories,
         totalCategories: categories.length,
-        lastUpdated: new Date().toISOString()
-      }
-    });
+        lastUpdated: new Date().toISOString(),
+      },
+    })
   } catch (error) {
-    next(error);
+    next(error)
   }
-};
+}
 
 module.exports = {
   getExpenditures,
-  getExpenditureCategories
-};
+  getExpenditureCategories,
+}

@@ -1,0 +1,14 @@
+{
+  "name": "prettier-config",
+  "version": "1.0.0",
+  "description": "Shared Prettier configuration for Empowered Indian monorepo",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "prettier",
+    "config",
+    "prettier-config"
+  ],
+  "author": "Empowered Indian",
+  "license": "ISC"
+}

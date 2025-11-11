@@ -324,7 +324,17 @@ const ExportStatesListAsPdf = React.forwardRef(
     }
 
     return (
-      <Button variant="default" onClick={handleClick} disabled={loading} className="gap-2">
+      <Button
+        variant="default"
+        onClick={handleClick}
+        disabled={loading}
+        className="gap-2"
+        style={{
+          backgroundColor: 'hsl(221.2 83.2% 53.3%)',
+          color: 'white',
+          opacity: loading ? 0.5 : 1,
+        }}
+      >
         <FiDownload />
         {loading ? 'Generating PDF...' : error ? 'Export Failed' : 'Download Report'}
       </Button>

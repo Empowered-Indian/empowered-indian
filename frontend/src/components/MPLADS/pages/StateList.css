@@ -164,10 +164,11 @@
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow: visible;
   align-items: center;
-  gap: 0px;
+  gap: 10px;
   justify-content: space-between;
+  padding: 4px;
 }
 
 .view-controls .view-controls {
