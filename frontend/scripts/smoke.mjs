@@ -1,12 +1,12 @@
 /*
   Simple API smoke test for MPLADS endpoints.
   Usage:
-    API_URL=http://localhost:5000/api npm run smoke
+  API_URL=http://localhost:5001/api npm run smoke
   or
-    npm run smoke  (defaults to http://localhost:5000/api)
+  npm run smoke  (defaults to http://localhost:5001/api)
 */
 
-const BASE = process.env.API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api'
+const BASE = process.env.API_URL?.replace(/\/$/, '') || 'http://localhost:5001/api'
 
 const fetchJson = async path => {
   const url = `${BASE}${path}`
