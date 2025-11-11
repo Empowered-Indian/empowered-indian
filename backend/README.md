@@ -4,6 +4,7 @@ Overview
 This service powers the Empowered Indian API, serving data for political/administrative hierarchies, public works and expenditures (MPLADS/MLAADS), analytics, and civic engagement features.
 
 Stack
+
 - Node.js + Express
 - MongoDB / Mongoose
 - Helmet, CORS, rate limiting, sanitizers for security
@@ -14,11 +15,13 @@ Getting Started
 ### Option 1: Docker Setup (Recommended)
 
 1. **Start MongoDB using Docker Compose** (from project root)
+
    ```bash
    docker-compose up -d
    ```
 
 2. **Install dependencies and start**
+
    ```bash
    cd backend
    cp .env.example .env
@@ -42,6 +45,7 @@ Getting Started
 
 Environment Variables
 Copy `.env.example` to `.env` and set values:
+
 - `MONGODB_URI` — Connection string (DO NOT COMMIT)
   - For Docker: `mongodb://admin:adminpassword@localhost:27017/mplads?authSource=admin` (default)
   - For Atlas: `mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/database_name`
@@ -55,6 +59,7 @@ Copy `.env.example` to `.env` and set values:
 - Performance and security tuning: `ENABLE_RATE_LIMIT`, `DB_*`, `CACHE_TTL_*`
 
 Scripts
+
 - `npm run dev` — Start with nodemon
 - `npm start` — Start in production
 - `npm run lint` / `npm run lint:fix` — ESLint (flat config)
@@ -62,11 +67,13 @@ Scripts
 - `npm run analyze-performance` / `npm run db-optimize` — Diagnostics
 
 API
+
 - Base path: `/api`
 - Health: `GET /health`
 - See routes in `routes/` for available endpoints.
 
 Security
+
 - Never commit `.env` or secrets. Use `.env.example` as a template only.
 - Rotate any credentials previously committed and rewrite history before publishing.
 - Validate inputs and avoid exposing internal error details in production.

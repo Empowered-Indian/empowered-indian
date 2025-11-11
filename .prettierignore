@@ -1,0 +1,34 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+build
+coverage
+*.log
+
+# Package manager files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# IDE
+.vscode
+.idea
+
+# Git
+.git
+
+# Environment
+.env
+.env.*
+
+# Misc
+.DS_Store
+.vercel
+*.min.js
+*.min.css
+
+# GitHub
+.github/ISSUE_TEMPLATE

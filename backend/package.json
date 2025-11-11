@@ -11,7 +11,9 @@
     "analyze-performance": "node scripts/analyzePerformance.js",
     "db-optimize": "npm run analyze-performance && npm run create-indexes && npm run analyze-performance",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -46,5 +48,12 @@
   },
   "devDependencies": {
     "supertest": "^7.1.4"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "arrowParens": "avoid"
   }
 }

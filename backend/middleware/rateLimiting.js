@@ -1,5 +1,5 @@
-const rateLimit = require('express-rate-limit');
-const { secureLogger } = require('../utils/logger');
+const rateLimit = require('express-rate-limit')
+const { secureLogger } = require('../utils/logger')
 
 /**
  * Comprehensive rate limiting middleware for MPLADS API
@@ -17,60 +17,59 @@ const createRateLimitMessage = (category, windowMs) => ({
   error: 'Rate limit exceeded',
   message: `Too many ${category} requests. Please try again later.`,
   retryAfter: Math.ceil(windowMs / 60000) + ' minutes',
-  category
-});
+  category,
+})
 
 /**
  * Custom skip function for development environment
  * @param {Object} _req - Express request object
  * @returns {boolean} Whether to skip rate limiting
  */
-const skipDevelopment = (_req) => {
-  return process.env.NODE_ENV !== 'production' &&
-         process.env.ENABLE_RATE_LIMIT !== 'true';
-};
+const skipDevelopment = _req => {
+  return process.env.NODE_ENV !== 'production' && process.env.ENABLE_RATE_LIMIT !== 'true'
+}
 
 /**
  * Enhanced rate limit store with IP tracking
  */
 const _createStore = () => {
-  const hits = new Map();
-  const resetTime = new Map();
-  
+  const hits = new Map()
+  const resetTime = new Map()
+
   return {
     incr: (key, cb) => {
-      const now = Date.now();
-      const windowStart = resetTime.get(key);
-      
+      const now = Date.now()
+      const windowStart = resetTime.get(key)
+
       if (!windowStart || now > windowStart) {
-        hits.set(key, 1);
-        resetTime.set(key, now + 10 * 60 * 1000); // 10 minutes
-        cb(null, 1, now + 10 * 60 * 1000);
+        hits.set(key, 1)
+        resetTime.set(key, now + 10 * 60 * 1000) // 10 minutes
+        cb(null, 1, now + 10 * 60 * 1000)
       } else {
-        const count = (hits.get(key) || 0) + 1;
-        hits.set(key, count);
-        cb(null, count, windowStart);
+        const count = (hits.get(key) || 0) + 1
+        hits.set(key, count)
+        cb(null, count, windowStart)
       }
     },
-    
-    decrement: (key) => {
-      const count = hits.get(key) || 0;
+
+    decrement: key => {
+      const count = hits.get(key) || 0
       if (count > 0) {
-        hits.set(key, count - 1);
+        hits.set(key, count - 1)
       }
     },
-    
-    resetKey: (key) => {
-      hits.delete(key);
-      resetTime.delete(key);
+
+    resetKey: key => {
+      hits.delete(key)
+      resetTime.delete(key)
     },
-    
+
     resetAll: () => {
-      hits.clear();
-      resetTime.clear();
-    }
-  };
-};
+      hits.clear()
+      resetTime.clear()
+    },
+  }
+}
 
 // Rate limiting configurations for different endpoint categories
 
@@ -85,16 +84,16 @@ const generalApiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: skipDevelopment,
-  keyGenerator: (req) => {
+  keyGenerator: req => {
     // Use IP + User-Agent for more specific tracking
-    return `${req.ip}-${req.get('User-Agent')?.substring(0, 50) || 'unknown'}`;
+    return `${req.ip}-${req.get('User-Agent')?.substring(0, 50) || 'unknown'}`
   },
   // Rate limit reached handler
   handler: (req, res) => {
-    secureLogger.security.rateLimitExceeded(req.ip, req.path, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('API', 10 * 60 * 1000));
-  }
-});
+    secureLogger.security.rateLimitExceeded(req.ip, req.path, req.correlationId)
+    return res.status(429).json(createRateLimitMessage('API', 10 * 60 * 1000))
+  },
+})
 
 /**
  * Search and query rate limiting
@@ -108,16 +107,20 @@ const searchLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipDevelopment,
   handler: (req, res) => {
-    secureLogger.warn('Search rate limit exceeded', {
-      category: 'security',
-      type: 'rate_limit_search',
-      ip: req.ip,
-      query: req.query,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('search', 10 * 60 * 1000));
-  }
-});
+    secureLogger.warn(
+      'Search rate limit exceeded',
+      {
+        category: 'security',
+        type: 'rate_limit_search',
+        ip: req.ip,
+        query: req.query,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('search', 10 * 60 * 1000))
+  },
+})
 
 /**
  * Export data rate limiting
@@ -131,16 +134,20 @@ const exportLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipDevelopment,
   handler: (req, res) => {
-    secureLogger.warn('Export rate limit exceeded', {
-      category: 'security',
-      type: 'rate_limit_export',
-      ip: req.ip,
-      exportType: req.path,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('export', 10 * 60 * 1000));
-  }
-});
+    secureLogger.warn(
+      'Export rate limit exceeded',
+      {
+        category: 'security',
+        type: 'rate_limit_export',
+        ip: req.ip,
+        exportType: req.path,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('export', 10 * 60 * 1000))
+  },
+})
 
 /**
  * Analytics rate limiting
@@ -154,16 +161,20 @@ const analyticsLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipDevelopment,
   handler: (req, res) => {
-    secureLogger.warn('Analytics rate limit exceeded', {
-      category: 'security',
-      type: 'rate_limit_analytics',
-      ip: req.ip,
-      endpoint: req.path,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('analytics', 10 * 60 * 1000));
-  }
-});
+    secureLogger.warn(
+      'Analytics rate limit exceeded',
+      {
+        category: 'security',
+        type: 'rate_limit_analytics',
+        ip: req.ip,
+        endpoint: req.path,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('analytics', 10 * 60 * 1000))
+  },
+})
 
 /**
  * User input rate limiting (feedback, submissions)
@@ -177,16 +188,20 @@ const userInputLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipDevelopment,
   handler: (req, res) => {
-    secureLogger.warn('User input rate limit exceeded', {
-      category: 'security',
-      type: 'rate_limit_user_input',
-      ip: req.ip,
-      endpoint: req.path,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('user input', 10 * 60 * 1000));
-  }
-});
+    secureLogger.warn(
+      'User input rate limit exceeded',
+      {
+        category: 'security',
+        type: 'rate_limit_user_input',
+        ip: req.ip,
+        endpoint: req.path,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('user input', 10 * 60 * 1000))
+  },
+})
 
 /**
  * Strict rate limiting for sensitive endpoints
@@ -200,16 +215,20 @@ const strictLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipDevelopment,
   handler: (req, res) => {
-    secureLogger.warn('Strict rate limit exceeded for sensitive endpoint', {
-      category: 'security',
-      type: 'rate_limit_strict',
-      ip: req.ip,
-      sensitiveEndpoint: req.path,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('sensitive operation', 10 * 60 * 1000));
-  }
-});
+    secureLogger.warn(
+      'Strict rate limit exceeded for sensitive endpoint',
+      {
+        category: 'security',
+        type: 'rate_limit_strict',
+        ip: req.ip,
+        sensitiveEndpoint: req.path,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('sensitive operation', 10 * 60 * 1000))
+  },
+})
 
 /**
  * Burst protection for rapid requests
@@ -223,16 +242,20 @@ const burstProtection = rateLimit({
   legacyHeaders: false,
   skip: skipDevelopment,
   handler: (req, res) => {
-    secureLogger.warn('Burst protection triggered', {
-      category: 'security',
-      type: 'rate_limit_burst',
-      ip: req.ip,
-      endpoint: req.path,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('burst protection', 10 * 60 * 1000));
-  }
-});
+    secureLogger.warn(
+      'Burst protection triggered',
+      {
+        category: 'security',
+        type: 'rate_limit_burst',
+        ip: req.ip,
+        endpoint: req.path,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('burst protection', 10 * 60 * 1000))
+  },
+})
 
 /**
  * Progressive rate limiting
@@ -240,67 +263,71 @@ const burstProtection = rateLimit({
  */
 const progressiveLimiter = (req, res, next) => {
   if (skipDevelopment(req)) {
-    return next();
+    return next()
   }
-  
-  const key = req.ip;
-  const now = Date.now();
-  
+
+  const key = req.ip
+  const now = Date.now()
+
   // Simple in-memory store for demonstration
   // In production, use Redis or similar for distributed systems
   if (!req.app.locals.progressiveStore) {
-    req.app.locals.progressiveStore = new Map();
-    req.app.locals.progressiveStoreLastCleanup = now;
+    req.app.locals.progressiveStore = new Map()
+    req.app.locals.progressiveStoreLastCleanup = now
   }
-  
-  const store = req.app.locals.progressiveStore;
-  
+
+  const store = req.app.locals.progressiveStore
+
   // Periodic cleanup to prevent memory leaks - clean every 30 minutes
   if (now - (req.app.locals.progressiveStoreLastCleanup || 0) > 30 * 60 * 1000) {
-    const cutoffTime = now - 2 * 60 * 60 * 1000; // Remove entries older than 2 hours
+    const cutoffTime = now - 2 * 60 * 60 * 1000 // Remove entries older than 2 hours
     for (const [ip, data] of store.entries()) {
       if (data.lastRequest < cutoffTime) {
-        store.delete(ip);
+        store.delete(ip)
       }
     }
-    req.app.locals.progressiveStoreLastCleanup = now;
+    req.app.locals.progressiveStoreLastCleanup = now
   }
-  
-  const userData = store.get(key) || { count: 0, firstRequest: now, lastRequest: now };
-  
-  userData.count++;
-  userData.lastRequest = now;
-  
+
+  const userData = store.get(key) || { count: 0, firstRequest: now, lastRequest: now }
+
+  userData.count++
+  userData.lastRequest = now
+
   // Reset if more than 10 minutes has passed (align with other limits)
   if (now - userData.firstRequest > 10 * 60 * 1000) {
-    userData.count = 1;
-    userData.firstRequest = now;
+    userData.count = 1
+    userData.firstRequest = now
   }
-  
-  store.set(key, userData);
-  
+
+  store.set(key, userData)
+
   // Progressive limits based on request count
-  let limit = 5000; // Base limit (5x higher)
-  if (userData.count > 2500) limit = 500;
-  if (userData.count > 5000) limit = 250;
-  if (userData.count > 10000) limit = 50;
-  
+  let limit = 5000 // Base limit (5x higher)
+  if (userData.count > 2500) limit = 500
+  if (userData.count > 5000) limit = 250
+  if (userData.count > 10000) limit = 50
+
   // Check if user has exceeded progressive limit in last 10 minutes
-  const requestsInWindow = userData.count;
+  const requestsInWindow = userData.count
   if (requestsInWindow > limit) {
-    secureLogger.warn('Progressive rate limit exceeded', {
-      category: 'security',
-      type: 'rate_limit_progressive',
-      ip: req.ip,
-      requestsInWindow,
-      limit,
-      timestamp: new Date().toISOString()
-    }, req.correlationId);
-    return res.status(429).json(createRateLimitMessage('progressive rate limit', 10 * 60 * 1000));
+    secureLogger.warn(
+      'Progressive rate limit exceeded',
+      {
+        category: 'security',
+        type: 'rate_limit_progressive',
+        ip: req.ip,
+        requestsInWindow,
+        limit,
+        timestamp: new Date().toISOString(),
+      },
+      req.correlationId
+    )
+    return res.status(429).json(createRateLimitMessage('progressive rate limit', 10 * 60 * 1000))
   }
-  
-  next();
-};
+
+  next()
+}
 
 /**
  * Endpoint-specific rate limiters
@@ -311,35 +338,32 @@ const endpointLimiters = {
   mplads: searchLimiter,
   works: searchLimiter,
   expenditures: searchLimiter,
-  
+
   // Resource-intensive endpoints
   analytics: analyticsLimiter,
   export: exportLimiter,
-  
+
   // User interaction endpoints
   feedback: userInputLimiter,
-  
+
   // Sensitive endpoints
-  admin: strictLimiter
-};
+  admin: strictLimiter,
+}
 
 /**
  * Rate limiting middleware factory
  * @param {string} category - Endpoint category
  * @returns {Function} Express middleware
  */
-const getRateLimiter = (category) => {
-  return endpointLimiters[category] || generalApiLimiter;
-};
+const getRateLimiter = category => {
+  return endpointLimiters[category] || generalApiLimiter
+}
 
 /**
  * Combined security rate limiting
  * Applies multiple layers of rate limiting
  */
-const securityRateLimiting = [
-  burstProtection,
-  progressiveLimiter
-];
+const securityRateLimiting = [burstProtection, progressiveLimiter]
 
 module.exports = {
   generalApiLimiter,
@@ -352,5 +376,5 @@ module.exports = {
   progressiveLimiter,
   securityRateLimiting,
   getRateLimiter,
-  endpointLimiters
-};
+  endpointLimiters,
+}

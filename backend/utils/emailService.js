@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
-const { secureLogger } = require('./logger');
+const nodemailer = require('nodemailer')
+const crypto = require('crypto')
+const { secureLogger } = require('./logger')
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -8,22 +8,22 @@ const transporter = nodemailer.createTransport({
   secure: (process.env.SMTP_SECURE || 'false').toLowerCase() === 'true', // false for port 587 (TLS), true for port 465 (SSL)
   auth: {
     user: process.env.SMTP_USER || process.env.EMAIL_USER,
-    pass: process.env.SMTP_PASS || process.env.EMAIL_APP_PASSWORD
-  }
-});
+    pass: process.env.SMTP_PASS || process.env.EMAIL_APP_PASSWORD,
+  },
+})
 
 const generateVerificationToken = () => {
-  return crypto.randomBytes(32).toString('hex');
-};
+  return crypto.randomBytes(32).toString('hex')
+}
 
 const sendVerificationEmail = async (email, verificationToken, unsubscribeToken) => {
-  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${verificationToken}`;
-  const unsubscribeUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/unsubscribe/${unsubscribeToken}`;
-  
+  const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${verificationToken}`
+  const unsubscribeUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/unsubscribe/${unsubscribeToken}`
+
   const mailOptions = {
     from: {
       name: process.env.EMAIL_FROM_NAME || 'Empowered Indian',
-      address: process.env.EMAIL_USER
+      address: process.env.EMAIL_USER,
     },
     to: email,
     subject: 'Please verify your email subscription - Empowered Indian',
@@ -108,42 +108,44 @@ const sendVerificationEmail = async (email, verificationToken, unsubscribeToken)
           </div>
       </body>
       </html>
-    `
-  };
+    `,
+  }
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    
+    const info = await transporter.sendMail(mailOptions)
+
     secureLogger.info('Verification email sent successfully', {
       category: 'email',
       type: 'verification_sent',
       email: email.replace(/(.{2}).*(@.*)/, '$1***$2'), // Mask email for privacy
       messageId: info.messageId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
 
-    return { success: true, messageId: info.messageId };
+    return { success: true, messageId: info.messageId }
   } catch (error) {
     secureLogger.error('Failed to send verification email', {
       category: 'email',
       type: 'verification_failed',
       email: email.replace(/(.{2}).*(@.*)/, '$1***$2'),
       error: error.message,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
 
-    throw error;
+    throw error
   }
-};
+}
 
-const sendWelcomeEmail = async (email) => {
+const sendWelcomeEmail = async email => {
   // Get subscriber to use their unsubscribe token
-  const subscriber = await require('../models/Subscriber').findOne({ email });
-  const unsubscribeUrl = subscriber ? `${process.env.FRONTEND_URL || 'http://localhost:5173'}/unsubscribe/${subscriber.unsubscribeToken}` : '#';
+  const subscriber = await require('../models/Subscriber').findOne({ email })
+  const unsubscribeUrl = subscriber
+    ? `${process.env.FRONTEND_URL || 'http://localhost:5173'}/unsubscribe/${subscriber.unsubscribeToken}`
+    : '#'
   const mailOptions = {
     from: {
       name: process.env.EMAIL_FROM_NAME || 'Empowered Indian',
-      address: process.env.EMAIL_USER
+      address: process.env.EMAIL_USER,
     },
     to: email,
     subject: 'Welcome to Empowered Indian Community! 🇮🇳',
@@ -222,36 +224,36 @@ const sendWelcomeEmail = async (email) => {
           </div>
       </body>
       </html>
-    `
-  };
+    `,
+  }
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    
+    const info = await transporter.sendMail(mailOptions)
+
     secureLogger.info('Welcome email sent successfully', {
       category: 'email',
       type: 'welcome_sent',
       email: email.replace(/(.{2}).*(@.*)/, '$1***$2'),
       messageId: info.messageId,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
 
-    return { success: true, messageId: info.messageId };
+    return { success: true, messageId: info.messageId }
   } catch (error) {
     secureLogger.error('Failed to send welcome email', {
       category: 'email',
       type: 'welcome_failed',
       email: email.replace(/(.{2}).*(@.*)/, '$1***$2'),
       error: error.message,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+    })
 
-    throw error;
+    throw error
   }
-};
+}
 
 module.exports = {
   generateVerificationToken,
   sendVerificationEmail,
-  sendWelcomeEmail
-};
+  sendWelcomeEmail,
+}
