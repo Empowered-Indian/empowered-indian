@@ -22,45 +22,6 @@
   color: #6b7280;
 }
 
-/* Report Tabs */
-.report-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 32px;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0;
-}
-
-.report-tabs .tab-button {
-  border-radius: 8px 8px 0 0;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.report-tabs .tab-button.active {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
-  border-bottom-color: #3b82f6;
-}
-
-.report-tabs .tab-button.active:hover {
-  background-color: #2563eb !important;
-  border-bottom-color: #2563eb;
-}
-
-.report-tabs .tab-button:not(.active) {
-  background-color: transparent;
-  color: #6b7280;
-  border-bottom-color: transparent;
-}
-
-.report-tabs .tab-button:not(.active):hover {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
 .feedback-form,
 .data-issue-form {
   background: white;
@@ -214,35 +175,7 @@
   margin-bottom: 0;
 }
 
-.submit-button {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
-  border: none;
-  padding: 10px 20px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
 
-.submit-button:hover:not(:disabled) {
-  background-color: #2563eb !important;
-  color: #ffffff !important;
-}
-
-.submit-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-}
-
-.submit-button:disabled {
-  background-color: #9ca3af !important;
-  color: #ffffff !important;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.submit-button svg {
-  color: #ffffff !important;
-}
 
 .loading-spinner {
   width: 16px;
@@ -251,6 +184,7 @@
   border-top: 2px solid currentColor;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  color: white;  
 }
 
 @keyframes spin {
