@@ -175,8 +175,6 @@
   margin-bottom: 0;
 }
 
-
-
 .loading-spinner {
   width: 16px;
   height: 16px;
@@ -184,7 +182,7 @@
   border-top: 2px solid currentColor;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  color: white;  
+  color: white;
 }
 
 @keyframes spin {
@@ -227,22 +225,5 @@
 
   .report-info {
     padding: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .report-tabs {
-    flex-direction: column;
-    border-bottom: none;
-  }
-
-  .report-tabs .tab-button {
-    border-radius: 8px;
-    border-bottom: 2px solid transparent;
-    margin-bottom: 8px;
-  }
-
-  .report-tabs .tab-button.active {
-    border-bottom-color: #3b82f6;
   }
 }

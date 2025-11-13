@@ -141,33 +141,31 @@ const Report = () => {
         <p>Help us improve by reporting data issues or providing feedback</p>
       </div>
 
-      <div className="report-tabs">
-        <div className="report-tabs flex gap-2">
-          <Button
-            variant={activeTab === 'feedback' ? 'default' : 'ghost'}
-            className={`gap-2 rounded-b-none border-b-2 -mb-px ${
-              activeTab === 'feedback'
-                ? 'border-blue-500 bg-blue-500 text-white hover:bg-blue-600'
-                : 'border-transparent hover:bg-gray-100'
-            }`}
-            onClick={() => setActiveTab('feedback')}
-          >
-            <FiMessageSquare />
-            General Feedback
-          </Button>
-          <Button
-            variant={activeTab === 'data-issue' ? 'default' : 'ghost'}
-            className={`gap-2 rounded-b-none border-b-2 -mb-px ${
-              activeTab === 'data-issue'
-                ? 'border-blue-500 bg-blue-500 text-white hover:bg-blue-600'
-                : 'border-transparent hover:bg-gray-100'
-            }`}
-            onClick={() => setActiveTab('data-issue')}
-          >
-            <FiAlertTriangle />
-            Report Data Issue
-          </Button>
-        </div>
+      <div className="flex gap-2">
+        <Button
+          variant={activeTab === 'feedback' ? 'default' : 'ghost'}
+          className={`gap-2 rounded-b-none border-b-2 -mb-px ${
+            activeTab === 'feedback'
+              ? 'border-blue-500 bg-blue-500 text-white hover:bg-blue-600'
+              : 'border-transparent hover:bg-gray-100'
+          }`}
+          onClick={() => setActiveTab('feedback')}
+        >
+          <FiMessageSquare />
+          General Feedback
+        </Button>
+        <Button
+          variant={activeTab === 'data-issue' ? 'default' : 'ghost'}
+          className={`gap-2 rounded-b-none border-b-2 -mb-px ${
+            activeTab === 'data-issue'
+              ? 'border-blue-500 bg-blue-500 text-white hover:bg-blue-600'
+              : 'border-transparent hover:bg-gray-100'
+          }`}
+          onClick={() => setActiveTab('data-issue')}
+        >
+          <FiAlertTriangle />
+          Report Data Issue
+        </Button>
       </div>
 
       <div className="report-content">
