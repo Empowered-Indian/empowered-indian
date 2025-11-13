@@ -14,7 +14,7 @@ Getting Started
 Environment Variables
 Copy `.env.example` to `.env` and adjust values. Common keys:
 
-- `VITE_API_URL` — Backend API base URL (e.g., http://localhost:5001/api)
+- `VITE_API_URL` — Backend API base URL (e.g., http://localhost:8080/api)
 - `VITE_API_URL_DEVELOPMENT`, `VITE_API_URL_PRODUCTION` — Optional overrides
 - `VITE_SENTRY_DSN` and `VITE_SENTRY_ENVIRONMENT` — Error monitoring (DSN is not secret)
 - `VITE_GA_TRACKING_ID` — Google Analytics tracking ID
