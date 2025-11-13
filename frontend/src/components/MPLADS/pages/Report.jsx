@@ -141,10 +141,14 @@ const Report = () => {
         <p>Help us improve by reporting data issues or providing feedback</p>
       </div>
 
-      <div className="report-tabs">
+      <div className="flex gap-2">
         <Button
           variant={activeTab === 'feedback' ? 'default' : 'ghost'}
-          className={`tab-button gap-2 ${activeTab === 'feedback' ? 'active' : ''}`}
+          className={`gap-2 rounded-b-none border-b-2 -mb-px ${
+            activeTab === 'feedback'
+              ? 'border-blue-500 bg-blue-500 text-white hover:bg-blue-600'
+              : 'border-transparent hover:bg-gray-100'
+          }`}
           onClick={() => setActiveTab('feedback')}
         >
           <FiMessageSquare />
@@ -152,7 +156,11 @@ const Report = () => {
         </Button>
         <Button
           variant={activeTab === 'data-issue' ? 'default' : 'ghost'}
-          className={`tab-button gap-2 ${activeTab === 'data-issue' ? 'active' : ''}`}
+          className={`gap-2 rounded-b-none border-b-2 -mb-px ${
+            activeTab === 'data-issue'
+              ? 'border-blue-500 bg-blue-500 text-white hover:bg-blue-600'
+              : 'border-transparent hover:bg-gray-100'
+          }`}
           onClick={() => setActiveTab('data-issue')}
         >
           <FiAlertTriangle />
@@ -286,7 +294,7 @@ const Report = () => {
             <Button
               type="submit"
               variant="default"
-              className="submit-button gap-2"
+              className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -449,7 +457,7 @@ const Report = () => {
             <Button
               type="submit"
               variant="default"
-              className="submit-button gap-2"
+              className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

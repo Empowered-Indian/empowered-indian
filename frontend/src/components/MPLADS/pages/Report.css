@@ -22,15 +22,6 @@
   color: #6b7280;
 }
 
-/* Report Tabs */
-.report-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 32px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-/* Form Styles */
 .feedback-form,
 .data-issue-form {
   background: white;
@@ -184,7 +175,6 @@
   margin-bottom: 0;
 }
 
-/* Loading Spinner */
 .loading-spinner {
   width: 16px;
   height: 16px;
@@ -192,6 +182,7 @@
   border-top: 2px solid currentColor;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  color: white;
 }
 
 @keyframes spin {
@@ -234,11 +225,5 @@
 
   .report-info {
     padding: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .report-tabs {
-    flex-direction: column;
   }
 }
