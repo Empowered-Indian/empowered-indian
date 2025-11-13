@@ -47,6 +47,9 @@ export const API_ENDPOINTS = {
   // Expenditure endpoints
   EXPENDITURES: '/expenditures',
   EXPENDITURE_CATEGORIES: '/expenditures/categories',
+
+  // Mailing list endpoints
+  MAILING_LIST_UNSUBSCRIBE: '/mailing-list/unsubscribe',
 }
 
 export const CACHE_TIMES = {

@@ -29,7 +29,15 @@ const {
 const { generalApiLimiter, securityRateLimiting } = require('./middleware/rateLimiting')
 
 const app = express()
-const PORT = process.env.PORT || 8080
+
+// Ensure PORT is set in environment - throw error if not provided
+if (!process.env.PORT) {
+  console.error('ERROR: PORT environment variable is required but not set.')
+  console.error('Please set PORT in your .env file (e.g., PORT=5001)')
+  process.exit(1)
+}
+
+const PORT = process.env.PORT
 
 // Trust proxy for proper rate limiting and IP detection when behind reverse proxy
 app.set('trust proxy', 1)

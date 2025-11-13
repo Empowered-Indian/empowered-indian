@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams, Link } from 'react-router-dom'
 import { FiCheckCircle, FiHome, FiMail, FiLoader } from 'react-icons/fi'
+import { API_BASE_URL, API_ENDPOINTS } from '../utils/constants/api'
 import './UnsubscribeSuccess.css'
 
 const UnsubscribeSuccess = () => {
@@ -27,8 +28,8 @@ const UnsubscribeSuccess = () => {
   const handleUnsubscribe = async unsubscribeToken => {
     setLoading(true)
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/mailing-list/unsubscribe/${unsubscribeToken}`
+            const response = await fetch(
+        `${API_BASE_URL}${API_ENDPOINTS.MAILING_LIST_UNSUBSCRIBE}/${unsubscribeToken}`
       )
 
       if (response.ok) {
