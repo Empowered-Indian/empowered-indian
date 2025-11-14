@@ -33,7 +33,7 @@ const app = express()
 // Ensure PORT is set in environment - throw error if not provided
 if (!process.env.PORT) {
   console.error('ERROR: PORT environment variable is required but not set.')
-  console.error('Please set PORT in your .env file (e.g., PORT=5001)')
+  console.error('Please set PORT in your .env file (e.g., PORT=8080)')
   process.exit(1)
 }
 
