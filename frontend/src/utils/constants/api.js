@@ -11,7 +11,7 @@ const getApiBaseUrl = () => {
     return (
       import.meta.env.VITE_API_URL_DEVELOPMENT ||
       import.meta.env.VITE_API_URL ||
-      'http://localhost:5000/api'
+      'http://localhost:8080/api'
     )
   }
 }
@@ -47,6 +47,9 @@ export const API_ENDPOINTS = {
   // Expenditure endpoints
   EXPENDITURES: '/expenditures',
   EXPENDITURE_CATEGORIES: '/expenditures/categories',
+
+  // Mailing list endpoints
+  MAILING_LIST_UNSUBSCRIBE: '/mailing-list/unsubscribe',
 }
 
 export const CACHE_TIMES = {

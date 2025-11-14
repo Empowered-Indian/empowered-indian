@@ -23,3 +23,7 @@ npm-debug.log*
 
 # turbo repo
 .turbo
+
+# IDEs and editors
+.vscode
+.idea
