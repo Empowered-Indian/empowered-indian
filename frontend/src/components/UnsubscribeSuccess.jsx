@@ -25,10 +25,10 @@ const UnsubscribeSuccess = () => {
     }
   }, [location, token])
 
-  const handleUnsubscribe = async unsubscribeToken => {
+  const handleUnsubscribe = async (unsubscribeToken) => {
     setLoading(true)
     try {
-            const response = await fetch(
+      const response = await fetch(
         `${API_BASE_URL}${API_ENDPOINTS.MAILING_LIST_UNSUBSCRIBE}/${unsubscribeToken}`
       )
 
@@ -96,11 +96,16 @@ const UnsubscribeSuccess = () => {
         )}
 
         <div className="success-content">
-          <p>You have been successfully unsubscribed from Empowered Indian updates.</p>
-          <p>You will no longer receive newsletters or notifications from us.</p>
           <p>
-            We're sorry to see you go! If you change your mind, you can always subscribe again on
-            our website.
+            You have been successfully unsubscribed from Empowered Indian
+            updates.
+          </p>
+          <p>
+            You will no longer receive newsletters or notifications from us.
+          </p>
+          <p>
+            We're sorry to see you go! If you change your mind, you can always
+            subscribe again on our website.
           </p>
         </div>
 
@@ -117,7 +122,11 @@ const UnsubscribeSuccess = () => {
         <div className="feedback-section">
           <p className="feedback-text">
             Have feedback about why you unsubscribed?
-            <a href="https://twitter.com/roshanasingh6" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://twitter.com/roshanasingh6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Let us know on Twitter
             </a>
           </p>
