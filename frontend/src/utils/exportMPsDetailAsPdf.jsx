@@ -425,7 +425,7 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
 
   if (!data) {
     return (
-      <Button variant="outline" disabled className="gap-2">
+      <Button variant="default" disabled className="ei-primary-action">
         <FiDownload /> No data to export
       </Button>
     )
@@ -447,7 +447,12 @@ const ExportMPsDetailAsPdf = ({ mpData }) => {
   }
 
   return (
-    <Button variant="outline" onClick={handleClick} disabled={loading} className="action-btn gap-2">
+    <Button
+      variant="default"
+      onClick={handleClick}
+      disabled={loading}
+      className="action-btn ei-primary-action"
+    >
       <FiDownload />
       {loading ? 'Generating PDF...' : error ? 'Export Failed' : 'Download Report'}
     </Button>

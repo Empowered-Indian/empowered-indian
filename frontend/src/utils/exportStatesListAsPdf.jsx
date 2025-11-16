@@ -302,7 +302,7 @@ const ExportStatesListAsPdf = React.forwardRef(
 
     if (!currentFilteredStates || currentFilteredStates.length === 0) {
       return (
-        <Button variant="outline" disabled className="gap-2">
+        <Button variant="default" disabled className="ei-primary-action">
           <FiDownload /> No data to export
         </Button>
       )
@@ -324,7 +324,12 @@ const ExportStatesListAsPdf = React.forwardRef(
     }
 
     return (
-      <Button variant="default" onClick={handleClick} disabled={loading} className="gap-2">
+      <Button
+        variant="default"
+        onClick={handleClick}
+        disabled={loading}
+        className="ei-primary-action"
+      >
         <FiDownload />
         {loading ? 'Generating PDF...' : error ? 'Export Failed' : 'Download Report'}
       </Button>

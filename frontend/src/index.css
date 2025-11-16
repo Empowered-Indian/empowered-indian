@@ -57,3 +57,33 @@
     @apply bg-background text-foreground;
   }
 }
+
+/*
+  Global call-to-action buttons
+  Ensures critical actions like exports remain visible even when surrounding styles change.
+  Uses theme variables so colors stay consistent across pages.
+*/
+@layer components {
+  .ei-primary-action {
+    @apply inline-flex items-center gap-2 rounded-md px-4 py-2 font-semibold shadow-sm transition-colors;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 60%, hsl(var(--primary)) 100%);
+    color: hsl(var(--primary-foreground));
+    border: 1px solid hsl(var(--primary));
+  }
+
+  .ei-primary-action:hover {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 50%, hsl(var(--primary)) 90%);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .ei-primary-action:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2;
+  }
+
+  .ei-primary-action:disabled {
+    @apply cursor-not-allowed opacity-60 shadow-none;
+    background: hsl(var(--muted));
+    border-color: hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+  }
+}
