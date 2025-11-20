@@ -40,7 +40,7 @@ Getting Started
 
 - Requirements: Node.js 18+, MongoDB Atlas or local MongoDB
 - Install: `npm install`
-- Dev: `npm run dev` (default: http://localhost:5000)
+- Dev: `npm run dev` (default: http://localhost:8080)
 - Start: `npm start`
 
 Environment Variables
