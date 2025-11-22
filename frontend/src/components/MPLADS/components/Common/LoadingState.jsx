@@ -17,6 +17,9 @@ const LoadingState = ({
   const [hasTimedOut, setHasTimedOut] = useState(false)
   const [dots, setDots] = useState('')
 
+  // Round progress value to avoid decimals
+  const roundedProgress = Math.round(progressValue)
+
   // Animated dots for loading message
   useEffect(() => {
     const interval = setInterval(() => {
@@ -93,7 +96,7 @@ const LoadingState = ({
               <FiLoader className={`loading-spinner loading-spinner-${size}`} />
               {showProgress && (
                 <div className="loading-progress">
-                  <div className="loading-progress-bar" style={{ width: `${progressValue}%` }} />
+                  <div className="loading-progress-bar" style={{ width: `${roundedProgress}%` }} />
                 </div>
               )}
             </div>
@@ -102,7 +105,7 @@ const LoadingState = ({
                 {message}
                 {dots}
               </p>
-              {showProgress && <span className="loading-percentage">{progressValue}%</span>}
+              {showProgress && <span className="loading-percentage">{roundedProgress}%</span>}
             </div>
           </div>
         )

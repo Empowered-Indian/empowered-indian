@@ -47,13 +47,8 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
+    "prettier-config": "workspace:*",
     "supertest": "^7.1.4"
   },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "printWidth": 100,
-    "arrowParens": "avoid"
-  }
+  "prettier": "prettier-config"
 }
