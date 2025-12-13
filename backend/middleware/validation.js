@@ -27,7 +27,7 @@ const schemas = {
       .trim()
       .max(200)
       .pattern(/^[a-zA-Z0-9\s().-]+$/),
-    house: Joi.string().valid('Lok Sabha', 'Rajya Sabha'),
+    house: Joi.string().valid('Lok Sabha', 'Rajya Sabha', 'Both Houses'),
     ls_term: Joi.alternatives().try(
       Joi.string().valid('17', '18', 'both'),
       Joi.number().valid(17, 18)
@@ -60,7 +60,7 @@ const schemas = {
   }),
 
   worksFilters: Joi.object({
-    house: Joi.string().valid('Lok Sabha', 'Rajya Sabha'),
+    house: Joi.string().valid('Lok Sabha', 'Rajya Sabha', 'Both Houses'),
     mp_id: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
     state: Joi.string()
       .trim()
@@ -160,7 +160,7 @@ const schemas = {
       .trim()
       .max(100)
       .pattern(/^[a-zA-Z\s-]+$/),
-    house: Joi.string().valid('Lok Sabha', 'Rajya Sabha'),
+    house: Joi.string().valid('Lok Sabha', 'Rajya Sabha', 'Both Houses'),
     top_n: Joi.number().integer().min(1).max(50).default(10),
     ls_term: Joi.alternatives().try(
       Joi.string().valid('17', '18', 'both'),
