@@ -100,9 +100,6 @@ importers:
         specifier: ^1.0.15
         version: 1.0.15
     devDependencies:
-      prettier-config:
-        specifier: workspace:*
-        version: link:../packages/prettier-config
       supertest:
         specifier: ^7.1.4
         version: 7.1.4
@@ -191,9 +188,6 @@ importers:
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
-      prettier-config:
-        specifier: workspace:*
-        version: link:../packages/prettier-config
       tailwindcss:
         specifier: ^3.4.18
         version: 3.4.18
