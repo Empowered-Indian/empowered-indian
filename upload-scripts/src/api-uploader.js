@@ -1099,20 +1099,22 @@ async function syncMPLADSDataFromAPI(options = {}) {
         { lok_sabha: rawApiData.lok_sabha_18, rajya_sabha: { ...empty } },
         { lsTerm: 18 }
       )
-      combined.lok_sabha.allocated_limit.push(...t18.lok_sabha.allocated_limit)
-      combined.lok_sabha.expenditure.push(...t18.lok_sabha.expenditure)
-      combined.lok_sabha.works_completed.push(...t18.lok_sabha.works_completed)
-      combined.lok_sabha.works_recommended.push(...t18.lok_sabha.works_recommended)
+      // Use concat instead of spread to avoid stack overflow with large arrays
+      combined.lok_sabha.allocated_limit = combined.lok_sabha.allocated_limit.concat(t18.lok_sabha.allocated_limit)
+      combined.lok_sabha.expenditure = combined.lok_sabha.expenditure.concat(t18.lok_sabha.expenditure)
+      combined.lok_sabha.works_completed = combined.lok_sabha.works_completed.concat(t18.lok_sabha.works_completed)
+      combined.lok_sabha.works_recommended = combined.lok_sabha.works_recommended.concat(t18.lok_sabha.works_recommended)
     }
     if (rawApiData.lok_sabha_17) {
       const t17 = transformAllData(
         { lok_sabha: rawApiData.lok_sabha_17, rajya_sabha: { ...empty } },
         { lsTerm: 17 }
       )
-      combined.lok_sabha.allocated_limit.push(...t17.lok_sabha.allocated_limit)
-      combined.lok_sabha.expenditure.push(...t17.lok_sabha.expenditure)
-      combined.lok_sabha.works_completed.push(...t17.lok_sabha.works_completed)
-      combined.lok_sabha.works_recommended.push(...t17.lok_sabha.works_recommended)
+      // Use concat instead of spread to avoid stack overflow with large arrays
+      combined.lok_sabha.allocated_limit = combined.lok_sabha.allocated_limit.concat(t17.lok_sabha.allocated_limit)
+      combined.lok_sabha.expenditure = combined.lok_sabha.expenditure.concat(t17.lok_sabha.expenditure)
+      combined.lok_sabha.works_completed = combined.lok_sabha.works_completed.concat(t17.lok_sabha.works_completed)
+      combined.lok_sabha.works_recommended = combined.lok_sabha.works_recommended.concat(t17.lok_sabha.works_recommended)
     }
     if (rawApiData.rajya_sabha) {
       const trs = transformAllData(
