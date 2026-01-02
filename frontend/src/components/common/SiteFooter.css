@@ -1,31 +1,289 @@
+/* ==========================================================================
+   SITE FOOTER STYLES
+   Matches the Democratic Modernism design language
+   ========================================================================== */
+
 .site-footer {
-  background-color: #e2e8f0;
-  color: #2d3748;
-  padding: 2rem 0;
+  --footer-bg: hsl(210 40% 98%);
+  --footer-bg-dark: hsl(222.2 84% 4.9%);
+  --footer-text: hsl(215.4 16.3% 46.9%);
+  --footer-text-dark: hsl(222.2 84% 4.9%);
+  --footer-heading: hsl(222.2 84% 4.9%);
+  --footer-link: hsl(215.4 16.3% 46.9%);
+  --footer-link-hover: hsl(221.2 83.2% 53.3%);
+  --footer-border: hsl(214.3 31.8% 91.4%);
+  --footer-primary: hsl(221.2 83.2% 53.3%);
+
+  background: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
+  padding: 0;
   margin-top: auto;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.site-footer .footer-container {
+.footer-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
-  text-align: center;
+  padding: 0 1.5rem;
 }
 
-.site-footer .footer-container p {
-  margin: 0.5rem 0;
-  font-size: 0.875rem;
-  color: #4a5568;
+/* Footer Grid */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding: 4rem 0 3rem;
 }
 
-.site-footer .footer-container a {
-  color: #2563eb;
+/* Brand Column */
+.footer-brand {
+  max-width: 280px;
+}
+
+.footer-logo {
+  display: inline-block;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  margin-bottom: 1rem;
 }
 
-.site-footer .footer-container a:hover {
-  color: #1d4ed8;
-  text-decoration: underline;
+.footer-logo-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--footer-heading);
+  transition: color 0.2s ease;
+}
+
+.footer-logo:hover .footer-logo-text {
+  color: var(--footer-primary);
+}
+
+.footer-tagline {
+  font-size: 0.9375rem;
+  color: var(--footer-text);
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Social Links */
+.footer-social {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 1px solid var(--footer-border);
+  border-radius: 10px;
+  color: var(--footer-text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.social-link:hover {
+  background: var(--footer-primary);
+  border-color: var(--footer-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsla(221.2, 83.2%, 53.3%, 0.25);
+}
+
+/* Links Groups */
+.footer-links-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-heading {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--footer-heading);
+  margin: 0 0 1.25rem 0;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-links a {
+  font-size: 0.9375rem;
+  color: var(--footer-link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.footer-links a:hover {
+  color: var(--footer-link-hover);
+}
+
+/* Sponsor Section */
+.footer-sponsor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: white;
+  border: 1px solid var(--footer-border);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.footer-sponsor:hover {
+  border-color: var(--footer-primary);
+  box-shadow: 0 2px 8px hsla(221.2, 83.2%, 53.3%, 0.1);
+}
+
+.sponsor-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--footer-heading);
+}
+
+.footer-sponsor svg {
+  color: var(--footer-text);
+  transition: color 0.2s ease;
+}
+
+.footer-sponsor:hover svg {
+  color: var(--footer-primary);
+}
+
+.sponsor-description {
+  font-size: 0.8125rem;
+  color: var(--footer-text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Extra Info */
+.footer-extra {
+  font-size: 0.875rem;
+  color: var(--footer-text);
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+  border-top: 1px solid var(--footer-border);
+}
+
+/* Bottom Bar */
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--footer-border);
+}
+
+.footer-copyright {
+  font-size: 0.875rem;
+  color: var(--footer-text);
+  margin: 0;
+}
+
+.footer-made-with {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--footer-text);
+  margin: 0;
+}
+
+.heart-icon {
+  color: hsl(0 84.2% 60.2%);
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+
+  .footer-brand {
+    max-width: none;
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 3rem 0 2rem;
+  }
+
+  .footer-brand {
+    grid-column: span 1;
+    text-align: center;
+    max-width: none;
+  }
+
+  .footer-tagline {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
+
+  .footer-links-group {
+    text-align: center;
+  }
+
+  .footer-sponsor {
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+}
+
+/* Focus States for Accessibility */
+.footer-links a:focus-visible,
+.social-link:focus-visible,
+.footer-sponsor:focus-visible,
+.footer-logo:focus-visible {
+  outline: 2px solid var(--footer-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .heart-icon {
+    animation: none;
+  }
+
+  .social-link,
+  .footer-links a,
+  .footer-sponsor {
+    transition: none;
+  }
 }
