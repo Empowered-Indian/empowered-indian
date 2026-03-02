@@ -62,11 +62,11 @@ const FilterPanel = ({ onClose, isMobile: propIsMobile = false }) => {
       }))
     }
   }, [isMobile])
-  const [validationErrors, setValidationErrors] = useState({})
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const [isClosing, setIsClosing] = useState(false)
   const [terms, setTerms] = useState([18, 17])
   const [termsLoading, setTermsLoading] = useState(false)
-  const [termsError, setTermsError] = useState(null)
+  const [termsError, setTermsError] = useState<string | null>(null)
 
   const activeFilterCount = getActiveFilterCount()
 

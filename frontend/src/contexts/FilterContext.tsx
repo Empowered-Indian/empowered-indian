@@ -1,8 +1,25 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from 'react'
 
-const FilterContext = createContext()
+type FilterContextType = {
+  filters: Record<string, any>
+  updateFilter: (key: string, value: any) => void
+  updateMultipleFilters: (updates: Record<string, any>) => void
+  resetFilters: () => void
+  getActiveFilterCount: () => number
+  getApiParams: () => Record<string, any>
+}
 
-const defaultFilters = {
+const FilterContext = createContext<FilterContextType | null>(null)
+
+const defaultFilters: Record<string, any> = {
   // Search filters
   searchQuery: '',
   searchType: 'all', // all, mp, constituency, project
@@ -37,7 +54,15 @@ const defaultFilters = {
   sortOrder: 'desc',
 }
 
-const normalizeRange = (minVal, maxVal, { minDefault, maxDefault, allowEqual = true } = {}) => {
+const normalizeRange = (
+  minVal: any,
+  maxVal: any,
+  {
+    minDefault,
+    maxDefault,
+    allowEqual = true,
+  }: { minDefault?: number; maxDefault?: number; allowEqual?: boolean } = {}
+) => {
   const hasMin = minVal !== undefined && minVal !== null && minVal !== ''
   const hasMax = maxVal !== undefined && maxVal !== null && maxVal !== ''
   let min = hasMin ? Number(minVal) : (minDefault ?? undefined)
@@ -66,9 +91,9 @@ export const useFilters = () => {
   return context
 }
 
-export const FilterProvider = ({ children }) => {
+export const FilterProvider = ({ children }: { children: ReactNode }) => {
   // Initialize from localStorage synchronously to avoid read/write races
-  const [filters, setFilters] = useState(() => {
+  const [filters, setFilters] = useState<Record<string, any>>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       return { ...defaultFilters, ...(saved ? JSON.parse(saved) : {}) }
@@ -92,7 +117,7 @@ export const FilterProvider = ({ children }) => {
 
   // Cross-tab synchronization: listen for storage updates
   useEffect(() => {
-    const onStorage = e => {
+    const onStorage = (e: StorageEvent) => {
       if (e.key !== STORAGE_KEY) return
       try {
         const incoming = e.newValue ? JSON.parse(e.newValue) : null
@@ -116,12 +141,12 @@ export const FilterProvider = ({ children }) => {
     }
   }, [filters.house, filters.lsTerm])
 
-  const updateFilter = useCallback((key, value) => {
+  const updateFilter = useCallback((key: string, value: any) => {
     if (value === undefined) return
     setFilters(prev => ({ ...prev, [key]: value }))
   }, [])
 
-  const updateMultipleFilters = useCallback(updates => {
+  const updateMultipleFilters = useCallback((updates: Record<string, any>) => {
     if (!updates || typeof updates !== 'object') return
     const sanitized = { ...updates }
     // Remove undefineds to avoid clobbering
@@ -171,7 +196,7 @@ export const FilterProvider = ({ children }) => {
   }, [filters])
 
   const getApiParams = useCallback(() => {
-    const params = {}
+    const params: Record<string, any> = {}
 
     // Add non-empty filters to params
     if (filters.searchQuery) params.search = filters.searchQuery

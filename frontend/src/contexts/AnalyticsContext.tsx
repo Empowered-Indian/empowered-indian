@@ -1,20 +1,22 @@
-import React, { createContext, useEffect } from 'react'
+import { createContext, useEffect, type ReactNode } from 'react'
 import { analytics } from '../services/analytics'
 
-const AnalyticsContext = createContext({
-  analytics: null,
-  trackEvent: () => {},
-  trackSearch: () => {},
-  trackFilter: () => {},
-  trackExport: () => {},
-  trackPageView: () => {},
-  trackError: () => {},
-  trackEngagement: () => {},
-  reportErrorToSentry: () => {},
-  trackPerformance: () => {},
-})
+type AnalyticsContextType = {
+  analytics: any
+  trackEvent: (...args: any[]) => void
+  trackSearch: (...args: any[]) => void
+  trackFilter: (...args: any[]) => void
+  trackExport: (...args: any[]) => void
+  trackPageView: (...args: any[]) => void
+  trackError: (...args: any[]) => void
+  trackEngagement: (...args: any[]) => void
+  reportErrorToSentry: (...args: any[]) => void
+  trackPerformance: (...args: any[]) => void
+}
 
-export const AnalyticsProvider = ({ children }) => {
+const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
+
+export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Initialize analytics when component mounts
     try {
@@ -28,9 +30,9 @@ export const AnalyticsProvider = ({ children }) => {
   useEffect(() => {
     try {
       if (typeof window !== 'undefined') {
-        window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ =
-          (window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ || 0) + 1
-        if (window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ > 1) {
+        ;(window as any).__ANALYTICS_PROVIDER_MOUNT_COUNT__ =
+          ((window as any).__ANALYTICS_PROVIDER_MOUNT_COUNT__ || 0) + 1
+        if ((window as any).__ANALYTICS_PROVIDER_MOUNT_COUNT__ > 1) {
           console.warn('[Analytics] Multiple AnalyticsProvider mounts detected')
           // Record a lightweight event for observability
           try {
@@ -46,8 +48,8 @@ export const AnalyticsProvider = ({ children }) => {
     return () => {
       try {
         if (typeof window !== 'undefined') {
-          const n = (window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ || 1) - 1
-          window.__ANALYTICS_PROVIDER_MOUNT_COUNT__ = n > 0 ? n : 0
+          const n = ((window as any).__ANALYTICS_PROVIDER_MOUNT_COUNT__ || 1) - 1
+          ;(window as any).__ANALYTICS_PROVIDER_MOUNT_COUNT__ = n > 0 ? n : 0
         }
       } catch {
         // Ignore window access errors in SSR
@@ -56,7 +58,7 @@ export const AnalyticsProvider = ({ children }) => {
   }, [])
 
   // Provide safe wrapper functions
-  const trackEvent = (action, parameters) => {
+  const trackEvent = (action: any, parameters: any) => {
     try {
       analytics.trackEvent(action, parameters)
     } catch (error) {
@@ -64,7 +66,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackSearch = (searchTerm, resultsCount, source) => {
+  const trackSearch = (searchTerm: any, resultsCount: any, source: any) => {
     try {
       analytics.trackSearch(searchTerm, resultsCount, source)
     } catch (error) {
@@ -72,7 +74,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackFilter = (filterType, filterValue, activeCount) => {
+  const trackFilter = (filterType: any, filterValue: any, activeCount: any) => {
     try {
       analytics.trackFilter(filterType, filterValue, activeCount)
     } catch (error) {
@@ -80,7 +82,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackExport = (exportType, fileType, recordCount) => {
+  const trackExport = (exportType: any, fileType: any, recordCount: any) => {
     try {
       analytics.trackExport(exportType, fileType, recordCount)
     } catch (error) {
@@ -88,7 +90,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackPageView = (pageName, additionalData) => {
+  const trackPageView = (pageName: any, additionalData: any) => {
     try {
       analytics.trackPageView(pageName, additionalData)
     } catch (error) {
@@ -96,7 +98,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackError = (errorType, componentName, isFatal) => {
+  const trackError = (errorType: any, componentName: any, isFatal: any) => {
     try {
       analytics.trackError(errorType, componentName, isFatal)
     } catch (error) {
@@ -104,7 +106,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackEngagement = (contentType, contentId, action) => {
+  const trackEngagement = (contentType: any, contentId: any, action: any) => {
     try {
       analytics.trackEngagement(contentType, contentId, action)
     } catch (error) {
@@ -112,7 +114,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const reportErrorToSentry = (error, context) => {
+  const reportErrorToSentry = (error: any, context: any) => {
     try {
       analytics.reportErrorToSentry(error, context)
     } catch (sentryError) {
@@ -120,7 +122,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const trackPerformance = (metricName, value, context) => {
+  const trackPerformance = (metricName: any, value: any, context: any) => {
     try {
       analytics.trackPerformance(metricName, value, context)
     } catch (error) {
@@ -128,7 +130,7 @@ export const AnalyticsProvider = ({ children }) => {
     }
   }
 
-  const value = {
+  const value: AnalyticsContextType = {
     analytics,
     trackEvent,
     trackSearch,

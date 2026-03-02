@@ -2,7 +2,7 @@ import toast from 'react-hot-toast'
 import { API_BASE_URL } from './constants/api'
 
 // Export completed works as CSV
-export const exportCompletedWorks = async (filters = {}) => {
+export const exportCompletedWorks = async (filters: any = {}) => {
   try {
     const queryParams = new URLSearchParams(filters)
     const response = await fetch(`${API_BASE_URL}/export/completed-works?${queryParams}`)
@@ -29,7 +29,7 @@ export const exportCompletedWorks = async (filters = {}) => {
 }
 
 // Export recommended works as CSV
-export const exportRecommendedWorks = async (filters = {}) => {
+export const exportRecommendedWorks = async (filters: any = {}) => {
   try {
     const queryParams = new URLSearchParams(filters)
     const response = await fetch(`${API_BASE_URL}/export/recommended-works?${queryParams}`)
@@ -54,7 +54,7 @@ export const exportRecommendedWorks = async (filters = {}) => {
 }
 
 // Export expenditures as CSV
-export const exportExpenditures = async (filters = {}) => {
+export const exportExpenditures = async (filters: any = {}) => {
   try {
     const queryParams = new URLSearchParams(filters)
     const response = await fetch(`${API_BASE_URL}/export/expenditures?${queryParams}`)
@@ -79,7 +79,7 @@ export const exportExpenditures = async (filters = {}) => {
 }
 
 // Export MP summary as CSV
-export const exportMPSummary = async (filters = {}) => {
+export const exportMPSummary = async (filters: any = {}) => {
   try {
     const queryParams = new URLSearchParams(filters)
     const response = await fetch(`${API_BASE_URL}/export/mp-summary?${queryParams}`)
@@ -104,7 +104,7 @@ export const exportMPSummary = async (filters = {}) => {
 }
 
 // Helper function to download blob as file
-const downloadBlob = (blob, filename) => {
+const downloadBlob = (blob: Blob, filename: string) => {
   const url = window.URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -116,7 +116,7 @@ const downloadBlob = (blob, filename) => {
 }
 
 // Export current view data as JSON (for debugging/development)
-export const exportAsJSON = (data, filename = 'mplads_data.json') => {
+export const exportAsJSON = (data: any, filename = 'mplads_data.json') => {
   try {
     const jsonString = JSON.stringify(data, null, 2)
     const blob = new Blob([jsonString], { type: 'application/json' })
@@ -129,8 +129,8 @@ export const exportAsJSON = (data, filename = 'mplads_data.json') => {
 }
 
 // Helper to get current filter state for exports
-export const getCurrentFilters = filterContext => {
-  const filters = {}
+export const getCurrentFilters = (filterContext: any) => {
+  const filters: Record<string, any> = {}
 
   if (filterContext.state) filters.state = filterContext.state
   if (filterContext.house) filters.house = filterContext.house

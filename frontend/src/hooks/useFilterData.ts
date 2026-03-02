@@ -79,7 +79,7 @@ export const useFilterData = () => {
   }
 
   // Fetch constituencies by state
-  const fetchConstituencies = async state => {
+  const fetchConstituencies = async (state: any) => {
     if (!state || state === 'all') {
       return filterData.constituencies
     }
@@ -111,7 +111,7 @@ export const useFilterData = () => {
       } else {
         throw new Error('Invalid response format')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching constituencies:', err)
       setError(prev => ({ ...prev, constituencies: err.message }))
       return []
@@ -121,13 +121,13 @@ export const useFilterData = () => {
   }
 
   // Fetch filter counts
-  const fetchFilterCounts = async filters => {
+  const fetchFilterCounts = async (filters: Record<string, any>) => {
     try {
       const queryParams = new URLSearchParams()
 
       Object.entries(filters).forEach(([key, value]) => {
         if (value && value !== 'all' && value !== '') {
-          queryParams.append(key, value)
+          queryParams.append(key, String(value))
         }
       })
 

@@ -139,10 +139,10 @@ const StatePerformanceChart = ({
   height = 'auto',
   maxItems = 10,
 }) => {
-  const containerRef = useRef(null)
-  const canvasRef = useRef(null)
-  const chartRef = useRef(null)
-  const resizeObserverRef = useRef(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const canvasRef = useRef<HTMLDivElement | null>(null)
+  const chartRef = useRef<any>(null)
+  const resizeObserverRef = useRef<ResizeObserver | null>(null)
   const responsive = useResponsive()
 
   // Prepare series data once per input change
@@ -198,7 +198,8 @@ const StatePerformanceChart = ({
     const raf1 = requestAnimationFrame(tryInitOrResize)
     const raf2 = requestAnimationFrame(tryInitOrResize)
 
-    if ('ResizeObserver' in window) {
+    const supportsResizeObserver = typeof (window as any).ResizeObserver === 'function'
+    if (supportsResizeObserver) {
       resizeObserverRef.current = new ResizeObserver(() => tryInitOrResize())
       resizeObserverRef.current.observe(containerRef.current)
     } else {

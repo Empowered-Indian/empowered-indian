@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom'
 import { Github, Twitter, Mail, Heart, ExternalLink } from 'lucide-react'
 import './SiteFooter.css'
 
-const SiteFooter = ({ extraInfo, className = '', showFaq = true }) => {
+interface SiteFooterProps {
+  extraInfo?: string
+  className?: string
+  showFaq?: boolean
+}
+
+const SiteFooter = ({ extraInfo, className = '', showFaq = true }: SiteFooterProps) => {
   const currentYear = new Date().getFullYear()
 
   return (
@@ -99,9 +105,7 @@ const SiteFooter = ({ extraInfo, className = '', showFaq = true }) => {
               <span className="sponsor-name">Malpani Ventures</span>
               <ExternalLink size={14} />
             </a>
-            <p className="sponsor-description">
-              Funded as a social impact initiative
-            </p>
+            <p className="sponsor-description">Funded as a social impact initiative</p>
           </div>
         </div>
 

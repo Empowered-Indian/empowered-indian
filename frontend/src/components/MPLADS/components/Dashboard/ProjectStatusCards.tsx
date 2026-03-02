@@ -1,7 +1,13 @@
 import { FiFileText, FiCheckCircle, FiClock, FiTrendingUp } from 'react-icons/fi'
 import './ProjectStatusCards.css'
 
-const ProjectStatusCards = ({ data = {} }) => {
+type ProjectStatusData = {
+  totalRecommended?: number
+  totalInProgress?: number
+  totalCompleted?: number
+}
+
+const ProjectStatusCards = ({ data = {} }: { data?: ProjectStatusData }) => {
   const { totalRecommended = 0, totalInProgress = 0, totalCompleted = 0 } = data
 
   const cards = [

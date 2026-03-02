@@ -1,6 +1,6 @@
 // General number formatter for Indian Rupee compact display
 // Examples: 1326.5 CR, 24.3 L, 950 K, 12,345
-export function formatINRCompact(amount, options = {}) {
+export function formatINRCompact(amount: any, options: any = {}) {
   const {
     maximumFractionDigits = 1,
     minimumFractionDigits = 0,
@@ -51,7 +51,7 @@ export function formatINRCompact(amount, options = {}) {
 }
 
 // Full currency formatter (non-compact) for convenience
-export function formatINRCurrency(amount, maximumFractionDigits = 0) {
+export function formatINRCurrency(amount: any, maximumFractionDigits = 0) {
   const normalized = Number(amount)
   if (!Number.isFinite(normalized)) return '₹0'
   return new Intl.NumberFormat('en-IN', {

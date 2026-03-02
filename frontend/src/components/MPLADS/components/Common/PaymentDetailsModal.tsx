@@ -11,7 +11,19 @@ import {
 } from '@/components/ui/dialog'
 import './PaymentDetailsModal.css'
 
-const PaymentDetailsModal = ({ workId, recommendationId, workDescription, onClose }) => {
+type PaymentDetailsModalProps = {
+  workId?: string | number
+  recommendationId?: string | number
+  workDescription?: string
+  onClose: () => void
+}
+
+const PaymentDetailsModal = ({
+  workId,
+  recommendationId,
+  workDescription,
+  onClose,
+}: PaymentDetailsModalProps) => {
   const [paymentData, setPaymentData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)

@@ -365,12 +365,12 @@ const NavigationSimple = () => {
               boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
             }}
             onMouseEnter={e => {
-              e.target.style.background = 'linear-gradient(135deg, #dbeafe 0%, #e2e8f0 100%)'
-              e.target.style.transform = 'scale(1.05)'
+              e.currentTarget.style.background = 'linear-gradient(135deg, #dbeafe 0%, #e2e8f0 100%)'
+              e.currentTarget.style.transform = 'scale(1.05)'
             }}
             onMouseLeave={e => {
-              e.target.style.background = 'linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%)'
-              e.target.style.transform = 'scale(1)'
+              e.currentTarget.style.background = 'linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%)'
+              e.currentTarget.style.transform = 'scale(1)'
             }}
           >
             {isOpen ? <FiX /> : <FiMenu />}

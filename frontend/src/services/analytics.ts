@@ -1,11 +1,23 @@
 import * as Sentry from '@sentry/react'
 
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void
+    analytics?: AnalyticsService
+  }
+}
+
 /**
  * Safe Analytics Service for MPLADS Dashboard
  * Provides comprehensive tracking with error handling and fallbacks
  * Integrates with Sentry for error reporting
  */
 class AnalyticsService {
+  isEnabled: boolean
+  sessionId: string
+  initialized: boolean
+  eventQueue: Array<{ action: string; parameters: Record<string, any>; timestamp: number }>
+
   constructor() {
     this.isEnabled = false
     this.sessionId = this.generateSessionId()

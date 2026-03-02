@@ -21,6 +21,34 @@ import './Admin.css'
 import { getSubscribers } from '../../../services/api/mailingList'
 import { Button } from '@/components/ui/button'
 
+type FeedbackFilters = {
+  status: string
+  type: string
+  priority: string
+  page: number
+}
+
+type IssuesFilters = {
+  status: string
+  issueType: string
+  page: number
+}
+
+type SubscriberFilters = {
+  verified: string
+  active: string
+  page: number
+}
+
+type AdminPagination = {
+  currentPage?: number
+  totalPages?: number
+  totalItems?: number
+  hasPrevPage?: boolean
+  hasNextPage?: boolean
+  [key: string]: any
+}
+
 const Admin = () => {
   const navigate = useNavigate()
   const { user, logout, getAuthHeaders } = useAuth()
@@ -28,27 +56,27 @@ const Admin = () => {
   const [loading, setLoading] = useState(false)
   const [feedback, setFeedback] = useState([])
   const [dataIssues, setDataIssues] = useState([])
-  const [feedbackPagination, setFeedbackPagination] = useState({})
-  const [issuesPagination, setIssuesPagination] = useState({})
+  const [feedbackPagination, setFeedbackPagination] = useState<AdminPagination>({})
+  const [issuesPagination, setIssuesPagination] = useState<AdminPagination>({})
   const [subscribers, setSubscribers] = useState([])
-  const [subsPagination, setSubsPagination] = useState({})
+  const [subsPagination, setSubsPagination] = useState<AdminPagination>({})
   const [subsStats, setSubsStats] = useState(null)
 
   // Filter states
-  const [feedbackFilters, setFeedbackFilters] = useState({
+  const [feedbackFilters, setFeedbackFilters] = useState<FeedbackFilters>({
     status: '',
     type: '',
     priority: '',
     page: 1,
   })
 
-  const [issuesFilters, setIssuesFilters] = useState({
+  const [issuesFilters, setIssuesFilters] = useState<IssuesFilters>({
     status: '',
     issueType: '',
     page: 1,
   })
 
-  const [subsFilters, setSubsFilters] = useState({
+  const [subsFilters, setSubsFilters] = useState<SubscriberFilters>({
     verified: '',
     active: '',
     page: 1,
@@ -63,13 +91,15 @@ const Admin = () => {
 
   // Fetch feedback data
   const fetchFeedback = useCallback(
-    async (filters = feedbackFilters) => {
+    async (filters: FeedbackFilters = feedbackFilters) => {
       try {
         setLoading(true)
         const params = new URLSearchParams()
 
         Object.entries(filters).forEach(([key, value]) => {
-          if (value) params.append(key, value)
+          if (value !== '' && value !== undefined && value !== null) {
+            params.append(key, String(value))
+          }
         })
 
         const response = await fetch(`${API_BASE_URL}/feedback/all?${params.toString()}`, {
@@ -95,13 +125,15 @@ const Admin = () => {
 
   // Fetch data issues
   const fetchDataIssues = useCallback(
-    async (filters = issuesFilters) => {
+    async (filters: IssuesFilters = issuesFilters) => {
       try {
         setLoading(true)
         const params = new URLSearchParams()
 
         Object.entries(filters).forEach(([key, value]) => {
-          if (value) params.append(key, value)
+          if (value !== '' && value !== undefined && value !== null) {
+            params.append(key, String(value))
+          }
         })
 
         const response = await fetch(`${API_BASE_URL}/feedback/data-issues?${params.toString()}`, {
@@ -178,7 +210,7 @@ const Admin = () => {
   }
 
   const fetchSubscribers = useCallback(
-    async (filters = subsFilters) => {
+    async (filters: SubscriberFilters = subsFilters) => {
       try {
         setLoading(true)
         const params = {
@@ -357,7 +389,13 @@ const Admin = () => {
   }
 
   // Pagination component
-  const Pagination = ({ pagination, onPageChange }) => {
+  const Pagination = ({
+    pagination,
+    onPageChange,
+  }: {
+    pagination: AdminPagination
+    onPageChange: (page: number) => void
+  }) => {
     if (!pagination || pagination.totalPages <= 1) return null
 
     return (

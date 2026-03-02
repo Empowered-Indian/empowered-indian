@@ -18,7 +18,7 @@ const baseStyles = createBaseStyles(StyleSheet)
 const extendedStyles = createExtendedStyles(StyleSheet)
 const styles = { ...baseStyles, ...extendedStyles }
 
-const MPDetailDocument = ({ data }) => {
+const MPDetailDocument = ({ data }: any) => {
   const timestamp = new Date().toLocaleString()
   const mp = data.mp || {}
 
@@ -66,7 +66,7 @@ const MPDetailDocument = ({ data }) => {
   // Combine all works for stats calculation
   const allWorks = [...completedWorks, ...recommendedWorks]
 
-  const categoryStats = {}
+  const categoryStats: Record<string, any> = {}
   allWorks.forEach(work => {
     const category = work.workCategory || 'Normal/Others'
     const amount = getWorkAmount(work)
@@ -78,7 +78,7 @@ const MPDetailDocument = ({ data }) => {
   })
 
   // Group works by year
-  const yearlyStats = {}
+  const yearlyStats: Record<string, any> = {}
   allWorks.forEach(work => {
     const date = getWorkDate(work)
     const year = date ? new Date(date).getFullYear().toString() : 'Unknown'
@@ -91,13 +91,13 @@ const MPDetailDocument = ({ data }) => {
   })
 
   // Prepare yearly data for chart
-  const yearlyData = Object.entries(yearlyStats)
+  const yearlyData = Object.entries(yearlyStats as Record<string, any>)
     .map(([year, stats]) => ({
       _id: year,
-      totalAmount: stats.totalCost,
-      transactionCount: stats.count,
+      totalAmount: (stats as any).totalCost,
+      transactionCount: (stats as any).count,
     }))
-    .sort((a, b) => a._id - b._id)
+    .sort((a, b) => Number(a._id) - Number(b._id))
 
   const maxYearlyCount = Math.max(...yearlyData.map(y => y.transactionCount || 0))
   const maxYearlyAmount = Math.max(...yearlyData.map(y => y.totalAmount || 0))
@@ -394,9 +394,9 @@ const MPDetailDocument = ({ data }) => {
   )
 }
 
-const ExportMPsDetailAsPdf = ({ mpData }) => {
+const ExportMPsDetailAsPdf = ({ mpData }: any) => {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   const mpComWorksParams = {
     state: mpData?.state || '',

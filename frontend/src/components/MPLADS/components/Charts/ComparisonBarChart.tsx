@@ -6,15 +6,36 @@ import {
   getResponsiveChartDimensions,
 } from '../../../../utils/chartHelpers'
 
+type ComparisonSeries = {
+  name?: string
+  data?: number[]
+}
+
+type ComparisonChartData = {
+  categories?: string[]
+  series?: ComparisonSeries[]
+}
+
+type ComparisonBarChartProps = {
+  data?: ComparisonChartData
+  title?: string
+  xAxisLabel?: string
+  yAxisLabel?: string
+}
+
 const ComparisonBarChart = ({
-  data = [],
+  data = {},
   title = 'Constituency Performance Comparison',
   xAxisLabel = 'Constituencies',
   yAxisLabel = 'Utilization %',
-}) => {
+}: ComparisonBarChartProps) => {
   const responsive = useResponsive()
+  const chartData = {
+    categories: Array.isArray(data?.categories) ? data.categories : [],
+    series: Array.isArray(data?.series) ? data.series : [],
+  }
   // Check if data has the correct structure
-  const hasValidData = data && data.categories && data.series && data.categories.length > 0
+  const hasValidData = chartData.categories.length > 0 && chartData.series.length > 0
 
   // Don't render chart if no valid data
   if (!hasValidData) {
@@ -38,8 +59,6 @@ const ComparisonBarChart = ({
     )
   }
 
-  const chartData = data
-
   const baseOption = {
     title: {
       text: title,
@@ -55,7 +74,7 @@ const ComparisonBarChart = ({
       axisPointer: {
         type: 'shadow',
       },
-      formatter: function (params) {
+      formatter: function (params: any[]) {
         let tooltip = params[0].name + '<br/>'
         params.forEach(item => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.value}%<br/>`
@@ -64,7 +83,7 @@ const ComparisonBarChart = ({
       },
     },
     legend: {
-      data: chartData.series.map(s => s.name),
+      data: chartData.series.map((s, index) => s.name || `Series ${index + 1}`),
       top: 40,
       type: 'scroll',
     },
@@ -127,7 +146,7 @@ const ComparisonBarChart = ({
       },
     ],
     series: chartData.series.map((serie, index) => ({
-      name: serie.name,
+      name: serie.name || `Series ${index + 1}`,
       type: 'bar',
       barGap: 0,
       emphasis: {
@@ -136,7 +155,7 @@ const ComparisonBarChart = ({
       itemStyle: {
         color: index === 0 ? '#5470c6' : index === 1 ? '#91cc75' : '#fac858',
       },
-      data: serie.data,
+      data: Array.isArray(serie.data) ? serie.data : [],
       barMaxWidth: responsive.isMobile ? (responsive.isSmallMobile ? 15 : 20) : 30,
     })),
   }

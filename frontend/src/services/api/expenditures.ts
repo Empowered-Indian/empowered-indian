@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../../utils/constants/api'
 
 export const expendituresAPI = {
   // Get expenditures with filters
-  getExpenditures: async (params = {}) => {
+  getExpenditures: async (params: any = {}) => {
     const { page = 1, limit = 100, ...filters } = params
     return apiClient.get(API_ENDPOINTS.EXPENDITURES, {
       params: { page, limit, ...filters },

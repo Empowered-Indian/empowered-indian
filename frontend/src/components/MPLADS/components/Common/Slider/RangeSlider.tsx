@@ -30,11 +30,13 @@ const RangeSlider = ({
   value = [min, max],
   onChange,
   format = val => val.toString(),
+  formatValue,
   label = 'Range Slider',
   step = 1,
   disabled = false,
   className = '',
-}) => {
+  debounceDelay = 300,
+}: any) => {
   // Internal state for immediate UI updates
   const [internalValue, setInternalValue] = useState(value)
   const debounceTimerRef = useRef(null)
@@ -55,10 +57,12 @@ const RangeSlider = ({
         if (onChange) {
           onChange(newValue)
         }
-      }, 300)
+      }, debounceDelay)
     },
-    [onChange]
+    [onChange, debounceDelay]
   )
+
+  const formatDisplay = formatValue || format
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -84,9 +88,9 @@ const RangeSlider = ({
       <div className="range-slider__values flex justify-between items-center mb-3">
         <div className="text-sm font-medium text-gray-700">{label}</div>
         <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-          <span>{format(internalValue[0])}</span>
+          <span>{formatDisplay(internalValue[0])}</span>
           <span className="text-gray-400">-</span>
-          <span>{format(internalValue[1])}</span>
+          <span>{formatDisplay(internalValue[1])}</span>
         </div>
       </div>
 

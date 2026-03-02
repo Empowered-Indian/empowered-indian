@@ -3,6 +3,8 @@ import { CACHE_TIMES } from '../utils/constants/api'
 import { summaryAPI, mpladsAPI, worksAPI, analyticsAPI, expendituresAPI } from '../services/api'
 import { useFilters } from '../contexts/FilterContext'
 
+const useAnyQuery = (options: any) => useQuery(options as any) as any
+
 // Ensure caller params can't accidentally force invalid combinations.
 // Strip only house: 'Both Houses' (backend treats this literally and finds none).
 // Preserve explicit 'Lok Sabha' / 'Rajya Sabha' overrides.
@@ -22,14 +24,14 @@ export const useOverview = () => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['summary', 'overview', baseParams.ls_term || 'none', houseParam],
     queryFn: () => summaryAPI.getOverview(baseParams),
     staleTime: CACHE_TIMES.SUMMARY,
   })
 }
 
-export const useStateSummary = params => {
+export const useStateSummary = (params: any = {}) => {
   const { filters } = useFilters()
   const houseParam = (params && params.house) || filters.house || 'Lok Sabha'
   const sanitized = sanitize(params)
@@ -39,7 +41,7 @@ export const useStateSummary = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['summary', 'states', merged],
     queryFn: () => summaryAPI.getStateSummary(merged),
     staleTime: CACHE_TIMES.SUMMARY,
@@ -56,7 +58,7 @@ export const useMPSummary = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['summary', 'mps', merged],
     queryFn: () => summaryAPI.getMPSummary(merged),
     staleTime: CACHE_TIMES.SUMMARY,
@@ -75,7 +77,7 @@ export const useConstituencySummary = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['summary', 'constituencies', merged],
     queryFn: () => summaryAPI.getConstituencySummary(merged),
     staleTime: CACHE_TIMES.SUMMARY,
@@ -88,7 +90,7 @@ export const useMPDetails = mpId => {
   const { filters } = useFilters()
   const baseParams =
     filters.house === 'Lok Sabha' || !filters.house ? { ls_term: Number(filters.lsTerm || 18) } : {}
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['mplads', 'mp', mpId, baseParams.ls_term],
     queryFn: () => mpladsAPI.getMPDetails(mpId, baseParams),
     staleTime: CACHE_TIMES.MP_DETAILS,
@@ -106,7 +108,7 @@ export const useMPWorks = (mpId, params) => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['mplads', 'mp', mpId, 'works', merged],
     queryFn: () => mpladsAPI.getMPWorks(mpId, merged),
     staleTime: CACHE_TIMES.WORKS,
@@ -123,7 +125,7 @@ export const useSearchMPs = query => {
     ...(houseParam !== 'Both Houses' ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['mplads', 'search', query, baseParams],
     queryFn: () => {
       if (!query || query.length < 2) {
@@ -146,7 +148,7 @@ export const useSectorData = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['mplads', 'sectors', merged],
     queryFn: () => mpladsAPI.getSectorWiseData(merged),
     staleTime: CACHE_TIMES.ANALYTICS,
@@ -163,7 +165,7 @@ export const useTrends = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['mplads', 'trends', merged],
     queryFn: () => mpladsAPI.getYearWiseTrends(merged),
     staleTime: CACHE_TIMES.ANALYTICS,
@@ -181,7 +183,7 @@ export const useCompletedWorks = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['works', 'completed', merged],
     queryFn: () => worksAPI.getCompletedWorks(merged),
     staleTime: CACHE_TIMES.WORKS,
@@ -200,7 +202,7 @@ export const useRecommendedWorks = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['works', 'recommended', merged],
     queryFn: () => worksAPI.getRecommendedWorks(merged),
     staleTime: CACHE_TIMES.WORKS,
@@ -210,7 +212,7 @@ export const useRecommendedWorks = params => {
 }
 
 export const useWorkCategories = () => {
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['works', 'categories'],
     queryFn: worksAPI.getWorkCategories,
     staleTime: CACHE_TIMES.SUMMARY,
@@ -228,7 +230,7 @@ export const useAnalyticsTrends = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['analytics', 'trends', merged],
     queryFn: () => analyticsAPI.getTrends(merged),
     staleTime: CACHE_TIMES.ANALYTICS,
@@ -245,14 +247,14 @@ export const useTopPerformers = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['analytics', 'top-performers', merged],
     queryFn: () => analyticsAPI.getTopPerformers(merged),
     staleTime: CACHE_TIMES.ANALYTICS,
   })
 }
 
-export const usePerformanceDistribution = params => {
+export const usePerformanceDistribution = (params: any = {}) => {
   const { filters } = useFilters()
   const houseParam = (params && params.house) || filters.house || 'Lok Sabha'
   const sanitized = sanitize(params)
@@ -262,7 +264,7 @@ export const usePerformanceDistribution = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['analytics', 'performance-distribution', merged],
     queryFn: () => analyticsAPI.getPerformanceDistribution(merged),
     staleTime: CACHE_TIMES.ANALYTICS,
@@ -280,7 +282,7 @@ export const useExpenditures = params => {
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
     ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
   }
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['expenditures', merged],
     queryFn: () => expendituresAPI.getExpenditures(merged),
     staleTime: CACHE_TIMES.EXPENDITURE,
@@ -288,7 +290,7 @@ export const useExpenditures = params => {
 }
 
 export const useExpenditureCategories = () => {
-  return useQuery({
+  return useAnyQuery({
     queryKey: ['expenditures', 'categories'],
     queryFn: expendituresAPI.getExpenditureCategories,
     staleTime: CACHE_TIMES.SUMMARY,

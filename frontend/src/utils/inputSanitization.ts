@@ -13,7 +13,7 @@ import { useState } from 'react'
  * @param {boolean} options.preserveSpaces - Whether to preserve spaces during typing (default: true)
  * @returns {string} - Sanitized input value
  */
-export const sanitizeInput = (value, options = {}) => {
+export const sanitizeInput = (value: any, options: any = {}) => {
   if (typeof value !== 'string') return ''
 
   const { maxLength = 100, preserveSpaces = true } = options
@@ -47,7 +47,7 @@ export const sanitizeInput = (value, options = {}) => {
  * @param {Object} options - Optional configuration
  * @returns {string} - Sanitized and trimmed input value ready for submission
  */
-export const sanitizeForSubmission = (value, options = {}) => {
+export const sanitizeForSubmission = (value: any, options: any = {}) => {
   return sanitizeInput(value, { ...options, preserveSpaces: false })
 }
 
@@ -56,7 +56,7 @@ export const sanitizeForSubmission = (value, options = {}) => {
  * @param {string} value - The email input value to sanitize
  * @returns {string} - Sanitized email value
  */
-export const sanitizeEmail = value => {
+export const sanitizeEmail = (value: any) => {
   if (typeof value !== 'string') return ''
 
   return (
@@ -79,7 +79,7 @@ export const sanitizeEmail = value => {
  * @param {Object} options - Sanitization options
  * @returns {Array} - [value, setValue, sanitizedValue, handleChange]
  */
-export const useSanitizedInput = (initialValue = '', options = {}) => {
+export const useSanitizedInput = (initialValue = '', options: any = {}) => {
   const [value, setValue] = useState(initialValue)
 
   const handleChange = e => {

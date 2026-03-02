@@ -1,9 +1,15 @@
 import { Navigate, useLocation } from 'react-router-dom'
+import type { ReactNode } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import './ProtectedRoute.css'
 
-const ProtectedRoute = ({ children, requireAdmin = false }) => {
+interface ProtectedRouteProps {
+  children: ReactNode
+  requireAdmin?: boolean
+}
+
+const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const { loading, isAuthenticated, isAdmin } = useAuth()
   const location = useLocation()
 

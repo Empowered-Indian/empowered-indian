@@ -16,6 +16,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import './ProjectListing.css'
 // Removed unused useFilters import (no longer needed in this component)
 
+type ProjectListingProps = {
+  stateName?: string
+  constituency?: string
+  mpId?: string | number
+  mpName?: string
+  showFiltersDefault?: boolean
+  className?: string
+  mpSummary?: any
+}
+
+type SelectedPaymentWork = {
+  workId?: any
+  recommendationId?: any
+  description?: string
+  totalPaid?: number
+  paymentCount?: number
+} | null
+
 const ProjectListing = ({
   stateName,
   constituency,
@@ -23,7 +41,7 @@ const ProjectListing = ({
   mpName,
   showFiltersDefault = false,
   className = '',
-}) => {
+}: ProjectListingProps) => {
   // Note: Using only local filters in this component; global filters are not required here
   const [projectType, setProjectType] = useState('completed')
   const [currentPage, setCurrentPage] = useState(1)
@@ -35,7 +53,7 @@ const ProjectListing = ({
     has_payments: '',
   })
   const [showFilters, setShowFilters] = useState(showFiltersDefault)
-  const [selectedPaymentWork, setSelectedPaymentWork] = useState(null)
+  const [selectedPaymentWork, setSelectedPaymentWork] = useState<SelectedPaymentWork>(null)
   const debouncedSearch = useDebounce(localFilters.search, 300)
 
   // Reset filters when constituency changes to prevent persistent filter state
@@ -199,7 +217,7 @@ const ProjectListing = ({
   const availableYears = useMemo(() => {
     if (!projects || projects.length === 0) return []
 
-    const yearsSet = new Set()
+    const yearsSet = new Set<number>()
 
     projects.forEach(project => {
       const dateVal =
@@ -508,6 +526,8 @@ const ProjectListing = ({
                             onClick={() =>
                               setSelectedPaymentWork({
                                 workId: project.workId,
+                                recommendationId:
+                                  project.recommendationId || project.recommendation_id,
                                 description: project.work_description || project.workDescription,
                                 totalPaid: project.totalPaid,
                                 paymentCount: project.paymentCount,
@@ -602,6 +622,7 @@ const ProjectListing = ({
       {selectedPaymentWork && (
         <PaymentDetailsModal
           workId={selectedPaymentWork.workId}
+          recommendationId={selectedPaymentWork.recommendationId}
           workDescription={selectedPaymentWork.description}
           onClose={() => setSelectedPaymentWork(null)}
         />

@@ -4,14 +4,33 @@ import { FiAlertTriangle, FiRefreshCw, FiHome, FiInfo } from 'react-icons/fi'
 import { Button } from '@/components/ui/button'
 import './ErrorBoundary.css'
 
-class ErrorBoundary extends React.Component {
+interface ErrorBoundaryProps {
+  children?: React.ReactNode
+  level?: 'page' | 'section' | 'component' | string
+  showDetails?: boolean
+  onReset?: (() => void) | null
+  fallback?: React.ComponentType<{
+    error: any
+    errorInfo: any
+    onReset: () => void
+    onGoHome: () => void
+  }> | null
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean
+  error: any
+  errorInfo: any
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   static defaultProps = {
     level: 'page', // 'page', 'section', 'component'
     showDetails: false,
     onReset: null,
     fallback: null,
   }
-  constructor(props) {
+  constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = {
       hasError: false,
@@ -25,7 +44,7 @@ class ErrorBoundary extends React.Component {
     return { hasError: true }
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console in development
     if (import.meta.env.DEV) {
       console.error('Error caught by boundary:', error, errorInfo)

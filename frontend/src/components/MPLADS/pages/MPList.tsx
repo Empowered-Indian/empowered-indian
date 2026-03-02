@@ -33,8 +33,8 @@ const MPList = () => {
   // Use global house/lsTerm from FilterContext instead of local override
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(48) // default to a multiple of typical 4-column grid
-  const [allMPs, setAllMPs] = useState([])
-  const gridRef = useRef(null)
+  const [allMPs, setAllMPs] = useState<any[]>([])
+  const gridRef = useRef<HTMLDivElement | null>(null)
   const [columns, setColumns] = useState(4)
 
   const { data, isLoading, isFetching, error, refetch } = useMPSummary({
@@ -63,8 +63,8 @@ const MPList = () => {
         ? 'Rajya Sabha'
         : `Both Houses • ${getPeriodLabel(filters?.lsTerm || 18)}`
 
-  const mps = useMemo(() => {
-    return data?.data || []
+  const mps = useMemo<any[]>(() => {
+    return Array.isArray(data?.data) ? data.data : []
   }, [data?.data])
   const totalMPs = data?.pagination?.totalCount || 0
   const totalPages = data?.pagination?.totalPages || Math.ceil(totalMPs / limit)
@@ -183,7 +183,13 @@ const MPList = () => {
     }
 
     // Get unique houses for filters
-    const uniqueHouses = [...new Set(source.map(mp => mp.house).filter(Boolean))].sort()
+    const uniqueHouses = [
+      ...new Set(
+        source
+          .map(mp => mp.house)
+          .filter((house): house is string => typeof house === 'string' && house.length > 0)
+      ),
+    ].sort()
 
     return {
       filteredMPs: filtered,

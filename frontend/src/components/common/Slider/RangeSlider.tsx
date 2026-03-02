@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react'
 import './RangeSlider.css'
 
 // Custom hook for debouncing
-const useDebounce = (callback, delay) => {
+const useDebounce = (callback: any, delay: any) => {
   const timeoutRef = useRef(null)
 
   return useCallback(
@@ -36,7 +36,7 @@ const RangeSlider = ({
   range = true,
   debounceMs = 0,
   ...props
-}) => {
+}: any) => {
   const [localValue, setLocalValue] = useState(value)
   const [isDragging, setIsDragging] = useState(null)
   const [showTooltip, setShowTooltip] = useState({ min: false, max: false })

@@ -14,7 +14,7 @@ import { useAnalytics } from '../../../../hooks/useAnalytics'
 import './ExportButton.css'
 
 const ExportButton = ({
-  type, // 'completed-works', 'recommended-works', 'expenditures', 'mp-summary'
+  type = 'completed-works', // 'completed-works', 'recommended-works', 'expenditures', 'mp-summary'
   additionalFilters = {},
   data = null, // For JSON export
   label,

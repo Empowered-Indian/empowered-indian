@@ -93,7 +93,7 @@ export const buildMPSlug = mp => {
 
 // Build a human‑readable MP slug without ID
 // Default: name-constituency-state
-export const buildMPSlugHuman = (mp, opts = {}) => {
+export const buildMPSlugHuman = (mp: any, opts: any = {}) => {
   if (!mp) return ''
   const { lsTerm, includeHouse = true, includeTerm = true } = opts
   const parts = [mp.name || mp.mpName, mp.constituency, mp.state].filter(Boolean).map(slugify)

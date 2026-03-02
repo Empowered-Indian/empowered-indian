@@ -2,7 +2,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { API_BASE_URL } from '../../utils/constants/api'
 
-const apiClient = axios.create({
+const apiClient: any = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
   headers: {
@@ -12,21 +12,21 @@ const apiClient = axios.create({
 
 // Request interceptor
 apiClient.interceptors.request.use(
-  config => {
+  (config: any) => {
     // You can add auth tokens here if needed
     return config
   },
-  error => {
+  (error: any) => {
     return Promise.reject(error)
   }
 )
 
 // Response interceptor
 apiClient.interceptors.response.use(
-  response => {
+  (response: any) => {
     return response.data
   },
-  error => {
+  (error: any) => {
     const message = error.response?.data?.error || error.message || 'Something went wrong'
 
     // Don't show toast for cancelled requests

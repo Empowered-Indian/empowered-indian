@@ -1,21 +1,19 @@
 import apiClient from './apiClient'
 
-export const subscribeToMailingList = async (email, options = {}) => {
-  return apiClient.post(
-    '/mailing-list/subscribe',
-    { email },
-    { skipErrorToast: options.skipErrorToast === true }
-  )
+export const subscribeToMailingList = async (email: string, options: any = {}) => {
+  return apiClient.post('/mailing-list/subscribe', { email }, {
+    skipErrorToast: options.skipErrorToast === true,
+  } as any)
 }
 
-export const unsubscribeFromMailingList = async email => {
+export const unsubscribeFromMailingList = async (email: string) => {
   return apiClient.post('/mailing-list/unsubscribe', { email })
 }
 
-export const getSubscribers = async (params = {}) => {
+export const getSubscribers = async (params: any = {}) => {
   const query = new URLSearchParams()
-  if (params.page) query.append('page', params.page)
-  if (params.limit) query.append('limit', params.limit)
+  if (params.page) query.append('page', String(params.page))
+  if (params.limit) query.append('limit', String(params.limit))
   if (params.verified === true) query.append('verified', 'true')
   if (params.verified === false) query.append('verified', 'false')
   if (params.active === true) query.append('active', 'true')
@@ -28,7 +26,7 @@ export const getSubscriberStats = async () => {
   return apiClient.get('/mailing-list/admin/stats')
 }
 
-export const verifyEmail = async token => {
+export const verifyEmail = async (token: string) => {
   return apiClient.get(`/mailing-list/verify?token=${encodeURIComponent(token)}`)
 }
 

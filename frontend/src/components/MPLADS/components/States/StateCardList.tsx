@@ -4,13 +4,23 @@ import './StateCardList.css'
 import { formatINRCompact } from '../../../../utils/formatters'
 import { useNavigate } from 'react-router-dom'
 
+type ColumnAlign = React.CSSProperties['textAlign']
+
+type ColumnConfig = {
+  key: string
+  label: string
+  width: string
+  minWidth: number
+  align: ColumnAlign
+}
+
 const StateCardList = ({ states = [], onSortedStatesChange }) => {
   const clonedStates = states
   const navigate = useNavigate()
 
   const [sortConfig, setSortConfig] = useState({ key: 'state', direction: 'asc' })
 
-  const columns = [
+  const columns: ColumnConfig[] = [
     { key: 'id', label: 'ID', width: '3%', minWidth: 40, align: 'center' },
     { key: 'state', label: 'State / UT', width: '35%', minWidth: 160, align: 'left' },
     { key: 'mpCount', label: 'MPs', width: '10%', minWidth: 70, align: 'center' },

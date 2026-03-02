@@ -19,7 +19,7 @@ const Login = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [validationErrors, setValidationErrors] = useState({})
+  const [validationErrors, setValidationErrors] = useState<Record<string, string | null>>({})
 
   // Get the page user was trying to access
   const from = location.state?.from?.pathname || '/mplads/admin'

@@ -6,9 +6,9 @@ import { pdf } from '@react-pdf/renderer'
  * @param {string} fileName - The filename for the PDF
  * @returns {Promise<boolean>} - Returns true if successful
  */
-export async function generateAndDownloadPdf(docNode, fileName) {
+export async function generateAndDownloadPdf(docNode: any, fileName: string) {
   try {
-    const asPdf = pdf(docNode, { author: 'Empowered Indian' })
+    const asPdf = pdf(docNode)
     const blob = await asPdf.toBlob()
     const url = URL.createObjectURL(blob)
     const a = window.document.createElement('a')

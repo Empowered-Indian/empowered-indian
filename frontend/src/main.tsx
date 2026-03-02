@@ -8,6 +8,9 @@ import App from './App'
 
 // Initialize Sentry for error tracking (only if enabled and DSN is provided)
 if (import.meta.env.VITE_ENABLE_SENTRY === 'true' && import.meta.env.VITE_SENTRY_DSN) {
+  const enablePerformance = import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === 'true'
+  const enableReplay = import.meta.env.MODE === 'production'
+
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.VITE_SENTRY_ENVIRONMENT || import.meta.env.MODE || 'development',
@@ -29,16 +32,15 @@ if (import.meta.env.VITE_ENABLE_SENTRY === 'true' && import.meta.env.VITE_SENTRY
       return event
     },
     integrations: [
-      Sentry.browserTracingIntegration({
-        // Only track performance if enabled
-        enabled: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === 'true',
-      }),
-      Sentry.replayIntegration({
-        maskAllText: true, // Mask all text for privacy
-        maskAllInputs: true, // Mask all inputs for privacy
-        // Only enable replay in production
-        enabled: import.meta.env.MODE === 'production',
-      }),
+      ...(enablePerformance ? [Sentry.browserTracingIntegration()] : []),
+      ...(enableReplay
+        ? [
+            Sentry.replayIntegration({
+              maskAllText: true, // Mask all text for privacy
+              maskAllInputs: true, // Mask all inputs for privacy
+            }),
+          ]
+        : []),
     ],
     // Performance monitoring settings
     tracesSampleRate: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === 'true' ? 0.1 : 0,

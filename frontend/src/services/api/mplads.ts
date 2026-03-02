@@ -3,34 +3,34 @@ import { API_ENDPOINTS } from '../../utils/constants/api'
 
 export const mpladsAPI = {
   // Get individual MP details
-  getMPDetails: async (mpId, params = {}) => {
+  getMPDetails: async (mpId: any, params: any = {}) => {
     return apiClient.get(`${API_ENDPOINTS.MPLADS_MP_DETAILS}/${mpId}`, { params })
   },
 
   // Get MP's works
-  getMPWorks: async (mpId, params = {}) => {
+  getMPWorks: async (mpId: any, params: any = {}) => {
     return apiClient.get(`${API_ENDPOINTS.MPLADS_MP_DETAILS}/${mpId}/works`, { params })
   },
 
   // Search MPs by name or constituency
-  searchMPs: async (query, params = {}) => {
+  searchMPs: async (query: string, params: any = {}) => {
     return apiClient.get(API_ENDPOINTS.MPLADS_SEARCH, {
       params: { q: query, ...params },
     })
   },
 
   // Get constituency details
-  getConstituencyDetails: async constituencyId => {
+  getConstituencyDetails: async (constituencyId: any) => {
     return apiClient.get(`${API_ENDPOINTS.MPLADS_CONSTITUENCIES}/${constituencyId}`)
   },
 
   // Get sector-wise data
-  getSectorWiseData: async (params = {}) => {
+  getSectorWiseData: async (params: any = {}) => {
     return apiClient.get(API_ENDPOINTS.MPLADS_SECTORS, { params })
   },
 
   // Get year-wise trends
-  getYearWiseTrends: async (params = {}) => {
+  getYearWiseTrends: async (params: any = {}) => {
     return apiClient.get(API_ENDPOINTS.MPLADS_TRENDS, { params })
   },
 

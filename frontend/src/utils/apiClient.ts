@@ -1,7 +1,7 @@
 // Centralized API client with request cancellation support
 // Minimal surface: apiRequest(url, options?) and cancelAllRequests()
 
-const activeControllers = new Set()
+const activeControllers = new Set<AbortController>()
 
 const withAbortController = () => {
   const controller = new AbortController()
@@ -18,7 +18,7 @@ const getAuthToken = () => {
   }
 }
 
-export const apiRequest = async (url, options = {}) => {
+export const apiRequest = async (url: string, options: any = {}) => {
   const { signal, cleanup } = withAbortController()
   try {
     const headers = new Headers(options.headers || {})

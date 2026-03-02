@@ -1,7 +1,16 @@
 import { FiAlertCircle, FiRefreshCw, FiHome } from 'react-icons/fi'
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import './ErrorDisplay.css'
+
+type ErrorDisplayProps = {
+  error?: any
+  onRetry?: () => void
+  title?: string
+  showHomeButton?: boolean
+  customActions?: ReactNode
+}
 
 const ErrorDisplay = ({
   error,
@@ -9,7 +18,7 @@ const ErrorDisplay = ({
   title = 'Something went wrong',
   showHomeButton = true,
   customActions = null,
-}) => {
+}: ErrorDisplayProps) => {
   const navigate = useNavigate()
 
   // Extract error message

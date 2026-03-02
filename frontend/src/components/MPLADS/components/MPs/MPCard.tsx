@@ -16,7 +16,7 @@ import { formatINRCompact } from '../../../../utils/formatters'
 import { buildMPSlugHuman, normalizeMPSlug } from '../../../../utils/slug'
 import { useFilters } from '../../../../contexts/FilterContext'
 
-const MPCard = ({ mp, rank }) => {
+const MPCard = ({ mp, rank = null }) => {
   const formatCurrency = amount => formatINRCompact(amount)
 
   const formatNumber = num => {

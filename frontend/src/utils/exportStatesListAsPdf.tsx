@@ -10,7 +10,7 @@ const baseStyles = createBaseStyles(StyleSheet)
 const extendedStyles = createExtendedStyles(StyleSheet)
 const styles = { ...baseStyles, ...extendedStyles }
 
-const MyDocument = ({ data = [], meta = {} }) => {
+const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
   const timestamp = new Date().toLocaleString()
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0)
   const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0)
@@ -284,10 +284,10 @@ const MyDocument = ({ data = [], meta = {} }) => {
   )
 }
 
-const ExportStatesListAsPdf = React.forwardRef(
+const ExportStatesListAsPdf = React.forwardRef<any, any>(
   ({ filteredStates = [], meta = {}, layout = 'cards' }, ref) => {
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
+    const [error, setError] = useState<string | null>(null)
     const [currentFilteredStates, setCurrentFilteredStates] = useState(filteredStates)
 
     React.useEffect(() => {

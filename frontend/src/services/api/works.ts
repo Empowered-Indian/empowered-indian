@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../../utils/constants/api'
 
 export const worksAPI = {
   // Get completed works with filters
-  getCompletedWorks: async (params = {}) => {
+  getCompletedWorks: async (params: any = {}) => {
     const {
       page = 1,
       limit = 20,
@@ -45,7 +45,7 @@ export const worksAPI = {
   },
 
   // Get recommended works with filters
-  getRecommendedWorks: async (params = {}) => {
+  getRecommendedWorks: async (params: any = {}) => {
     const {
       page = 1,
       limit = 20,
@@ -96,7 +96,7 @@ export const worksAPI = {
   },
 
   // Get constituencies
-  getConstituencies: async (params = {}) => {
+  getConstituencies: async (params: any = {}) => {
     const { state } = params
     return apiClient.get(API_ENDPOINTS.WORKS_CONSTITUENCIES, {
       params: { state },
@@ -104,12 +104,12 @@ export const worksAPI = {
   },
 
   // Get payment details for a specific work
-  getWorkPayments: async workId => {
+  getWorkPayments: async (workId: any) => {
     return apiClient.get(`/works/${workId}/payments`)
   },
 
   // Get payment details for a specific recommendation
-  getRecommendationPayments: async recommendationId => {
+  getRecommendationPayments: async (recommendationId: any) => {
     return apiClient.get(`/works/recommendations/${recommendationId}/payments`)
   },
 }

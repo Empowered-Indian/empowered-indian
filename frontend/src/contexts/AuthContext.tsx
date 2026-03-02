@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import { AuthContext } from './AuthContextDef'
+import { useState, useEffect, type ReactNode } from 'react'
+import { AuthContext, type AuthContextType } from './AuthContextDef'
 import { API_BASE_URL } from '../utils/constants/api'
 import { apiRequest, cancelAllRequests } from '../utils/apiClient'
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [token, setToken] = useState(localStorage.getItem('authToken'))
+  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'))
 
   // Check if user is authenticated on app load
   useEffect(() => {
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   }, [token])
 
   // Login function
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     try {
       const response = await apiRequest(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       })
 
-      const data = await response.json()
+      const data = (await response.json()) as any
 
       if (data.success) {
         const { user, token } = data.data
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
 
-  const value = {
+  const value: AuthContextType = {
     user,
     token,
     loading,

@@ -4,6 +4,20 @@ import SkeletonLoader from './SkeletonLoader'
 import { Button } from '@/components/ui/button'
 import './LoadingState.css'
 
+type LoadingType = 'default' | 'skeleton' | 'table' | 'chart' | 'minimal' | 'inline'
+type LoadingSize = 'small' | 'medium' | 'large'
+
+type LoadingStateProps = {
+  type?: LoadingType
+  message?: string
+  size?: LoadingSize
+  showProgress?: boolean
+  progressValue?: number
+  timeout?: number
+  onTimeout?: () => void
+  className?: string
+}
+
 const LoadingState = ({
   type = 'default',
   message = 'Loading...',
@@ -13,7 +27,7 @@ const LoadingState = ({
   timeout = 30000, // 30 seconds
   onTimeout,
   className = '',
-}) => {
+}: LoadingStateProps) => {
   const [hasTimedOut, setHasTimedOut] = useState(false)
   const [dots, setDots] = useState('')
 
@@ -120,19 +134,20 @@ const LoadingState = ({
 }
 
 // Specialized loading components for common use cases
-export const TableLoadingState = ({ message = 'Loading data...', ...props }) => (
+export const TableLoadingState = ({ message = 'Loading data...', ...props }: LoadingStateProps) => (
   <LoadingState type="table" message={message} {...props} />
 )
 
-export const ChartLoadingState = ({ message = 'Loading chart...', ...props }) => (
-  <LoadingState type="chart" message={message} {...props} />
-)
+export const ChartLoadingState = ({
+  message = 'Loading chart...',
+  ...props
+}: LoadingStateProps) => <LoadingState type="chart" message={message} {...props} />
 
-export const InlineLoadingState = ({ message = 'Loading...', ...props }) => (
+export const InlineLoadingState = ({ message = 'Loading...', ...props }: LoadingStateProps) => (
   <LoadingState type="inline" message={message} size="small" {...props} />
 )
 
-export const MinimalLoadingState = ({ ...props }) => (
+export const MinimalLoadingState = (props: LoadingStateProps) => (
   <LoadingState type="minimal" size="small" {...props} />
 )
 
@@ -141,7 +156,7 @@ export const FilterLoadingState = ({
   message = 'Applying filters...',
   filtersCount = 0,
   ...props
-}) => (
+}: LoadingStateProps & { filtersCount?: number }) => (
   <LoadingState
     type="inline"
     message={
@@ -155,7 +170,11 @@ export const FilterLoadingState = ({
 )
 
 // Search results loading state
-export const SearchLoadingState = ({ query = '', message = 'Searching...', ...props }) => (
+export const SearchLoadingState = ({
+  query = '',
+  message = 'Searching...',
+  ...props
+}: LoadingStateProps & { query?: string }) => (
   <LoadingState
     type="inline"
     message={query ? `Searching for "${query}"...` : message}

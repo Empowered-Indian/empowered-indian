@@ -3,12 +3,12 @@ import { API_ENDPOINTS } from '../../utils/constants/api'
 
 export const summaryAPI = {
   // Get overall dashboard overview
-  getOverview: async (params = {}) => {
+  getOverview: async (params: any = {}) => {
     return apiClient.get(API_ENDPOINTS.SUMMARY_OVERVIEW, { params })
   },
 
   // Get state-wise summary
-  getStateSummary: async (params = {}) => {
+  getStateSummary: async (params: any = {}) => {
     // Default to showing all states (India has ~37 states/UTs)
     const { limit = 50, ...otherParams } = params
     return apiClient.get(API_ENDPOINTS.SUMMARY_STATES, {
@@ -17,7 +17,7 @@ export const summaryAPI = {
   },
 
   // Get MP-wise summary with pagination
-  getMPSummary: async (params = {}) => {
+  getMPSummary: async (params: any = {}) => {
     const { page = 1, limit = 20, ...filters } = params
     return apiClient.get(API_ENDPOINTS.SUMMARY_MPS, {
       params: { page, limit, ...filters },
@@ -25,7 +25,7 @@ export const summaryAPI = {
   },
 
   // Get constituency-wise summary for a state
-  getConstituencySummary: async (params = {}) => {
+  getConstituencySummary: async (params: any = {}) => {
     const { limit = 50, ...otherParams } = params
     return apiClient.get(API_ENDPOINTS.SUMMARY_CONSTITUENCIES, {
       params: { limit, ...otherParams },

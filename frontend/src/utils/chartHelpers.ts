@@ -8,7 +8,7 @@
  * @param {Object} responsive - Responsive configuration
  * @returns {Object} Responsive chart options
  */
-export const getResponsiveChartOptions = (baseOptions, responsive = {}) => {
+export const getResponsiveChartOptions = (baseOptions: any, responsive: any = {}) => {
   const { isMobile = false, isSmallMobile = false, isTouchDevice = false } = responsive
 
   // Deep clone base options to avoid mutation
@@ -174,7 +174,7 @@ export const getResponsiveChartOptions = (baseOptions, responsive = {}) => {
  * @param {Object} responsive - Responsive configuration
  * @returns {Object} Chart dimensions and container styles
  */
-export const getResponsiveChartDimensions = (responsive = {}) => {
+export const getResponsiveChartDimensions = (responsive: any = {}) => {
   const {
     isMobile = false,
     isSmallMobile = false,
@@ -210,7 +210,7 @@ export const getResponsiveChartDimensions = (responsive = {}) => {
  * @param {boolean} isHighContrast - Whether to use high contrast colors
  * @returns {Array} Array of color values
  */
-export const getAccessibleColorPalette = (count, isHighContrast = false) => {
+export const getAccessibleColorPalette = (count: number, isHighContrast = false) => {
   const highContrastColors = [
     '#1f2937', // Dark gray
     '#dc2626', // Red
@@ -254,7 +254,7 @@ export const getAccessibleColorPalette = (count, isHighContrast = false) => {
  * @param {Object} responsive - Responsive configuration
  * @returns {Array} Optimized series configuration
  */
-export const getResponsiveSeries = (series, responsive = {}) => {
+export const getResponsiveSeries = (series: any[], responsive: any = {}) => {
   const { isMobile = false, isSmallMobile = false, isTouchDevice = false } = responsive
 
   return series.map(s => {

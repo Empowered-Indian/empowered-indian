@@ -137,7 +137,7 @@ export const getErrorSuggestions = error => {
 /**
  * Show error toast notification with appropriate styling
  */
-export const showErrorToast = (error, options = {}) => {
+export const showErrorToast = (error: any, options: any = {}) => {
   const message = getErrorMessage(error)
   const severity = getErrorSeverity(error)
 
@@ -160,13 +160,13 @@ export const showErrorToast = (error, options = {}) => {
     ...options,
   }
 
-  return toast.error(message, toastOptions)
+  return toast.error(message, toastOptions as any)
 }
 
 /**
  * Show success toast notification
  */
-export const showSuccessToast = (message, options = {}) => {
+export const showSuccessToast = (message: string, options: any = {}) => {
   const toastOptions = {
     duration: 3000,
     position: 'top-right',
@@ -185,13 +185,13 @@ export const showSuccessToast = (message, options = {}) => {
     ...options,
   }
 
-  return toast.success(message, toastOptions)
+  return toast.success(message, toastOptions as any)
 }
 
 /**
  * Show info toast notification
  */
-export const showInfoToast = (message, options = {}) => {
+export const showInfoToast = (message: string, options: any = {}) => {
   const toastOptions = {
     duration: 4000,
     position: 'top-right',
@@ -210,13 +210,13 @@ export const showInfoToast = (message, options = {}) => {
     ...options,
   }
 
-  return toast(message, toastOptions)
+  return toast(message, toastOptions as any)
 }
 
 /**
  * Show loading toast notification
  */
-export const showLoadingToast = (message = 'Loading...', options = {}) => {
+export const showLoadingToast = (message = 'Loading...', options: any = {}) => {
   const toastOptions = {
     duration: Infinity, // Keep until dismissed
     position: 'top-right',
@@ -231,13 +231,13 @@ export const showLoadingToast = (message = 'Loading...', options = {}) => {
     ...options,
   }
 
-  return toast.loading(message, toastOptions)
+  return toast.loading(message, toastOptions as any)
 }
 
 /**
  * Dismiss toast by ID
  */
-export const dismissToast = toastId => {
+export const dismissToast = (toastId: any) => {
   toast.dismiss(toastId)
 }
 
