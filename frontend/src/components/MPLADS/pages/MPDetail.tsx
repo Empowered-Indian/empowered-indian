@@ -19,7 +19,7 @@ import FundUtilizationGauge from '../components/Charts/FundUtilizationGauge'
 import InfoTooltip from '../components/Common/InfoTooltip'
 import ProjectListing from '../components/Projects/ProjectListing'
 import SkeletonLoader from '../components/Common/SkeletonLoader'
-import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling.jsx'
+import { showSuccessToast, showErrorToast } from '../../../utils/errorHandling'
 import {
   getIdFromSlug,
   isBareObjectId,
@@ -32,7 +32,7 @@ import { useFilters } from '../../../contexts/FilterContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import './MPDetail.css'
-import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf.jsx'
+import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf'
 
 const MPDetail = () => {
   const navigate = useNavigate()

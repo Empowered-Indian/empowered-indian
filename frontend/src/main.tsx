@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import * as Sentry from '@sentry/react'
 import { AnalyticsProvider } from './contexts/AnalyticsContext'
 import './index.css'
-import App from './App.jsx'
+import App from './App'
 
 // Initialize Sentry for error tracking (only if enabled and DSN is provided)
 if (import.meta.env.VITE_ENABLE_SENTRY === 'true' && import.meta.env.VITE_SENTRY_DSN) {
