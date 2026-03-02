@@ -103,7 +103,7 @@ class MPLADSApiClient {
         const options = {
           hostname: 'mplads.mospi.gov.in',
           port: 443,
-          path: '/',
+          path: '/digigov/dashboard.html',
           method: 'GET',
           headers: {
             'User-Agent': this.headers['User-Agent'],
@@ -243,12 +243,12 @@ class MPLADSApiClient {
   async makeQuickTestCall() {
     return new Promise((resolve, _reject) => {
       try {
-        const postData = 'combo=0%2C0%2C0%2C2&key=Total%20Works%20Completed'
+        const postData = JSON.stringify({ uname: '0,0,0,2' })
 
         const options = {
           hostname: 'mplads.mospi.gov.in',
           port: 443,
-          path: '/rest/PreLoginDashboardData/getTilesReportData',
+          path: '/rest/PreLoginDashboardData/getTilesData',
           method: 'POST',
           headers: {
             Accept: this.headers['Accept'],
@@ -281,7 +281,7 @@ class MPLADSApiClient {
             try {
               if (res.statusCode === 200) {
                 const response = JSON.parse(data)
-                if (response && typeof response === 'object') {
+                if (response && typeof response === 'object' && Object.keys(response).length > 0) {
                   resolve(true)
                   return
                 }
@@ -334,27 +334,26 @@ class MPLADSApiClient {
     return new Promise((resolve, reject) => {
       try {
         // Map house to combo parameter
-        // Lok Sabha: default (18th) omits term selector; 17th uses an extra ",5" as per request.md
+        // Lok Sabha tenure IDs from public dashboard API:
+        // 17th Lok Sabha => 5, 18th Lok Sabha => 7
         let houseCombo
         if (house === 'lok_sabha') {
           if (String(lsTerm).toLowerCase() === '17') {
-            // 17th LS combo from request.md: 0,0,0,2,5
-            houseCombo = '0%2C0%2C0%2C2%2C5'
+            houseCombo = '0,0,0,2,5'
           } else {
-            // 18th LS (current default behavior)
-            houseCombo = '0%2C0%2C0%2C2'
+            houseCombo = '0,0,0,2,7'
           }
         } else {
           // Rajya Sabha unchanged
-          houseCombo = '0%2C0%2C0%2C1'
+          houseCombo = '0,0,0,1'
         }
 
-        // Map data type to key parameter
+        // Map data type to key parameter as used by the current public dashboard API
         const dataTypeMap = {
-          works_completed: 'Total%20Works%20Completed',
-          works_recommended: 'Total%20Works%20Recommended',
-          expenditure: 'Total%20Expenditure',
-          allocated_limit: 'Allocated%20Limit',
+          works_completed: 'Works Completed',
+          works_recommended: 'Works Recommended',
+          expenditure: 'Expenditure on Completed and On-going Works as on Date',
+          allocated_limit: 'Allocated Limit for',
         }
 
         const keyParam = dataTypeMap[dataType]
@@ -365,8 +364,7 @@ class MPLADSApiClient {
 
         console.log(`Fetching ${house} ${dataType} data from API...`)
 
-        // Use the exact format from working native request
-        const postData = `combo=${houseCombo}&key=${keyParam}`
+        const postData = JSON.stringify({ combo: houseCombo, key: keyParam })
 
         const options = {
           hostname: 'mplads.mospi.gov.in',
@@ -429,7 +427,7 @@ class MPLADSApiClient {
               }
 
               // Otherwise, find the correct data key that matches our request
-              const expectedKey = keyParam.replace(/%20/g, ' ') // Convert URL encoded spaces back
+              const expectedKey = keyParam
               const availableKeys = Object.keys(response || {})
 
               let _dataKey = null
@@ -451,6 +449,37 @@ class MPLADSApiClient {
                     break
                   }
                 }
+              }
+
+              if (rawData === null || rawData === undefined) {
+                const responseKeyFallbacks = {
+                  works_completed: ['Total Works Completed', 'Works Completed'],
+                  works_recommended: ['Total Works Recommended', 'Works Recommended'],
+                  expenditure: [
+                    'Total Expenditure',
+                    'Expenditure on Completed and On-going Works as on Date',
+                  ],
+                  allocated_limit: ['Allocated Limit', 'Allocated Limit for'],
+                }
+
+                const fallbackKeys = responseKeyFallbacks[dataType] || []
+                for (const fallbackKey of fallbackKeys) {
+                  if (response && response[fallbackKey] !== undefined) {
+                    _dataKey = fallbackKey
+                    rawData = response[fallbackKey]
+                    break
+                  }
+                }
+              }
+
+              // Most current API responses return a single key per request.
+              if (
+                (rawData === null || rawData === undefined) &&
+                response &&
+                availableKeys.length === 1
+              ) {
+                _dataKey = availableKeys[0]
+                rawData = response[_dataKey]
               }
 
               if (rawData === null || rawData === undefined) {
