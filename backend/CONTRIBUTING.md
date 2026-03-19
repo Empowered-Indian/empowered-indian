@@ -13,7 +13,7 @@ Environment
 
 - Copy `.env.example` to `.env` and populate secrets.
 - Never commit `.env` or credentials. Use placeholders in `.env.example`.
-- Required: `MONGODB_URI`, `JWT_SECRET`, `CORS_ORIGINS`; optional: `EMAIL_*`, `SENTRY_DSN`.
+- Required: `MONGODB_URI`, `JWT_SECRET`, `CORS_ORIGINS`; optional: `EMAIL_*`.
 
 Code Style
 

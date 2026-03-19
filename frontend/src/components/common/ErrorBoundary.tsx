@@ -1,5 +1,4 @@
 import React from 'react'
-import * as Sentry from '@sentry/react'
 import { FiAlertTriangle, FiRefreshCw, FiHome, FiInfo } from 'react-icons/fi'
 import { Button } from '@/components/ui/button'
 import './ErrorBoundary.css'
@@ -54,38 +53,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     this.setState({
       error,
       errorInfo,
-    })
-
-    // Report error to Sentry with additional context
-    Sentry.withScope(scope => {
-      // Add context information
-      scope.setTag('errorBoundary', this.props.level || 'unknown')
-      scope.setTag('component', this.constructor.name)
-
-      // Add component hierarchy information
-      if (errorInfo?.componentStack) {
-        scope.setContext('componentStack', {
-          stack: errorInfo.componentStack,
-        })
-      }
-
-      // Add user context (non-PII)
-      scope.setUser({
-        id: null, // No user tracking for government app
-        ip_address: null, // No IP tracking
-      })
-
-      // Add additional context
-      scope.setContext('errorBoundary', {
-        level: this.props.level,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-        viewport: `${window.innerWidth}x${window.innerHeight}`,
-      })
-
-      // Report the error
-      Sentry.captureException(error)
     })
   }
 

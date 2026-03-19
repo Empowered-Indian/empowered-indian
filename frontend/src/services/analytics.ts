@@ -1,5 +1,3 @@
-import * as Sentry from '@sentry/react'
-
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void
@@ -10,7 +8,6 @@ declare global {
 /**
  * Safe Analytics Service for MPLADS Dashboard
  * Provides comprehensive tracking with error handling and fallbacks
- * Integrates with Sentry for error reporting
  */
 class AnalyticsService {
   isEnabled: boolean
@@ -170,94 +167,25 @@ class AnalyticsService {
     })
   }
 
-  // Error tracking (anonymized) - Enhanced with Sentry integration
-  trackError(errorType, componentName, isFatal = false, error = null) {
+  // Error tracking (anonymized)
+  trackError(errorType, componentName, isFatal = false) {
     const errorDescription = `${String(errorType)}_${String(componentName)}`
 
-    // Track in Google Analytics
     this.trackEvent('exception', {
       description: errorDescription,
       fatal: Boolean(isFatal),
       error_component: String(componentName),
     })
-
-    // Also report to Sentry if error object is provided
-    if (error && typeof error === 'object') {
-      Sentry.withScope(scope => {
-        scope.setTag('component', String(componentName))
-        scope.setTag('errorType', String(errorType))
-        scope.setLevel(isFatal ? 'error' : 'warning')
-
-        scope.setContext('analytics', {
-          errorType: String(errorType),
-          componentName: String(componentName),
-          isFatal: Boolean(isFatal),
-          sessionId: this.sessionId,
-          timestamp: new Date().toISOString(),
-        })
-
-        if (error instanceof Error) {
-          Sentry.captureException(error)
-        } else {
-          Sentry.captureMessage(errorDescription, 'error')
-        }
-      })
-    }
   }
 
-  // Manual error reporting to Sentry
-  reportErrorToSentry(error, context = {}) {
-    try {
-      Sentry.withScope(scope => {
-        // Add context information
-        Object.entries(context).forEach(([key, value]) => {
-          scope.setTag(key, String(value))
-        })
-
-        scope.setContext('manualReport', {
-          ...context,
-          sessionId: this.sessionId,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          url: window.location.href,
-        })
-
-        if (error instanceof Error) {
-          Sentry.captureException(error)
-        } else {
-          Sentry.captureMessage(String(error), 'error')
-        }
-      })
-    } catch (sentryError) {
-      console.warn('Failed to report error to Sentry:', sentryError)
-    }
-  }
-
-  // Performance monitoring integration
+  // Performance monitoring
   trackPerformance(metricName, value, context = {}) {
-    // Track in Google Analytics
     this.trackEvent('custom_metric', {
       metric_name: metricName,
       metric_value: value,
       metric_category: 'performance',
+      ...context,
     })
-
-    // Send performance data to Sentry
-    try {
-      Sentry.addBreadcrumb({
-        category: 'performance',
-        message: `${metricName}: ${value}`,
-        level: 'info',
-        data: {
-          metric: metricName,
-          value: value,
-          ...context,
-          sessionId: this.sessionId,
-        },
-      })
-    } catch (sentryError) {
-      console.warn('Failed to track performance in Sentry:', sentryError)
-    }
   }
 
   // Content engagement

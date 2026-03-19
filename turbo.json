@@ -1,28 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "**/.env.*local",
-    "docker-compose.yml"
-  ],
-  "globalEnv": [
-    "NODE_ENV",
-    "CI",
-    "VERCEL",
-    "VERCEL_ENV",
-    "SENTRY_DSN"
-  ],
+  "globalDependencies": ["**/.env.*local", "docker-compose.yml"],
+  "globalEnv": ["NODE_ENV", "CI", "VERCEL", "VERCEL_ENV"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        "dist/**",
-        "build/**",
-        "out/**"
-      ],
-      "env": [
-        "NODE_ENV",
-        "VITE_*"
-      ]
+      "outputs": ["dist/**", "build/**", "out/**"],
+      "env": ["NODE_ENV", "VITE_*"]
     },
     "dev": {
       "cache": false,

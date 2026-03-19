@@ -1,11 +1,7 @@
-// IMPORTANT: Make sure to import `instrument.js` at the top of your file.
-require('./instrument.js')
-
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
 const compression = require('compression')
-const Sentry = require('@sentry/node')
 require('dotenv').config()
 
 const { connectDB, gracefulShutdown } = require('./config/database')
@@ -202,9 +198,6 @@ app.get('/', (req, res) => {
 
 // Error request logging middleware (before error handler)
 app.use(errorRequestLogger)
-
-// The Sentry error handler must be registered before any other error middleware and after all controllers
-Sentry.setupExpressErrorHandler(app)
 
 // Error handling middleware (must be last)
 app.use(errorHandler)

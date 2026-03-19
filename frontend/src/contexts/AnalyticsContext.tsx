@@ -10,7 +10,6 @@ type AnalyticsContextType = {
   trackPageView: (...args: any[]) => void
   trackError: (...args: any[]) => void
   trackEngagement: (...args: any[]) => void
-  reportErrorToSentry: (...args: any[]) => void
   trackPerformance: (...args: any[]) => void
 }
 
@@ -114,14 +113,6 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const reportErrorToSentry = (error: any, context: any) => {
-    try {
-      analytics.reportErrorToSentry(error, context)
-    } catch (sentryError) {
-      console.warn('Report error to Sentry failed:', sentryError.message)
-    }
-  }
-
   const trackPerformance = (metricName: any, value: any, context: any) => {
     try {
       analytics.trackPerformance(metricName, value, context)
@@ -139,7 +130,6 @@ export const AnalyticsProvider = ({ children }: { children: ReactNode }) => {
     trackPageView,
     trackError,
     trackEngagement,
-    reportErrorToSentry,
     trackPerformance,
   }
 

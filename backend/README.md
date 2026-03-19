@@ -8,7 +8,6 @@ Stack
 - Node.js + Express
 - MongoDB / Mongoose
 - Helmet, CORS, rate limiting, sanitizers for security
-- Sentry for error monitoring
 
 Getting Started
 
@@ -55,7 +54,6 @@ Copy `.env.example` to `.env` and set values:
 - `CORS_ORIGINS` — Comma-separated list of allowed origins
 - `EMAIL_SERVICE`, `EMAIL_USER`, `EMAIL_APP_PASSWORD`, `EMAIL_FROM_NAME`
 - `FRONTEND_URL` — For email verification links
-- `SENTRY_DSN` — Error monitoring DSN
 - Performance and security tuning: `ENABLE_RATE_LIMIT`, `DB_*`, `CACHE_TTL_*`
 
 Scripts

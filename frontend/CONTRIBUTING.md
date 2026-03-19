@@ -14,7 +14,7 @@ Environment
 
 - Copy `.env.example` to `.env`.
 - Do not commit `.env` or secrets. Use placeholders only in `.env.example`.
-- Key variables: `VITE_API_URL`, `VITE_SENTRY_DSN`, `VITE_GA_TRACKING_ID`.
+- Key variables: `VITE_API_URL`, `VITE_GA_TRACKING_ID`.
 
 Code Style
 
