@@ -1,162 +1,178 @@
+/* ==========================================================================
+   TERMS OF SERVICE PAGE — Civic Editorial
+   ========================================================================== */
 .tos-page {
   min-height: 100vh;
-  background: var(--bg-gradient-primary);
+  background: hsl(0 0% 100%);
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
 .tos-page .container {
-  max-width: none;
+  max-width: 820px;
   width: 100%;
-  margin: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
+  margin: 0 auto;
+  background: transparent;
   border-radius: 0;
   box-shadow: none;
-  padding: 60px 80px;
+  padding: 80px 2rem 60px;
   flex: 1;
 }
 
 .tos-page .header {
-  margin-bottom: 32px;
-  text-align: center;
+  margin-bottom: 48px;
+  text-align: left;
   position: relative;
 }
 
 .tos-page .back-link {
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: var(--primary-700);
+  position: relative;
+  display: inline-block;
+  color: hsl(215.4 16.3% 46.9%);
   text-decoration: none;
+  font-family: 'Outfit', sans-serif;
   font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--primary-50);
-  border: 1px solid var(--primary-100);
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  transition: color 0.2s ease;
+  margin-bottom: 2rem;
 }
 
 .tos-page .back-link:hover {
-  background: var(--primary-100);
-  transform: translateX(-2px);
+  color: hsl(38 92% 50%);
+  transform: none;
 }
 
 .tos-page .page-title {
-  font-size: 2.5rem;
-  color: #2c3e50;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 3rem;
+  font-weight: 600;
+  font-style: italic;
+  color: hsl(222.2 84% 4.9%);
   margin: 0;
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  line-height: 1.1;
+}
+
+.tos-page .page-title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: hsl(38 92% 50%);
+  margin-top: 1rem;
 }
 
 .tos-page .tos-content {
   text-align: left;
-  line-height: 1.6;
-  color: #2c3e50;
+  line-height: 1.7;
+  color: hsl(222.2 84% 4.9%);
+  font-family: 'Outfit', sans-serif;
 }
 
 .tos-page .last-updated {
-  background: var(--primary-50);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 32px;
-  border-left: 4px solid var(--primary-600);
+  background: transparent;
+  padding: 0 0 1.25rem 0;
+  border-radius: 0;
+  margin-bottom: 2rem;
+  border-left: none;
+  border-bottom: 1px solid hsl(214.3 31.8% 91.4%);
 }
 
 .tos-page .last-updated p {
   margin: 0;
-  color: #555;
-  font-size: 0.9rem;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.8125rem;
 }
 
 .tos-page .tos-section {
-  margin-bottom: 32px;
+  margin-bottom: 2.5rem;
 }
 
 .tos-page .tos-section h2 {
-  color: var(--primary-800);
-  font-size: 1.5rem;
-  margin-bottom: 16px;
-  border-bottom: 2px solid var(--primary-100);
-  padding-bottom: 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: hsl(222.2 84% 4.9%);
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .tos-page .tos-section p {
-  margin-bottom: 16px;
-  color: var(--text-secondary);
-  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
+  line-height: 1.7;
 }
 
 .tos-page .tos-section ul {
-  margin: 16px 0;
-  padding-left: 20px;
+  margin: 0.75rem 0 1rem 0;
+  padding-left: 0;
+  list-style: none;
 }
 
 .tos-page .tos-section li {
-  margin-bottom: 8px;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
+  padding-left: 1.25rem;
+  position: relative;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 1200px) {
-  .tos-page .container {
-    padding: 50px 60px;
-  }
+.tos-page .tos-section li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.625rem;
+  width: 6px;
+  height: 1.5px;
+  background: hsl(38 92% 50%);
 }
 
-@media (max-width: 768px) {
-  .tos-page {
-    padding: 0;
-  }
-  .tos-page .container {
-    padding: 30px 24px;
-  }
-  .tos-page .header {
-    margin-bottom: 24px;
-  }
-  .tos-page .back-link {
-    position: static;
-    display: inline-block;
-    margin-bottom: 16px;
-    font-size: 0.85rem;
-    padding: 6px 12px;
-  }
-  .tos-page .page-title {
-    font-size: 2rem;
-  }
-  .tos-page .tos-section {
-    margin-bottom: 24px;
-  }
-  .tos-page .tos-section h2 {
-    font-size: 1.3rem;
-  }
-  .tos-page .tos-section p,
-  .tos-page .tos-section li {
-    font-size: 0.9rem;
-  }
-}
-
-/* Link Styles */
 .tos-page .tos-section a {
-  color: var(--primary-600);
+  color: hsl(221.2 83.2% 53.3%);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .tos-page .tos-section a:hover {
-  color: var(--primary-700);
-  text-decoration: underline;
+  color: hsl(38 92% 50%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tos-page .container {
+    padding: 48px 1.5rem 40px;
+  }
+
+  .tos-page .page-title {
+    font-size: 2.25rem;
+  }
+
+  .tos-page .tos-section {
+    margin-bottom: 2rem;
+  }
+
+  .tos-page .tos-section h2 {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 480px) {
   .tos-page .container {
-    padding: 24px 16px;
+    padding: 32px 1rem 32px;
+  }
+
+  .tos-page .page-title {
+    font-size: 1.875rem;
   }
 }

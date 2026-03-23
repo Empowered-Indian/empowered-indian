@@ -1,41 +1,44 @@
+/* ==========================================================================
+   EMAIL VERIFICATION PAGE — Civic Editorial
+   ========================================================================== */
 .verification-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: hsl(0 0% 100%);
   padding: 20px;
 }
 
 .verification-container {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+  border: 1px solid hsl(214.3 31.8% 91.4%);
+  border-radius: 0;
+  padding: 3rem;
   text-align: center;
-  max-width: 500px;
+  max-width: 480px;
   width: 100%;
 }
 
 .verification-content {
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
 }
 
 .verification-content .icon {
   font-size: 48px;
-  margin-bottom: 16px;
+  margin-bottom: 1.25rem;
 }
 
 .verification-content.loading .icon {
-  color: #64748b;
+  color: hsl(215.4 16.3% 46.9%);
 }
 
 .verification-content.success .icon {
-  color: #16a34a;
+  color: hsl(142 76% 36%);
 }
 
 .verification-content.error .icon {
-  color: #dc2626;
+  color: hsl(0 84.2% 60.2%);
 }
 
 .spinning {
@@ -43,26 +46,34 @@
 }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .verification-content h2 {
-  margin: 0 0 16px 0;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1e293b;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  margin: 0 0 1rem 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: hsl(222.2 84% 4.9%);
 }
 
 .verification-content p {
-  margin: 8px 0;
-  color: #64748b;
-  font-size: 16px;
-  line-height: 1.5;
+  margin: 0.5rem 0;
+  color: hsl(215.4 16.3% 46.9%);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.verification-content a {
+  color: hsl(221.2 83.2% 53.3%);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.verification-content a:hover {
+  color: hsl(38 92% 50%);
 }
 
 .verification-actions {
@@ -72,12 +83,46 @@
   flex-wrap: wrap;
 }
 
-/* Button styles removed - using centralized button styles */
+.verification-actions .btn-primary,
+.verification-actions .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  letter-spacing: 0.03em;
+}
+
+.verification-actions .btn-primary {
+  color: white;
+  background: hsl(221.2 83.2% 53.3%);
+}
+
+.verification-actions .btn-primary:hover {
+  background: hsl(221.2 83.2% 43.3%);
+  color: white;
+}
+
+.verification-actions .btn-secondary {
+  color: hsl(222.2 84% 4.9%);
+  background: transparent;
+  border: 1.5px solid hsl(214.3 31.8% 91.4%);
+}
+
+.verification-actions .btn-secondary:hover {
+  border-color: hsl(221.2 83.2% 53.3%);
+  color: hsl(221.2 83.2% 53.3%);
+}
 
 @media (max-width: 640px) {
   .verification-container {
-    padding: 24px;
-    margin: 16px;
+    padding: 2rem 1.5rem;
+    margin: 1rem;
   }
 
   .verification-content .icon {
@@ -85,7 +130,7 @@
   }
 
   .verification-content h2 {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 
   .verification-actions {

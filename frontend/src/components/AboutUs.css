@@ -1,388 +1,425 @@
-/* About Us Page Styles */
+/* ==========================================================================
+   ABOUT US PAGE — Civic Editorial
+   ========================================================================== */
 .about-us-page {
   min-height: 100vh;
-  background: var(--bg-gradient-primary);
+  background: hsl(0 0% 100%);
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
 .about-us-page .container {
-  max-width: none;
+  max-width: 820px;
   width: 100%;
-  margin: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
+  margin: 0 auto;
+  background: transparent;
+  backdrop-filter: none;
   border-radius: 0;
   box-shadow: none;
-  padding: 60px 80px;
+  padding: 80px 2rem 60px;
   flex: 1;
 }
 
 .about-us-page .header {
-  margin-bottom: 32px;
-  text-align: center;
+  margin-bottom: 48px;
+  text-align: left;
   position: relative;
 }
 
 .back-link {
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: var(--primary-700);
+  position: relative;
+  display: inline-block;
+  color: hsl(215.4 16.3% 46.9%);
   text-decoration: none;
+  font-family: 'Outfit', sans-serif;
   font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--primary-50);
-  border: 1px solid var(--primary-100);
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  transition: color 0.2s ease;
+  margin-bottom: 2rem;
 }
 
 .back-link:hover {
-  background: var(--primary-100);
-  transform: translateX(-2px);
+  color: hsl(38 92% 50%);
+  transform: none;
 }
 
 .page-title {
-  font-size: 2.5rem;
-  color: #2c3e50;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 3rem;
+  font-weight: 600;
+  font-style: italic;
+  color: hsl(222.2 84% 4.9%);
   margin: 0;
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  line-height: 1.1;
+}
+
+.page-title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: hsl(38 92% 50%);
+  margin-top: 1rem;
 }
 
 .about-content {
   text-align: left;
-  line-height: 1.6;
-  color: #2c3e50;
+  line-height: 1.7;
+  color: hsl(222.2 84% 4.9%);
+  font-family: 'Outfit', sans-serif;
 }
 
 .about-section {
-  margin-bottom: 40px;
-}
-
-.about-section.intro {
-  text-align: center;
   margin-bottom: 48px;
 }
 
+.about-section.intro {
+  text-align: left;
+  margin-bottom: 56px;
+}
+
 .mission-statement {
-  font-size: 1.2rem;
-  line-height: 1.7;
-  color: var(--primary-800);
-  background: var(--primary-50);
-  padding: 32px;
-  border-radius: 12px;
-  border-left: 5px solid var(--primary-600);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.375rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: hsl(222.2 84% 4.9%);
+  background: transparent;
+  padding: 0 0 0 1.5rem;
+  border-radius: 0;
+  border-left: 3px solid hsl(38 92% 50%);
   margin: 0;
+  font-weight: 500;
 }
 
 .about-section h2 {
-  color: var(--primary-800);
-  font-size: 1.6rem;
-  margin-bottom: 20px;
-  border-bottom: 3px solid var(--primary-100);
-  padding-bottom: 10px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: hsl(222.2 84% 4.9%);
+  font-size: 1.625rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  border-bottom: none;
+  padding-bottom: 0;
   position: relative;
 }
 
 .about-section h2::after {
   content: '';
   position: absolute;
-  bottom: -3px;
+  bottom: -6px;
   left: 0;
-  width: 60px;
-  height: 3px;
-  background: var(--primary-600);
+  width: 32px;
+  height: 2px;
+  background: hsl(38 92% 50%);
 }
 
 .about-section h3 {
-  color: var(--primary-700);
-  font-size: 1.3rem;
-  margin: 24px 0 12px 0;
+  font-family: 'Outfit', sans-serif;
+  color: hsl(222.2 84% 4.9%);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
 }
 
 .about-section p {
-  margin-bottom: 16px;
-  color: var(--text-secondary);
-  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
   line-height: 1.7;
+  font-weight: 400;
 }
 
 .about-section ul {
-  margin: 16px 0;
-  padding-left: 20px;
+  margin: 1rem 0;
+  padding-left: 0;
+  list-style: none;
 }
 
 .about-section li {
-  margin-bottom: 10px;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+  margin-bottom: 0.625rem;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
   line-height: 1.6;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.about-section li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.625rem;
+  width: 6px;
+  height: 1.5px;
+  background: hsl(38 92% 50%);
 }
 
 .about-section a {
-  color: var(--primary-700);
+  color: hsl(221.2 83.2% 53.3%);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .about-section a:hover {
-  color: var(--primary-800);
-  text-decoration: underline;
+  color: hsl(38 92% 50%);
+  text-decoration: none;
 }
 
 /* Vision Box */
 .vision-box {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  background: hsl(222.2 84% 4.9%);
   color: white;
-  padding: 32px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  border-radius: 0;
+  text-align: left;
+  box-shadow: none;
+  position: relative;
+}
+
+.vision-box::before {
+  content: '\201C';
+  position: absolute;
+  top: 0.5rem;
+  left: 1.5rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 5rem;
+  color: hsl(38 92% 50%);
+  line-height: 1;
+  opacity: 0.4;
 }
 
 .vision-box p {
-  font-size: 1.2rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.375rem;
   font-weight: 500;
+  font-style: italic;
   margin: 0;
-  color: white;
-  line-height: 1.6;
+  color: hsla(210, 40%, 98%, 0.85);
+  line-height: 1.5;
 }
 
 /* Approach Grid */
 .approach-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-top: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 1.5rem;
+  border: 1px solid hsl(214.3 31.8% 91.4%);
 }
 
 .approach-item {
   background: white;
-  padding: 24px;
-  border-radius: 10px;
-  border: 1px solid var(--primary-100);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  padding: 2rem;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid hsl(214.3 31.8% 91.4%);
+  box-shadow: none;
+  transition: background 0.2s ease;
+}
+
+.approach-item:last-child {
+  border-right: none;
 }
 
 .approach-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  background: hsl(210 40% 98%);
+  transform: none;
+  box-shadow: none;
 }
 
 .approach-item h3 {
-  color: var(--primary-700);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: hsl(222.2 84% 4.9%);
   margin-top: 0;
-  margin-bottom: 12px;
-  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .approach-item p {
   margin: 0;
-  color: var(--text-secondary);
+  color: hsl(215.4 16.3% 46.9%);
   line-height: 1.6;
+  font-size: 0.875rem;
 }
 
 /* Contact List */
 .contact-list {
   list-style: none;
   padding: 0;
-  margin: 20px 0;
+  margin: 1.25rem 0;
 }
 
 .contact-list li {
-  margin-bottom: 12px;
-  padding: 12px;
-  background: var(--primary-50);
-  border-radius: 8px;
-  border-left: 3px solid var(--primary-600);
+  margin-bottom: 0.5rem;
+  padding: 0.625rem 0 0.625rem 1rem;
+  background: transparent;
+  border-radius: 0;
+  border-left: 2px solid hsl(38 92% 50%);
 }
 
-/* Call to Action */
+/* CTA */
 .call-to-action {
-  margin-top: 48px;
+  margin-top: 56px;
 }
 
 .cta-box {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 40px;
-  border-radius: 16px;
+  background: hsl(222.2 84% 4.9%);
+  padding: 3.5rem;
+  border-radius: 0;
   text-align: center;
-  border: 2px solid var(--primary-100);
+  border: none;
 }
 
 .cta-box h2 {
-  color: var(--primary-800);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: hsla(210, 40%, 98%, 0.9);
   border: none;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.75rem;
+  font-style: italic;
 }
 
 .cta-box h2::after {
   display: none;
 }
 
+.cta-box p {
+  color: hsla(210, 40%, 98%, 0.55);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
 .cta-link {
-  background: var(--primary-600);
-  color: white !important;
-  padding: 8px 16px;
-  border-radius: 6px;
+  background: hsl(38 92% 50%);
+  color: hsl(222.2 84% 4.9%) !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0;
   text-decoration: none;
   font-weight: 600;
-  transition: background 0.3s ease;
+  transition: background 0.2s ease;
 }
 
 .cta-link:hover {
-  background: var(--primary-700);
+  background: hsl(38 92% 55%);
   text-decoration: none;
 }
 
 .tagline {
-  font-size: 1.1rem;
-  color: var(--primary-800);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.125rem;
+  color: hsla(210, 40%, 98%, 0.7);
   font-weight: 600;
-  margin-top: 20px;
+  font-style: italic;
+  margin-top: 1.25rem;
 }
 
 /* Footer */
 .about-footer {
-  margin-top: 48px;
-  padding-top: 32px;
-  border-top: 2px solid var(--primary-100);
-  text-align: center;
+  margin-top: 56px;
+  padding-top: 2rem;
+  border-top: 1px solid hsl(214.3 31.8% 91.4%);
+  text-align: left;
+}
+
+.about-footer p {
+  font-size: 0.9375rem;
+  color: hsl(215.4 16.3% 46.9%);
 }
 
 .back-link-bottom {
   display: inline-block;
-  margin-top: 16px;
-  color: var(--primary-700);
+  margin-top: 1rem;
+  color: hsl(215.4 16.3% 46.9%);
   text-decoration: none;
   font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--primary-50);
-  border: 1px solid var(--primary-100);
-  transition: all 0.3s ease;
+  font-size: 0.8125rem;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  transition: color 0.2s ease;
 }
 
 .back-link-bottom:hover {
-  background: var(--primary-100);
-  transform: translateX(-2px);
+  color: hsl(38 92% 50%);
+  transform: none;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 1200px) {
-  .about-us-page .container {
-    padding: 50px 60px;
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-  .about-us-page {
-    padding: 0;
-  }
-
   .about-us-page .container {
-    padding: 30px 24px;
-  }
-
-  .about-us-page .header {
-    margin-bottom: 24px;
-  }
-
-  .back-link {
-    position: static;
-    display: inline-block;
-    margin-bottom: 16px;
-    font-size: 0.85rem;
-    padding: 6px 12px;
+    padding: 48px 1.5rem 40px;
   }
 
   .page-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 
   .about-section {
-    margin-bottom: 32px;
+    margin-bottom: 36px;
   }
 
   .about-section h2 {
-    font-size: 1.4rem;
-  }
-
-  .about-section h3 {
-    font-size: 1.2rem;
+    font-size: 1.375rem;
   }
 
   .mission-statement {
-    font-size: 1.1rem;
-    padding: 24px;
+    font-size: 1.2rem;
+    padding-left: 1.25rem;
   }
 
   .approach-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+  }
+
+  .approach-item {
+    border-right: none;
+    border-bottom: 1px solid hsl(214.3 31.8% 91.4%);
+  }
+
+  .approach-item:last-child {
+    border-bottom: none;
   }
 
   .vision-box {
-    padding: 24px;
-  }
-
-  .vision-box p {
-    font-size: 1.1rem;
+    padding: 2rem;
   }
 
   .cta-box {
-    padding: 32px 24px;
-  }
-
-  .cta-box h2 {
-    font-size: 1.5rem;
+    padding: 2.5rem 2rem;
   }
 }
 
 @media (max-width: 480px) {
   .about-us-page .container {
-    padding: 24px 16px;
+    padding: 32px 1rem 32px;
   }
 
   .page-title {
-    font-size: 1.8rem;
-  }
-
-  .about-section h2 {
-    font-size: 1.3rem;
-  }
-
-  .mission-statement {
-    font-size: 1rem;
-    padding: 20px;
+    font-size: 1.875rem;
   }
 
   .approach-item {
-    padding: 20px;
+    padding: 1.5rem;
   }
 
   .vision-box {
-    padding: 20px;
+    padding: 1.75rem;
   }
 
   .cta-box {
-    padding: 24px 16px;
-  }
-
-  .back-link,
-  .back-link-bottom {
-    font-size: 0.8rem;
-    padding: 6px 10px;
+    padding: 2rem 1.25rem;
   }
 }

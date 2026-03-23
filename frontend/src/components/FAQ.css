@@ -1,137 +1,138 @@
-/* FAQ Page Styles */
+/* ==========================================================================
+   FAQ PAGE — Civic Editorial
+   ========================================================================== */
 .faq-page {
   min-height: 100vh;
-  background: var(--bg-gradient-primary);
+  background: hsl(0 0% 100%);
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
 .faq-page .container {
-  max-width: none;
+  max-width: 820px;
   width: 100%;
-  margin: 0;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
+  margin: 0 auto;
+  background: transparent;
+  backdrop-filter: none;
   border-radius: 0;
   box-shadow: none;
-  padding: 60px 80px;
+  padding: 80px 2rem 60px;
   flex: 1;
 }
 
 .faq-page .header {
-  margin-bottom: 32px;
-  text-align: center;
+  margin-bottom: 48px;
+  text-align: left;
   position: relative;
 }
 
 .faq-page .back-link {
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: var(--primary-700);
+  position: relative;
+  display: inline-block;
+  color: hsl(215.4 16.3% 46.9%);
   text-decoration: none;
+  font-family: 'Outfit', sans-serif;
   font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--primary-50);
-  border: 1px solid var(--primary-100);
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  transition: color 0.2s ease;
+  margin-bottom: 2rem;
 }
 
 .faq-page .back-link:hover {
-  background: var(--primary-100);
-  transform: translateX(-2px);
+  color: hsl(38 92% 50%);
+  transform: none;
 }
 
 .faq-page .page-title {
-  font-size: 2.25rem;
-  color: #2c3e50;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 3rem;
+  font-weight: 600;
+  font-style: italic;
+  color: hsl(222.2 84% 4.9%);
   margin: 0;
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
+  line-height: 1.1;
+}
+
+.faq-page .page-title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: hsl(38 92% 50%);
+  margin-top: 1rem;
 }
 
 .faq-content {
   text-align: left;
   line-height: 1.65;
-  color: var(--text-primary);
+  color: hsl(222.2 84% 4.9%);
+  font-family: 'Outfit', sans-serif;
 }
 
 .faq-intro {
-  margin-bottom: 32px;
-  padding: 16px 20px;
-  background: var(--primary-50);
-  border-radius: 12px;
-  border-left: 4px solid var(--primary-500);
-  color: var(--text-secondary);
+  margin-bottom: 40px;
+  padding: 1.25rem 1.5rem;
+  background: hsl(210 40% 98%);
+  border-radius: 0;
+  border-left: 3px solid hsl(38 92% 50%);
+  color: hsl(215.4 16.3% 46.9%);
   font-style: italic;
-  text-align: center;
+  text-align: left;
+  font-size: 0.9375rem;
 }
 
 .faq-controls {
-  margin-top: 16px;
+  margin-top: 1rem;
   display: flex;
   gap: 12px;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
 }
 
-/* Control button styles removed - using centralized button styles */
-
-/* Collapsible Section Styles */
-.collapsible-section {
-  margin-bottom: 16px;
-  border: 1px solid var(--primary-100);
-  border-radius: 12px;
-  background: white;
+/* Accordion Styles */
+.faq-section {
+  margin-bottom: 0;
+  border: none;
+  border-bottom: 1px solid hsl(214.3 31.8% 91.4%);
+  border-radius: 0;
+  background: transparent;
   overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.collapsible-section:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.collapsible-section.expanded {
-  border-color: var(--primary-200);
 }
 
 .section-header {
   width: 100%;
-  padding: 18px 20px;
-  background: var(--primary-50);
+  padding: 1.25rem 0;
+  background: transparent;
   border: none;
   cursor: pointer;
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
   transition: all 0.2s ease;
-  border-radius: 12px 12px 0 0;
+  border-radius: 0;
   font-family: inherit;
   text-align: left;
 }
 
 .section-header:hover {
-  background: var(--primary-100);
-}
-
-.collapsible-section.expanded .section-header {
-  background: var(--primary-100);
-  border-bottom: 1px solid var(--primary-200);
-  border-radius: 12px 12px 0 0;
-}
-
-.collapsible-section.collapsed .section-header {
-  border-radius: 12px;
+  background: transparent;
 }
 
 .section-header h2 {
-  color: var(--primary-800);
-  font-size: 1.25rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: hsl(222.2 84% 4.9%);
+  font-size: 1.375rem;
+  font-weight: 600;
   margin: 0;
   border: none;
   padding: 0;
@@ -139,228 +140,161 @@
   text-align: left;
 }
 
-.toggle-icon {
-  color: var(--primary-600);
-  font-size: 1.2rem;
-  transition: transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
-}
-
-.collapsible-section.expanded .toggle-icon {
-  transform: rotate(0deg);
-}
-
-.collapsible-section.collapsed .toggle-icon {
-  transform: rotate(-90deg);
-}
-
 .section-content {
-  padding: 20px 24px 24px;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  to {
-    opacity: 1;
-    max-height: 1000px;
-    padding-top: 20px;
-    padding-bottom: 24px;
-  }
-}
-
-/* Legacy section styles for non-collapsible sections */
-.faq-section:not(.collapsible-section) {
-  margin-bottom: 28px;
-}
-
-.faq-section:not(.collapsible-section) h2 {
-  color: var(--primary-800);
-  font-size: 1.4rem;
-  margin-bottom: 12px;
-  border-bottom: 2px solid var(--primary-100);
-  padding-bottom: 8px;
+  padding: 0 0 1.5rem 0;
 }
 
 .qa {
-  margin: 14px 0 18px 0;
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.5rem;
+  border-left: 2px solid hsl(214.3 31.8% 91.4%);
 }
 
 .qa h3 {
-  font-size: 1.05rem;
-  color: var(--primary-700);
-  margin: 0 0 6px 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: hsl(222.2 84% 4.9%);
+  margin: 0 0 0.375rem 0;
 }
 
 .qa p {
-  margin: 0 0 8px 0;
-  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  font-weight: 400;
 }
 
-/* Links within content */
+/* Links */
 .faq-content a {
-  color: var(--primary-600);
+  color: hsl(221.2 83.2% 53.3%);
   text-decoration: none;
   font-weight: 500;
 }
 
 .faq-content a:hover {
-  color: var(--primary-700);
-  text-decoration: underline;
+  color: hsl(38 92% 50%);
+  text-decoration: none;
 }
 
 /* Contact Section */
 .contact-section {
-  margin: 32px 0;
-  padding: 32px 24px;
-  background: var(--primary-50);
-  border-radius: 12px;
-  border: 1px solid var(--primary-100);
+  margin: 48px 0;
+  padding: 2rem 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid hsl(214.3 31.8% 91.4%);
 }
 
 .contact-section h2 {
-  color: var(--primary-800);
-  font-size: 1.4rem;
-  margin-bottom: 16px;
-  border-bottom: 2px solid var(--primary-200);
-  padding-bottom: 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: hsl(222.2 84% 4.9%);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .contact-section p {
-  margin-bottom: 16px;
-  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
 }
 
 .contact-list {
-  margin: 12px 0 0 0;
-  padding-left: 20px;
+  margin: 0.75rem 0 0 0;
+  padding-left: 0;
+  list-style: none;
 }
 
 .contact-list li {
-  margin-bottom: 6px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  padding-left: 1rem;
+  border-left: 2px solid hsl(38 92% 50%);
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 .faq-footer {
   margin-top: 48px;
-  padding: 32px 24px;
-  background: var(--primary-50);
-  border-radius: 12px;
-  text-align: center;
-  color: var(--text-secondary);
-  border: 1px solid var(--primary-100);
+  padding: 2rem 0;
+  background: transparent;
+  border-radius: 0;
+  text-align: left;
+  color: hsl(215.4 16.3% 46.9%);
+  border: none;
+  border-top: 1px solid hsl(214.3 31.8% 91.4%);
 }
 
 .faq-footer p {
-  margin: 0 0 12px 0;
-  color: var(--text-secondary);
+  margin: 0 0 1rem 0;
+  color: hsl(215.4 16.3% 46.9%);
+  font-size: 0.9375rem;
 }
 
-/* Links in the footer with normal styling */
 .faq-footer a,
 .faq-footer a:visited {
-  color: var(--primary-600);
+  color: hsl(221.2 83.2% 53.3%);
   text-decoration: none;
   font-weight: 500;
 }
 
 .faq-footer a:hover {
-  color: var(--primary-700);
-  text-decoration: underline;
+  color: hsl(38 92% 50%);
+  text-decoration: none;
 }
 
 .back-link-bottom {
-  color: var(--primary-700);
+  color: hsl(215.4 16.3% 46.9%);
   text-decoration: none;
   font-weight: 500;
-  padding: 8px 16px;
-  border: 1px solid var(--primary-100);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  font-size: 0.8125rem;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  transition: color 0.2s ease;
   display: inline-block;
-  background: var(--primary-50);
+  background: transparent;
 }
 
 .back-link-bottom:hover {
-  background: var(--primary-100);
-  color: var(--primary-700);
-  transform: translateX(-2px);
+  color: hsl(38 92% 50%);
+  transform: none;
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-  .faq-page .container {
-    padding: 50px 60px;
-  }
-}
-
 @media (max-width: 768px) {
-  .faq-page {
-    padding: 0;
-  }
-
   .faq-page .container {
-    padding: 30px 24px;
+    padding: 48px 1.5rem 40px;
   }
 
   .faq-page .page-title {
-    font-size: 1.9rem;
-  }
-
-  .faq-page .back-link {
-    position: static;
-    margin-bottom: 16px;
-    display: inline-block;
-    font-size: 0.85rem;
-    padding: 6px 12px;
-  }
-
-  .section-header {
-    padding: 14px 16px;
+    font-size: 2.25rem;
   }
 
   .section-header h2 {
-    font-size: 1.1rem;
-  }
-
-  .section-content {
-    padding: 16px 18px 20px;
-  }
-
-  .toggle-icon {
-    font-size: 1rem;
-    margin-left: 12px;
-  }
-
-  .faq-intro {
-    padding: 12px 16px;
-    margin-bottom: 24px;
-    font-size: 0.9rem;
-  }
-
-  .contact-section {
-    margin: 24px 0;
-    padding: 24px 20px;
-  }
-
-  .contact-section h2 {
     font-size: 1.2rem;
   }
 
-  .faq-footer {
-    margin-top: 32px;
-    padding: 24px 20px;
+  .section-content {
+    padding: 0 0 1.25rem 0;
+  }
+
+  .qa {
+    padding-left: 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .faq-page .container {
-    padding: 24px 16px;
+    padding: 32px 1rem 32px;
+  }
+
+  .faq-page .page-title {
+    font-size: 1.875rem;
   }
 }

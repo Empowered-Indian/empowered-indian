@@ -1,30 +1,28 @@
 /* ==========================================================================
-   SITE FOOTER STYLES
-   Matches the Democratic Modernism design language
+   SITE FOOTER — Civic Editorial, Light Theme
    ========================================================================== */
 
 .site-footer {
   --footer-bg: hsl(210 40% 98%);
-  --footer-bg-dark: hsl(222.2 84% 4.9%);
   --footer-text: hsl(215.4 16.3% 46.9%);
-  --footer-text-dark: hsl(222.2 84% 4.9%);
   --footer-heading: hsl(222.2 84% 4.9%);
   --footer-link: hsl(215.4 16.3% 46.9%);
-  --footer-link-hover: hsl(221.2 83.2% 53.3%);
+  --footer-link-hover: hsl(38 92% 50%);
   --footer-border: hsl(214.3 31.8% 91.4%);
   --footer-primary: hsl(221.2 83.2% 53.3%);
+  --footer-accent: hsl(38 92% 50%);
 
   background: var(--footer-bg);
   border-top: 1px solid var(--footer-border);
   padding: 0;
   margin-top: auto;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
 }
 
 .footer-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
 }
 
 /* Footer Grid */
@@ -32,7 +30,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 3rem;
-  padding: 4rem 0 3rem;
+  padding: 5rem 0 3rem;
 }
 
 /* Brand Column */
@@ -43,43 +41,45 @@
 .footer-logo {
   display: inline-block;
   text-decoration: none;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .footer-logo-text {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-style: italic;
   color: var(--footer-heading);
   transition: color 0.2s ease;
 }
 
 .footer-logo:hover .footer-logo-text {
-  color: var(--footer-primary);
+  color: var(--footer-accent);
 }
 
 .footer-tagline {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--footer-text);
-  line-height: 1.6;
-  margin: 0 0 1.5rem 0;
+  line-height: 1.7;
+  margin: 0 0 1.75rem 0;
+  font-weight: 400;
 }
 
 /* Social Links */
 .footer-social {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .social-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   background: white;
   border: 1px solid var(--footer-border);
-  border-radius: 10px;
+  border-radius: 0;
   color: var(--footer-text);
   text-decoration: none;
   transition: all 0.2s ease;
@@ -90,7 +90,7 @@
   border-color: var(--footer-primary);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px hsla(221.2, 83.2%, 53.3%, 0.25);
+  box-shadow: 0 4px 12px hsla(221.2, 83.2%, 53.3%, 0.2);
 }
 
 /* Links Groups */
@@ -100,12 +100,13 @@
 }
 
 .footer-heading {
-  font-size: 0.8125rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--footer-heading);
-  margin: 0 0 1.25rem 0;
+  letter-spacing: 0.12em;
+  color: var(--footer-accent);
+  margin: 0 0 1.5rem 0;
 }
 
 .footer-links {
@@ -114,15 +115,16 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.875rem;
 }
 
 .footer-links a {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--footer-link);
   text-decoration: none;
   transition: color 0.2s ease;
   display: inline-block;
+  font-weight: 400;
 }
 
 .footer-links a:hover {
@@ -137,19 +139,19 @@
   padding: 0.625rem 1rem;
   background: white;
   border: 1px solid var(--footer-border);
-  border-radius: 8px;
+  border-radius: 0;
   text-decoration: none;
   transition: all 0.2s ease;
   margin-bottom: 0.75rem;
 }
 
 .footer-sponsor:hover {
-  border-color: var(--footer-primary);
-  box-shadow: 0 2px 8px hsla(221.2, 83.2%, 53.3%, 0.1);
+  border-color: var(--footer-accent);
+  box-shadow: 0 2px 8px hsla(38, 92%, 50%, 0.1);
 }
 
 .sponsor-name {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--footer-heading);
 }
@@ -160,19 +162,20 @@
 }
 
 .footer-sponsor:hover svg {
-  color: var(--footer-primary);
+  color: var(--footer-accent);
 }
 
 .sponsor-description {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--footer-text);
   margin: 0;
   line-height: 1.5;
+  font-weight: 400;
 }
 
 /* Extra Info */
 .footer-extra {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--footer-text);
   text-align: center;
   padding: 1rem 0;
@@ -190,31 +193,33 @@
 }
 
 .footer-copyright {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--footer-text);
   margin: 0;
+  font-weight: 400;
 }
 
 .footer-made-with {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--footer-text);
   margin: 0;
+  font-weight: 400;
 }
 
 .heart-icon {
   color: hsl(0 84.2% 60.2%);
-  animation: heartbeat 1.5s ease-in-out infinite;
+  animation: heartbeat 2s ease-in-out infinite;
 }
 
 @keyframes heartbeat {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  50% { transform: scale(1.15); }
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 1024px) {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
@@ -228,6 +233,10 @@
 }
 
 @media (max-width: 640px) {
+  .footer-container {
+    padding: 0 1.5rem;
+  }
+
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -265,25 +274,16 @@
   }
 }
 
-/* Focus States for Accessibility */
+/* Accessibility */
 .footer-links a:focus-visible,
 .social-link:focus-visible,
 .footer-sponsor:focus-visible,
 .footer-logo:focus-visible {
   outline: 2px solid var(--footer-primary);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .heart-icon {
-    animation: none;
-  }
-
-  .social-link,
-  .footer-links a,
-  .footer-sponsor {
-    transition: none;
-  }
+  .heart-icon { animation: none; }
+  .social-link, .footer-links a, .footer-sponsor { transition: none; }
 }
