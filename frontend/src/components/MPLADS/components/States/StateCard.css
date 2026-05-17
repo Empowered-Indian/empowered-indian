@@ -243,6 +243,11 @@
     padding: 1.25rem;
   }
 
+  .state-card-footer {
+    margin-top: 0rem;
+    padding-top: 0rem;
+  }
+
   .state-name {
     font-size: 1.125rem;
     max-width: 85%;
@@ -256,12 +261,18 @@
 /* Ultra-small devices fixes (<=400px) */
 @media (max-width: 400px) {
   .state-card {
-    padding: 1rem;
+    padding: 2rem;
     border-radius: 0.5rem;
   }
 
   .state-card-header {
     gap: 0.75rem;
+  }
+
+  .state-card-footer {
+    margin-top: 0rem;
+    padding-top: 0rem;
+    text-align: center;
   }
 
   .state-icon {

@@ -27,3 +27,6 @@ npm-debug.log*
 # IDEs and editors
 .vscode
 .idea
+
+# local codex context
+.codex

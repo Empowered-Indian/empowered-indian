@@ -81,7 +81,9 @@
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 1.25rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -123,8 +125,10 @@
   color: #64748b;
   flex-shrink: 0;
   transition: all 0.3s ease;
-  line-height: 0; /* prevent inline gap around SVG */
+  line-height: 0;
+  /* prevent inline gap around SVG */
 }
+
 /* Ensure nested SVGs (Lucide) size and align consistently */
 .stat-icon svg {
   width: 1.75rem;
@@ -139,6 +143,7 @@
   color: #3b82f6;
   transform: scale(1.05);
 }
+
 /* Text block next to icon should vertically center to icon height */
 .summary-stat > div {
   min-height: 64px;
@@ -471,7 +476,8 @@
   color: #1a1a1a;
   transition: all 0.2s ease;
   text-align: left;
-  min-height: 56px; /* Minimum touch target */
+  min-height: 56px;
+  /* Minimum touch target */
 }
 
 .summary-card-header:hover,
@@ -516,6 +522,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
 }
+
 .mobile-summary-expanded .stat-icon svg {
   width: 1.25rem;
   height: 1.25rem;
@@ -546,6 +553,7 @@
     transform: translateY(-10px);
     max-height: 0;
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -700,6 +708,14 @@
   .mp-card-details {
     grid-template-columns: 1fr;
   }
+
+  .summary-stat {
+    flex-direction: column;
+  }
+
+  .mps-section {
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -731,6 +747,7 @@
     width: 48px;
     height: 48px;
   }
+
   .stat-icon svg {
     width: 1.25rem;
     height: 1.25rem;

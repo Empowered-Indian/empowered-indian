@@ -16,7 +16,11 @@
   border-top: 1px solid var(--footer-border);
   padding: 0;
   margin-top: auto;
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Outfit',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .footer-container {
@@ -215,8 +219,13 @@
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 /* Responsive */
@@ -284,6 +293,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .heart-icon { animation: none; }
-  .social-link, .footer-links a, .footer-sponsor { transition: none; }
+  .heart-icon {
+    animation: none;
+  }
+  .social-link,
+  .footer-links a,
+  .footer-sponsor {
+    transition: none;
+  }
 }
