@@ -22,9 +22,12 @@
   --color-warning: hsl(38 92% 50%);
 
   --shadow-sm: 0 1px 2px hsla(222.2, 84%, 4.9%, 0.05);
-  --shadow-md: 0 4px 6px -1px hsla(222.2, 84%, 4.9%, 0.1), 0 2px 4px -1px hsla(222.2, 84%, 4.9%, 0.06);
-  --shadow-lg: 0 10px 15px -3px hsla(222.2, 84%, 4.9%, 0.1), 0 4px 6px -2px hsla(222.2, 84%, 4.9%, 0.05);
-  --shadow-xl: 0 20px 25px -5px hsla(222.2, 84%, 4.9%, 0.1), 0 10px 10px -5px hsla(222.2, 84%, 4.9%, 0.04);
+  --shadow-md:
+    0 4px 6px -1px hsla(222.2, 84%, 4.9%, 0.1), 0 2px 4px -1px hsla(222.2, 84%, 4.9%, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px hsla(222.2, 84%, 4.9%, 0.1), 0 4px 6px -2px hsla(222.2, 84%, 4.9%, 0.05);
+  --shadow-xl:
+    0 20px 25px -5px hsla(222.2, 84%, 4.9%, 0.1), 0 10px 10px -5px hsla(222.2, 84%, 4.9%, 0.04);
 
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
@@ -54,8 +57,9 @@
 .reveal-on-scroll {
   opacity: 0;
   transform: translateY(32px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-on-scroll.is-visible {
@@ -63,9 +67,15 @@
   transform: translateY(0);
 }
 
-.reveal-on-scroll:nth-child(2) { transition-delay: 0.08s; }
-.reveal-on-scroll:nth-child(3) { transition-delay: 0.16s; }
-.reveal-on-scroll:nth-child(4) { transition-delay: 0.24s; }
+.reveal-on-scroll:nth-child(2) {
+  transition-delay: 0.08s;
+}
+.reveal-on-scroll:nth-child(3) {
+  transition-delay: 0.16s;
+}
+.reveal-on-scroll:nth-child(4) {
+  transition-delay: 0.24s;
+}
 
 /* ==========================================================================
    SECTION HEADERS
@@ -177,9 +187,16 @@
 }
 
 @keyframes heroFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -40px) scale(1.05); }
-  66% { transform: translate(-20px, 30px) scale(0.95); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -40px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 30px) scale(0.95);
+  }
 }
 
 /* Hero Container */
@@ -654,8 +671,13 @@
 }
 
 @keyframes progress-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================

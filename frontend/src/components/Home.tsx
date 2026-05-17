@@ -125,7 +125,9 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="5000">0</span>
+                    <span className="counter" data-target="5000">
+                      0
+                    </span>
                     <span className="stat-suffix">+ Cr</span>
                   </div>
                   <div className="stat-label">Funds Tracked</div>
@@ -139,7 +141,9 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="543">0</span>
+                    <span className="counter" data-target="543">
+                      0
+                    </span>
                   </div>
                   <div className="stat-label">MPs Monitored</div>
                 </div>
@@ -152,7 +156,9 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="38">0</span>
+                    <span className="counter" data-target="38">
+                      0
+                    </span>
                   </div>
                   <div className="stat-label">States & UTs</div>
                 </div>
@@ -165,7 +171,9 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="10000">0</span>
+                    <span className="counter" data-target="10000">
+                      0
+                    </span>
                     <span className="stat-suffix">+</span>
                   </div>
                   <div className="stat-label">Projects Tracked</div>
@@ -198,13 +206,19 @@ function Home() {
               </div>
               <h3 className="dashboard-title">MPLADS Dashboard</h3>
               <p className="dashboard-description">
-                Track MP fund utilization, project progress, and expenditure patterns across all
-                543 constituencies.
+                Track MP fund utilization, project progress, and expenditure patterns across all 543
+                constituencies.
               </p>
               <ul className="dashboard-features">
-                <li><ChevronRight size={14} /> Real-time fund tracking</li>
-                <li><ChevronRight size={14} /> Project status monitoring</li>
-                <li><ChevronRight size={14} /> MP performance analytics</li>
+                <li>
+                  <ChevronRight size={14} /> Real-time fund tracking
+                </li>
+                <li>
+                  <ChevronRight size={14} /> Project status monitoring
+                </li>
+                <li>
+                  <ChevronRight size={14} /> MP performance analytics
+                </li>
               </ul>
               <Link to="/mplads" className="dashboard-link">
                 <Button className="dashboard-btn">
@@ -227,9 +241,15 @@ function Home() {
                 every citizen.
               </p>
               <ul className="dashboard-features dashboard-features-muted">
-                <li><ChevronRight size={14} /> State-wise fund allocation</li>
-                <li><ChevronRight size={14} /> MLA performance metrics</li>
-                <li><ChevronRight size={14} /> Local project insights</li>
+                <li>
+                  <ChevronRight size={14} /> State-wise fund allocation
+                </li>
+                <li>
+                  <ChevronRight size={14} /> MLA performance metrics
+                </li>
+                <li>
+                  <ChevronRight size={14} /> Local project insights
+                </li>
               </ul>
               <div className="dashboard-coming-soon">
                 <div className="coming-soon-bar"></div>
@@ -259,8 +279,8 @@ function Home() {
               <div className="feature-content">
                 <h3 className="feature-title">Real-time Analytics</h3>
                 <p className="feature-description">
-                  Track fund utilization, project status, and expenditure patterns with
-                  interactive charts and visualizations.
+                  Track fund utilization, project status, and expenditure patterns with interactive
+                  charts and visualizations.
                 </p>
               </div>
               <div className="feature-number">01</div>
@@ -273,8 +293,8 @@ function Home() {
               <div className="feature-content">
                 <h3 className="feature-title">Advanced Search</h3>
                 <p className="feature-description">
-                  Find specific MPs, constituencies, or projects with powerful search and
-                  filtering capabilities.
+                  Find specific MPs, constituencies, or projects with powerful search and filtering
+                  capabilities.
                 </p>
               </div>
               <div className="feature-number">02</div>
@@ -354,8 +374,8 @@ function Home() {
             <span className="section-label">Stay Connected</span>
             <h2 className="newsletter-title">Get Updates</h2>
             <p className="newsletter-text">
-              Subscribe to receive the latest insights on government transparency, new features,
-              and important data releases.
+              Subscribe to receive the latest insights on government transparency, new features, and
+              important data releases.
             </p>
             <div className="newsletter-form-wrapper">
               <MailingListForm />
