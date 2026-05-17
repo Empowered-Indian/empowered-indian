@@ -145,14 +145,14 @@
 }
 
 /* Text block next to icon should vertically center to icon height */
-.summary-stat > div {
+.summary-stat>div {
   min-height: 64px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.summary-stat > div {
+.summary-stat>div {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -419,6 +419,7 @@
 
 /* Accessibility Improvements */
 @media (prefers-reduced-motion: reduce) {
+
   .mobile-summary-expanded,
   .card-content {
     animation: none;
@@ -436,6 +437,7 @@
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .mobile-summary-card,
   .mobile-card,
   .mobile-mp-card {
@@ -792,6 +794,7 @@
 
 /* Remove nested card look on mobile for Constituencies and Projects sections */
 @media (max-width: 768px) {
+
   .constituencies-section,
   .projects-section {
     background: transparent;
@@ -829,6 +832,7 @@
 }
 
 @media (min-width: 769px) {
+
   /* Hide mobile components on desktop */
   .mobile-summary-card,
   .mobile-overview,
