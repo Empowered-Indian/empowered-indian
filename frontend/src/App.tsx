@@ -24,6 +24,7 @@ import Login from './components/MPLADS/pages/Login'
 import EmailVerification from './components/EmailVerification'
 import UnsubscribeSuccess from './components/UnsubscribeSuccess'
 import NotFound from './components/NotFound'
+import StickyFeedbackButton from './components/common/StickyFeedbackButton'
 import './App.css'
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
                 },
               }}
             />
+            <StickyFeedbackButton />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

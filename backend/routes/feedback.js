@@ -48,6 +48,32 @@ const validateFeedback = [
     .isIn(['low', 'medium', 'high'])
     .withMessage('Invalid priority level')
     .escape(),
+  body('name')
+    .optional({ values: 'falsy' })
+    .isLength({ min: 1, max: 80 })
+    .withMessage('Name must be 80 characters or less')
+    .matches(/^[a-zA-Z0-9\s.'-]+$/)
+    .withMessage('Name contains invalid characters')
+    .escape(),
+  body('screenshotAttachment.fileName')
+    .optional({ values: 'falsy' })
+    .isLength({ max: 160 })
+    .withMessage('Screenshot filename is too long')
+    .escape(),
+  body('screenshotAttachment.mimeType')
+    .optional({ values: 'falsy' })
+    .isIn(['image/png', 'image/jpeg', 'image/webp'])
+    .withMessage('Unsupported screenshot type'),
+  body('screenshotAttachment.size')
+    .optional({ values: 'falsy' })
+    .isInt({ min: 1, max: 614400 })
+    .withMessage('Screenshot must be 600 KB or smaller'),
+  body('screenshotAttachment.dataBase64')
+    .optional({ values: 'falsy' })
+    .isLength({ max: 850000 })
+    .withMessage('Screenshot data is too large')
+    .matches(/^[A-Za-z0-9+/=]+$/)
+    .withMessage('Screenshot data is invalid'),
 ]
 
 // Enhanced validation middleware for data issue reporting
