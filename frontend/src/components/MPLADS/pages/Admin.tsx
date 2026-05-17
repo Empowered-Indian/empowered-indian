@@ -567,7 +567,18 @@ const Admin = () => {
                         <p className="submission-description">{item.description}</p>
                         <div className="submission-details">
                           <span>Submitted: {new Date(item.createdAt).toLocaleDateString()}</span>
+                          {item.name && <span>Name: {item.name}</span>}
                           {item.contactEmail && <span>Contact: {item.contactEmail}</span>}
+                          {item.metadata?.screenshotAttachment && (
+                            <a
+                              href={`data:${item.metadata.screenshotAttachment.mimeType};base64,${item.metadata.screenshotAttachment.dataBase64}`}
+                              download={item.metadata.screenshotAttachment.fileName}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Screenshot
+                            </a>
+                          )}
                         </div>
                       </div>
 
