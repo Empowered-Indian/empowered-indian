@@ -25,9 +25,16 @@ const submitFeedback = async (req, res) => {
       priority = 'medium', // 'low', 'medium', 'high'
       userAgent,
       url,
+      name,
+      screenshotAttachment,
     } = req.body
 
     const feedbackCollection = await getCollection('feedback')
+    const hasScreenshot =
+      screenshotAttachment?.fileName &&
+      screenshotAttachment?.mimeType &&
+      screenshotAttachment?.size &&
+      screenshotAttachment?.dataBase64
 
     const feedback = {
       type,
@@ -36,6 +43,7 @@ const submitFeedback = async (req, res) => {
       category,
       relatedId: relatedId || null,
       contactEmail: contactEmail || null,
+      name: name || null,
       priority,
       status: 'open', // 'open', 'in_progress', 'resolved', 'closed'
       metadata: {
@@ -43,6 +51,14 @@ const submitFeedback = async (req, res) => {
         url: url || req.get('Referer'),
         ipAddress: req.ip,
         timestamp: new Date(),
+        screenshotAttachment: hasScreenshot
+          ? {
+              fileName: screenshotAttachment.fileName,
+              mimeType: screenshotAttachment.mimeType,
+              size: Number(screenshotAttachment.size),
+              dataBase64: screenshotAttachment.dataBase64,
+            }
+          : null,
       },
       createdAt: new Date(),
       updatedAt: new Date(),

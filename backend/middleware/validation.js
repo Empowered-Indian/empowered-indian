@@ -181,6 +181,18 @@ const schemas = {
     category: Joi.string().valid('mp', 'work', 'expenditure', 'general').required(),
     contactEmail: Joi.string().email().allow('', null).optional(),
     priority: Joi.string().valid('low', 'medium', 'high').optional(),
+    name: Joi.string().trim().max(80).allow('', null).optional(),
+    screenshotAttachment: Joi.object({
+      fileName: Joi.string().trim().max(160).required(),
+      mimeType: Joi.string().valid('image/png', 'image/jpeg', 'image/webp').required(),
+      size: Joi.number().integer().min(1).max(614400).required(),
+      dataBase64: Joi.string()
+        .max(850000)
+        .pattern(/^[A-Za-z0-9+/=]+$/)
+        .required(),
+    })
+      .allow(null)
+      .optional(),
   }),
 
   dataIssue: Joi.object({
