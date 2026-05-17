@@ -272,7 +272,11 @@ const StickyFeedbackButton = () => {
             </div>
 
             <form className="sticky-feedback-form" onSubmit={handleSubmit}>
-              <div className="sticky-feedback-type-grid" role="radiogroup" aria-label="Feedback type">
+              <div
+                className="sticky-feedback-type-grid"
+                role="radiogroup"
+                aria-label="Feedback type"
+              >
                 <button
                   type="button"
                   className={feedbackType === 'bug' ? 'active' : ''}
@@ -335,7 +339,11 @@ const StickyFeedbackButton = () => {
                   <Paperclip size={16} aria-hidden="true" />
                   Screenshot attachment
                 </span>
-                <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleScreenshotChange} />
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleScreenshotChange}
+                />
                 {screenshot && <em>{screenshot.fileName}</em>}
               </label>
 
