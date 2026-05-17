@@ -60,7 +60,7 @@ export default defineConfig([
   ...node,
   {
     rules: {
-      'no-console': 'off',  // Example: allow all console methods
+      'no-console': 'off', // Example: allow all console methods
     },
   },
 ])

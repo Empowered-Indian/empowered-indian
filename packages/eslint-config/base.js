@@ -10,7 +10,7 @@ export default [
       '**/data/**',
       '**/coverage/**',
       '**/.turbo/**',
-      '**/eslint.config.*',  // Matches eslint.config.js, eslint.config.mjs, eslint.config.cjs, etc.
+      '**/eslint.config.*', // Matches eslint.config.js, eslint.config.mjs, eslint.config.cjs, etc.
     ],
   },
   {
@@ -20,11 +20,14 @@ export default [
     },
     rules: {
       ...js.configs.recommended.rules,
-      'no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_', 
-        varsIgnorePattern: '^_' 
-      }],
-      'eqeqeq': ['error', 'always'],
+      'no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      eqeqeq: ['error', 'always'],
       'no-undef': 'error',
     },
   },
