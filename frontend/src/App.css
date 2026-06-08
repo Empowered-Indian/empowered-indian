@@ -400,6 +400,65 @@ textarea:disabled {
   color: var(--text-primary);
 }
 
+.route-fallback {
+  width: min(100%, 1120px);
+  min-height: 55vh;
+  margin: 0 auto;
+  padding: var(--spacing-8) var(--spacing-4);
+}
+
+.route-fallback--mplads {
+  min-height: min(2500px, 260vh);
+}
+
+.route-fallback__bar,
+.route-fallback__block,
+.route-fallback__grid > div {
+  background: linear-gradient(
+    90deg,
+    var(--slate-100) 25%,
+    var(--slate-200) 37%,
+    var(--slate-100) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: var(--radius-lg);
+  animation: route-fallback-shimmer 1.4s ease infinite;
+}
+
+.route-fallback__bar {
+  width: min(280px, 65vw);
+  height: 2rem;
+  margin-bottom: var(--spacing-4);
+}
+
+.route-fallback__block {
+  height: 6rem;
+  margin-bottom: var(--spacing-6);
+}
+
+.route-fallback__block--wide {
+  width: 100%;
+}
+
+.route-fallback__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-4);
+}
+
+.route-fallback__grid > div {
+  min-height: 8rem;
+}
+
+@keyframes route-fallback-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
 /* Tooltip wrapper */
 .tooltip-wrapper {
   position: relative;
@@ -424,6 +483,12 @@ textarea:disabled {
   .card {
     padding: var(--spacing-4);
     border-radius: var(--radius-lg);
+  }
+  .route-fallback--mplads {
+    min-height: min(3200px, 360vh);
+  }
+  .route-fallback__grid {
+    grid-template-columns: 1fr;
   }
 }
 

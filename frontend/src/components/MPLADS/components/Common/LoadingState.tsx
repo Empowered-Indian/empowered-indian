@@ -16,6 +16,7 @@ type LoadingStateProps = {
   timeout?: number
   onTimeout?: () => void
   className?: string
+  forceTimeout?: boolean
 }
 
 const LoadingState = ({
@@ -27,6 +28,7 @@ const LoadingState = ({
   timeout = 30000, // 30 seconds
   onTimeout,
   className = '',
+  forceTimeout = false,
 }: LoadingStateProps) => {
   const [hasTimedOut, setHasTimedOut] = useState(false)
   const [dots, setDots] = useState('')
@@ -55,7 +57,7 @@ const LoadingState = ({
     }
   }, [timeout, onTimeout])
 
-  if (hasTimedOut) {
+  if (forceTimeout || hasTimedOut) {
     return (
       <div className={`loading-state loading-timeout ${className}`}>
         <div className="loading-timeout-content">

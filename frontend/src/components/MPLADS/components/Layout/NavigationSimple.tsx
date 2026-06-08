@@ -512,6 +512,8 @@ const NavigationSimple = () => {
                       </div>
                     </div>
                     <select
+                      id="mobile-house-select"
+                      aria-label="House"
                       value={filters.house || 'Lok Sabha'}
                       onChange={e => {
                         const val = e.target.value
@@ -565,6 +567,8 @@ const NavigationSimple = () => {
                       </div>
                     </div>
                     <select
+                      id="mobile-ls-term-select"
+                      aria-label="Lok Sabha term"
                       value={Number(filters.lsTerm) || 18}
                       onChange={e => updateFilter('lsTerm', Number(e.target.value))}
                       disabled={

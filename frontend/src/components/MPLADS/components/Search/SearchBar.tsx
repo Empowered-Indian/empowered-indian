@@ -12,10 +12,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 // A lean and robust search bar built from scratch.
-// - No suggestions dropdown
 // - Syncs with global filters
 // - Submits on Enter or on clicking the search button
-// - Simple, accessible markup
+// - Uses the combobox pattern for suggestions
 const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' }) => {
   const navigate = useNavigate()
   const { filters, updateFilter } = useFilters()
@@ -47,6 +46,8 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
   const handleClear = () => {
     setQuery('')
     updateFilter('searchQuery', '')
+    setOpen(false)
+    setActiveIndex(-1)
     inputRef.current?.focus()
   }
 
@@ -89,11 +90,13 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
     if (tryNavigateDirectToMP(value)) {
       trackEngagement('mp_profile', 'direct_search', 'direct_navigation')
       setOpen(false)
+      setActiveIndex(-1)
       return
     }
     // Otherwise go to the full search results page
     navigate(`/mplads/search?q=${encodeURIComponent(value)}`)
     setOpen(false)
+    setActiveIndex(-1)
   }
 
   const handleKeyDown = e => {
@@ -115,14 +118,21 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
           )
           navigate(`/mplads/mps/${encodeURIComponent(slug)}`)
           setOpen(false)
+          setActiveIndex(-1)
           return
         }
       }
       submit()
     } else if (e.key === 'Escape') {
       setOpen(false)
+      setActiveIndex(-1)
     }
   }
+
+  const activeSuggestionId =
+    open && activeIndex >= 0 && activeIndex < suggestions.length
+      ? `search-suggestion-${activeIndex}`
+      : undefined
 
   return (
     <div className="ni-search__wrap">
@@ -140,6 +150,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
         <Input
           ref={inputRef}
           type="text"
+          role="combobox"
           className="ni-search__input"
           placeholder={placeholder}
           aria-label="Search"
@@ -150,8 +161,10 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
           maxLength={100}
           onFocus={() => setOpen(query.length > 0)}
           aria-autocomplete="list"
+          aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls="search-suggestion-list"
+          aria-activedescendant={activeSuggestionId}
         />
         {query && (
           <Button
@@ -178,6 +191,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
               {suggestions.map((s, idx) => (
                 <div
                   key={`${s._id || s.id || idx}`}
+                  id={`search-suggestion-${idx}`}
                   role="option"
                   aria-selected={idx === activeIndex}
                   className={`ni-suggestion ${idx === activeIndex ? 'is-active' : ''}`}
@@ -191,6 +205,7 @@ const SearchBar = ({ placeholder = 'Search MPs, constituencies, or projects...' 
                       )
                       navigate(`/mplads/mps/${encodeURIComponent(slug)}`)
                       setOpen(false)
+                      setActiveIndex(-1)
                     }
                   }}
                 >

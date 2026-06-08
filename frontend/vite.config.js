@@ -16,6 +16,13 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development',
     minify: mode === 'production',
     chunkSizeWarningLimit: 500, // Warn for chunks > 500KB
+    modulePreload: {
+      polyfill: false,
+      resolveDependencies: (_filename, deps, context) => {
+        if (context.hostType !== 'html') return deps
+        return deps.filter(dep => !/\/(charts|pdf-vendor)-[^/]+\.js$/.test(dep))
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: id => {
@@ -35,11 +42,19 @@ export default defineConfig(({ mode }) => ({
             }
             // Hot toast - check BEFORE react to avoid mismatching
             if (id.includes('react-hot-toast')) {
-              return 'vendor'
+              return 'toast'
             }
             // Radix UI components - check BEFORE react to avoid mismatching
             if (id.includes('@radix-ui')) {
-              return 'vendor'
+              return 'radix-ui'
+            }
+            if (
+              id.includes('class-variance-authority') ||
+              id.includes('clsx') ||
+              id.includes('tailwind-merge') ||
+              id.includes('lucide-react')
+            ) {
+              return 'ui-vendor'
             }
             // Core React libs - keep all React modules unified
             // Use more specific matching to avoid catching react-* packages
@@ -50,10 +65,6 @@ export default defineConfig(({ mode }) => ({
             ) {
               return 'react-vendor'
             }
-            // ECharts - optimized with tree-shaking
-            if (id.includes('echarts')) {
-              return 'charts'
-            }
             // Date utilities
             if (id.includes('date-fns')) {
               return 'date-utils'
@@ -62,8 +73,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('axios')) {
               return 'api-client'
             }
-            // Other vendor libs
-            return 'vendor'
           }
         },
         // Optimize asset names

@@ -2,6 +2,55 @@
   animation: fadeIn 0.3s ease-in;
 }
 
+.dashboard--loading-skeleton {
+  min-height: min(3000px, 320vh);
+}
+
+.dashboard-loading-progress {
+  height: 0.375rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--slate-200);
+}
+
+.dashboard-loading-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-500), var(--civic-gold-500));
+  transition: width 0.2s ease;
+}
+
+.metric-card--skeleton {
+  min-height: 8.5rem;
+}
+
+.metric-card--skeleton:hover {
+  transform: none;
+  box-shadow: var(--shadow-card);
+}
+
+.dashboard-section--skeleton {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.chart-skeleton {
+  width: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chart-skeleton--large {
+  min-height: 380px;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -475,6 +524,10 @@
 
 /* Small mobile breakpoint (320px-480px) */
 @media (max-width: 480px) {
+  .dashboard--loading-skeleton {
+    min-height: min(3600px, 430vh);
+  }
+
   .dashboard-controls {
     flex-direction: column;
     align-items: stretch;
@@ -515,6 +568,10 @@
 
 /* Medium mobile breakpoint (481px-640px) */
 @media (min-width: 481px) and (max-width: 640px) {
+  .dashboard--loading-skeleton {
+    min-height: min(3400px, 390vh);
+  }
+
   .dashboard-controls {
     flex-direction: column;
     align-items: stretch;

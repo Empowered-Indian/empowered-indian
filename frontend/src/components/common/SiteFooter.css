@@ -4,13 +4,13 @@
 
 .site-footer {
   --footer-bg: hsl(210 40% 98%);
-  --footer-text: hsl(215.4 16.3% 46.9%);
+  --footer-text: hsl(215 25% 27%);
   --footer-heading: hsl(222.2 84% 4.9%);
-  --footer-link: hsl(215.4 16.3% 46.9%);
-  --footer-link-hover: hsl(38 92% 50%);
+  --footer-link: hsl(215 25% 27%);
+  --footer-link-hover: hsl(38 92% 32%);
   --footer-border: hsl(214.3 31.8% 91.4%);
   --footer-primary: hsl(221.2 83.2% 53.3%);
-  --footer-accent: hsl(38 92% 50%);
+  --footer-accent: hsl(38 92% 32%);
 
   background: var(--footer-bg);
   border-top: 1px solid var(--footer-border);

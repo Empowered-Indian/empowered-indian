@@ -42,20 +42,48 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-950XS79S49"></script>
     <script>
       window.dataLayer = window.dataLayer || []
-      function gtag() {
+      window.gtag = function gtag() {
         dataLayer.push(arguments)
       }
-      gtag('js', new Date())
+      window.gtag('js', new Date())
+      window.gtag('config', 'G-950XS79S49')
+      ;(function () {
+        function loadAnalytics() {
+          if (document.querySelector('script[data-gtag-loader]')) return
+          var script = document.createElement('script')
+          script.async = true
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-950XS79S49'
+          script.dataset.gtagLoader = 'true'
+          document.head.appendChild(script)
+        }
 
-      gtag('config', 'G-950XS79S49')
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(loadAnalytics, { timeout: 3000 })
+        } else {
+          window.addEventListener(
+            'load',
+            function () {
+              window.setTimeout(loadAnalytics, 1200)
+            },
+            { once: true }
+          )
+        }
+      })()
     </script>
   </head>
   <body>

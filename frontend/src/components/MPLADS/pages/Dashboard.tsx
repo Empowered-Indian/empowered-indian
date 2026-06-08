@@ -14,10 +14,7 @@ import {
 import { BiHourglass } from 'react-icons/bi'
 import { IndianRupee } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import StatePerformanceChart from '../components/Charts/StatePerformanceChart'
-import MPPersonalityChart from '../components/Charts/MPPersonalityChart'
-import StateAllocationChart from '../components/Charts/StateAllocationChart'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import ProjectStatusCards from '../components/Dashboard/ProjectStatusCards'
 import SearchBar from '../components/Search/SearchBar'
 import InfoTooltip from '../components/Common/InfoTooltip'
@@ -33,10 +30,98 @@ import { getPeriodLabel } from '../../../utils/lsTerm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
+const StatePerformanceChart = lazy(() => import('../components/Charts/StatePerformanceChart'))
+const MPPersonalityChart = lazy(() => import('../components/Charts/MPPersonalityChart'))
+const StateAllocationChart = lazy(() => import('../components/Charts/StateAllocationChart'))
+const DASHBOARD_LOADING_TIMEOUT_MS = 15000
+
+const ChartSkeleton = ({ size = 'default' }: { size?: 'default' | 'large' }) => (
+  <div className={`chart-skeleton chart-skeleton--${size}`} aria-hidden="true">
+    <SkeletonLoader type="chart" />
+  </div>
+)
+
+const DashboardLoadingSkeleton = ({ progress }: { progress: number }) => (
+  <div className="dashboard dashboard--loading-skeleton" aria-busy="true" aria-live="polite">
+    <div className="dashboard-header">
+      <div className="dashboard-title-section">
+        <SkeletonLoader width="min(420px, 80vw)" height="3rem" />
+        <SkeletonLoader width="min(620px, 92vw)" height="1.25rem" />
+      </div>
+
+      <div className="dashboard-controls">
+        <div className="dashboard-search">
+          <SkeletonLoader height="3rem" />
+        </div>
+        <div className="dashboard-actions">
+          <SkeletonLoader width="9rem" height="2.75rem" />
+        </div>
+      </div>
+      <div
+        className="dashboard-loading-progress"
+        aria-label={`Loading dashboard data ${Math.round(progress)}%`}
+      >
+        <span style={{ width: `${Math.max(12, progress)}%` }} />
+      </div>
+    </div>
+
+    <div className="metrics-grid">
+      {Array.from({ length: 7 }).map((_, index) => (
+        <Card key={index} className="metric-card metric-card--skeleton">
+          <SkeletonLoader width="40px" height="40px" />
+          <CardContent className="metric-content">
+            <SkeletonLoader width="55%" height="0.8rem" />
+            <SkeletonLoader width="75%" height="1.55rem" />
+            <SkeletonLoader width="90%" height="0.8rem" />
+            <SkeletonLoader width="45%" height="0.7rem" />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+
+    <div className="charts-section">
+      <div className="dashboard-section dashboard-section--skeleton">
+        <SkeletonLoader width="16rem" height="1.5rem" />
+        <div className="chart-row">
+          <div className="chart-container wip-chart">
+            <ChartSkeleton />
+          </div>
+          <div className="chart-container pie-chart">
+            <ChartSkeleton />
+          </div>
+        </div>
+      </div>
+      <div className="dashboard-section dashboard-section--skeleton">
+        <SkeletonLoader width="12rem" height="1.5rem" />
+        <div className="chart-container full-width">
+          <SkeletonLoader type="card" count={3} />
+        </div>
+      </div>
+      <div className="dashboard-section dashboard-section--skeleton">
+        <SkeletonLoader width="14rem" height="1.5rem" />
+        <div className="chart-container full-width">
+          <ChartSkeleton size="large" />
+        </div>
+      </div>
+    </div>
+
+    <div className="dashboard-info">
+      <Card className="info-card">
+        <SkeletonLoader type="card" />
+      </Card>
+      <Card className="info-card">
+        <SkeletonLoader type="card" />
+      </Card>
+    </div>
+  </div>
+)
+
 const Dashboard = () => {
   const navigate = useNavigate()
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false)
+  const [chartsReady, setChartsReady] = useState(false)
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false)
 
   const { data, isLoading, error, refetch } = useOverview()
   const { data: mpData, isLoading: mpLoading } = useMPSummary({ limit: 800 })
@@ -70,20 +155,41 @@ const Dashboard = () => {
     }
   }, [isLoading, mpLoading, stateLoading])
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setChartsReady(true), 350)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (!isLoading || hasInitiallyLoaded) {
+      setLoadingTimedOut(false)
+      return undefined
+    }
+
+    setLoadingTimedOut(false)
+    const timer = window.setTimeout(() => setLoadingTimedOut(true), DASHBOARD_LOADING_TIMEOUT_MS)
+    return () => window.clearTimeout(timer)
+  }, [isLoading, hasInitiallyLoaded])
+
   // Progressive loading state
   if (isLoading && !hasInitiallyLoaded) {
-    return (
-      <div className="dashboard">
-        <LoadingState
-          type="default"
-          message="Loading dashboard data"
-          showProgress={true}
-          progressValue={loadingProgress}
-          size="large"
-          timeout={15000}
-        />
-      </div>
-    )
+    if (loadingTimedOut) {
+      return (
+        <div className="dashboard">
+          <LoadingState
+            type="default"
+            message="Loading dashboard data"
+            showProgress={true}
+            progressValue={loadingProgress}
+            size="large"
+            timeout={0}
+            forceTimeout
+          />
+        </div>
+      )
+    }
+
+    return <DashboardLoadingSkeleton progress={loadingProgress} />
   }
 
   if (error) {
@@ -219,18 +325,28 @@ const Dashboard = () => {
         >
           <div className="chart-row">
             <div className="chart-container wip-chart">
-              <StatePerformanceChart
-                data={stateData?.data}
-                isLoading={stateLoading}
-                error={stateError}
-                title="States by Fund Utilization"
-              />
+              {chartsReady ? (
+                <Suspense fallback={<ChartSkeleton />}>
+                  <StatePerformanceChart
+                    data={stateData?.data}
+                    isLoading={stateLoading}
+                    error={stateError}
+                    title="States by Fund Utilization"
+                  />
+                </Suspense>
+              ) : (
+                <ChartSkeleton />
+              )}
             </div>
             <div className="chart-container pie-chart">
-              {mpLoading ? (
+              {!chartsReady ? (
+                <ChartSkeleton />
+              ) : mpLoading ? (
                 <LoadingState type="chart" message="Loading MP data..." />
               ) : (
-                <MPPersonalityChart data={mpData?.data || []} />
+                <Suspense fallback={<ChartSkeleton />}>
+                  <MPPersonalityChart data={mpData?.data || []} />
+                </Suspense>
               )}
             </div>
           </div>
@@ -264,8 +380,12 @@ const Dashboard = () => {
           <div className="chart-container full-width">
             {stateLoading ? (
               <LoadingState type="chart" message="Loading state allocation data..." size="large" />
+            ) : !chartsReady ? (
+              <ChartSkeleton size="large" />
             ) : (
-              <StateAllocationChart data={stateData?.data} />
+              <Suspense fallback={<ChartSkeleton size="large" />}>
+                <StateAllocationChart data={stateData?.data} />
+              </Suspense>
             )}
           </div>
         </CollapsibleSection>

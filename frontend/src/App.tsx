@@ -1,30 +1,48 @@
+import { lazy, Suspense, type ReactNode } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { FilterProvider } from './contexts/FilterContext'
 import { AuthProvider } from './contexts/AuthContext'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import ProtectedRoute from './components/common/ProtectedRoute'
-import Home from './components/Home'
-import PrivacyPolicy from './components/PrivacyPolicy'
-import TermsOfService from './components/TermsOfService'
-import FAQ from './components/FAQ'
-import AboutUs from './components/AboutUs'
 import Layout from './components/MPLADS/components/Layout/Layout'
-import Dashboard from './components/MPLADS/pages/Dashboard'
-import TrackArea from './components/MPLADS/pages/TrackArea'
-import Compare from './components/MPLADS/pages/Compare'
-import Report from './components/MPLADS/pages/Report'
-import SearchResults from './components/MPLADS/pages/SearchResults'
-import StateList from './components/MPLADS/pages/StateList'
-import StateDetail from './components/MPLADS/pages/StateDetail'
-import MPList from './components/MPLADS/pages/MPList'
-import MPDetail from './components/MPLADS/pages/MPDetail'
-import Admin from './components/MPLADS/pages/Admin'
-import Login from './components/MPLADS/pages/Login'
-import EmailVerification from './components/EmailVerification'
-import UnsubscribeSuccess from './components/UnsubscribeSuccess'
-import NotFound from './components/NotFound'
 import './App.css'
+
+const Home = lazy(() => import('./components/Home'))
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'))
+const TermsOfService = lazy(() => import('./components/TermsOfService'))
+const FAQ = lazy(() => import('./components/FAQ'))
+const AboutUs = lazy(() => import('./components/AboutUs'))
+const Dashboard = lazy(() => import('./components/MPLADS/pages/Dashboard'))
+const TrackArea = lazy(() => import('./components/MPLADS/pages/TrackArea'))
+const Compare = lazy(() => import('./components/MPLADS/pages/Compare'))
+const Report = lazy(() => import('./components/MPLADS/pages/Report'))
+const SearchResults = lazy(() => import('./components/MPLADS/pages/SearchResults'))
+const StateList = lazy(() => import('./components/MPLADS/pages/StateList'))
+const StateDetail = lazy(() => import('./components/MPLADS/pages/StateDetail'))
+const MPList = lazy(() => import('./components/MPLADS/pages/MPList'))
+const MPDetail = lazy(() => import('./components/MPLADS/pages/MPDetail'))
+const Admin = lazy(() => import('./components/MPLADS/pages/Admin'))
+const Login = lazy(() => import('./components/MPLADS/pages/Login'))
+const EmailVerification = lazy(() => import('./components/EmailVerification'))
+const UnsubscribeSuccess = lazy(() => import('./components/UnsubscribeSuccess'))
+const NotFound = lazy(() => import('./components/NotFound'))
+
+const RouteFallback = ({ className = '' }: { className?: string }) => (
+  <div className={`route-fallback ${className}`.trim()} aria-busy="true" aria-live="polite">
+    <div className="route-fallback__bar" />
+    <div className="route-fallback__block route-fallback__block--wide" />
+    <div className="route-fallback__grid">
+      <div />
+      <div />
+      <div />
+    </div>
+  </div>
+)
+
+const withRouteFallback = (element: ReactNode, className?: string) => (
+  <Suspense fallback={<RouteFallback className={className} />}>{element}</Suspense>
+)
 
 function App() {
   return (
@@ -43,15 +61,21 @@ function App() {
               }}
             />
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/verify-email" element={<EmailVerification />} />
-              <Route path="/unsubscribe/:token" element={<UnsubscribeSuccess />} />
-              <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={withRouteFallback(<Home />)} />
+              <Route path="/privacy-policy" element={withRouteFallback(<PrivacyPolicy />)} />
+              <Route path="/terms-of-service" element={withRouteFallback(<TermsOfService />)} />
+              <Route path="/faq" element={withRouteFallback(<FAQ />)} />
+              <Route path="/about-us" element={withRouteFallback(<AboutUs />)} />
+              <Route path="/verify-email" element={withRouteFallback(<EmailVerification />)} />
+              <Route
+                path="/unsubscribe/:token"
+                element={withRouteFallback(<UnsubscribeSuccess />)}
+              />
+              <Route
+                path="/unsubscribe-success"
+                element={withRouteFallback(<UnsubscribeSuccess />)}
+              />
+              <Route path="/login" element={withRouteFallback(<Login />)} />
 
               {/* MPLADS Routes */}
               <Route
@@ -62,28 +86,56 @@ function App() {
                   </FilterProvider>
                 }
               >
-                <Route index element={<Dashboard />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="track-area" element={<TrackArea />} />
-                <Route path="compare" element={<Compare />} />
-                <Route path="report" element={<Report />} />
-                <Route path="search" element={<SearchResults />} />
-                <Route path="states" element={<StateList />} />
-                <Route path="states/:stateId" element={<StateDetail />} />
-                <Route path="mps" element={<MPList />} />
-                <Route path="mps/:mpId" element={<MPDetail />} />
+                <Route index element={withRouteFallback(<Dashboard />, 'route-fallback--mplads')} />
+                <Route
+                  path="dashboard"
+                  element={withRouteFallback(<Dashboard />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="track-area"
+                  element={withRouteFallback(<TrackArea />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="compare"
+                  element={withRouteFallback(<Compare />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="report"
+                  element={withRouteFallback(<Report />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="search"
+                  element={withRouteFallback(<SearchResults />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="states"
+                  element={withRouteFallback(<StateList />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="states/:stateId"
+                  element={withRouteFallback(<StateDetail />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="mps"
+                  element={withRouteFallback(<MPList />, 'route-fallback--mplads')}
+                />
+                <Route
+                  path="mps/:mpId"
+                  element={withRouteFallback(<MPDetail />, 'route-fallback--mplads')}
+                />
                 <Route
                   path="admin"
-                  element={
+                  element={withRouteFallback(
                     <ProtectedRoute requireAdmin={true}>
                       <Admin />
-                    </ProtectedRoute>
-                  }
+                    </ProtectedRoute>,
+                    'route-fallback--mplads'
+                  )}
                 />
               </Route>
 
               {/* All other routes show Not Found */}
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={withRouteFallback(<NotFound />)} />
             </Routes>
           </div>
         </Router>
