@@ -108,7 +108,7 @@ function Home() {
                   <ArrowRight size={18} />
                 </Button>
               </Link>
-              <Link to="/about">
+              <Link to="/about-us">
                 <Button variant="outline" className="hero-btn-secondary">
                   Learn More
                 </Button>

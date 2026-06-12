@@ -5,6 +5,7 @@ import { FilterProvider } from './contexts/FilterContext'
 import { AuthProvider } from './contexts/AuthContext'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import RouteAnalytics from './components/common/RouteAnalytics'
 import Layout from './components/MPLADS/components/Layout/Layout'
 import './App.css'
 
@@ -50,6 +51,7 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="app">
+            <RouteAnalytics />
             <Toaster
               position="top-right"
               toastOptions={{
