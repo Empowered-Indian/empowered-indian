@@ -232,7 +232,7 @@ h6 {
   font-weight: var(--font-bold);
   line-height: var(--leading-tight);
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   margin: 0;
 }
 
@@ -408,7 +408,7 @@ textarea:disabled {
 }
 
 .route-fallback--mplads {
-  min-height: min(2500px, 260vh);
+  min-height: 75vh;
 }
 
 .route-fallback__bar,
@@ -485,7 +485,7 @@ textarea:disabled {
     border-radius: var(--radius-lg);
   }
   .route-fallback--mplads {
-    min-height: min(3200px, 360vh);
+    min-height: 75vh;
   }
   .route-fallback__grid {
     grid-template-columns: 1fr;

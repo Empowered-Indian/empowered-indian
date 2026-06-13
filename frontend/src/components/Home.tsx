@@ -23,33 +23,11 @@ function Home() {
   const heroRef = useRef(null)
 
   useEffect(() => {
-    const formatNumber = n => n.toLocaleString('en-IN')
-    const counters = Array.from(document.querySelectorAll('.counter'))
-
-    const animateCounter = counter => {
-      const target = Number(counter.getAttribute('data-target')) || 0
-      const duration = 1500
-      const fps = 60
-      const steps = Math.max(1, Math.round((duration / 1000) * fps))
-      let current = 0
-      const step = target / steps
-      const id = setInterval(() => {
-        current += step
-        if (current >= target) {
-          counter.textContent = formatNumber(Math.round(target))
-          clearInterval(id)
-        } else {
-          counter.textContent = formatNumber(Math.floor(current))
-        }
-      }, 1000 / fps)
-    }
-
     const io = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
           const el = entry.target
           if (entry.isIntersecting) {
-            if (el.classList.contains('counter')) animateCounter(el)
             el.classList.add('is-visible')
             io.unobserve(el)
           }
@@ -57,12 +35,6 @@ function Home() {
       },
       { threshold: 0.2 }
     )
-
-    counters.forEach(c => {
-      c.setAttribute('role', 'status')
-      c.setAttribute('aria-live', 'polite')
-      io.observe(c)
-    })
 
     const revealEls = Array.from(document.querySelectorAll('.reveal-on-scroll'))
     revealEls.forEach(el => io.observe(el))
@@ -82,26 +54,26 @@ function Home() {
 
         <div className="hero-container">
           <div className="hero-content">
-            <div className="hero-eyebrow reveal-on-scroll">
+            <div className="hero-eyebrow">
               <Sparkles size={14} />
               <span>Government Transparency Platform</span>
             </div>
 
-            <h1 className="hero-title reveal-on-scroll">
+            <h1 className="hero-title">
               <span className="hero-title-line">Empowered</span>
               <span className="hero-title-line hero-title-accent">Indian</span>
             </h1>
 
-            <p className="hero-tagline reveal-on-scroll">
+            <p className="hero-tagline">
               Making government data accessible, understandable, and actionable for every citizen
             </p>
 
-            <p className="hero-description reveal-on-scroll">
+            <p className="hero-description">
               Track fund utilization, monitor project progress, and hold our representatives
               accountable. Democracy works best when citizens are informed.
             </p>
 
-            <div className="hero-cta reveal-on-scroll">
+            <div className="hero-cta">
               <Link to="/mplads">
                 <Button className="hero-btn-primary">
                   <span>Explore MPLADS Data</span>
@@ -117,7 +89,7 @@ function Home() {
           </div>
 
           {/* Stats Grid */}
-          <div className="hero-stats-wrapper reveal-on-scroll">
+          <div className="hero-stats-wrapper">
             <div className="hero-stats">
               <div className="stat-card">
                 <div className="stat-icon">
@@ -126,7 +98,7 @@ function Home() {
                 <div className="stat-content">
                   <div className="stat-value">
                     <span className="counter" data-target="5000">
-                      0
+                      5,000
                     </span>
                     <span className="stat-suffix">+ Cr</span>
                   </div>
@@ -142,7 +114,7 @@ function Home() {
                 <div className="stat-content">
                   <div className="stat-value">
                     <span className="counter" data-target="543">
-                      0
+                      543
                     </span>
                   </div>
                   <div className="stat-label">MPs Monitored</div>
@@ -157,7 +129,7 @@ function Home() {
                 <div className="stat-content">
                   <div className="stat-value">
                     <span className="counter" data-target="38">
-                      0
+                      38
                     </span>
                   </div>
                   <div className="stat-label">States & UTs</div>
@@ -172,7 +144,7 @@ function Home() {
                 <div className="stat-content">
                   <div className="stat-value">
                     <span className="counter" data-target="10000">
-                      0
+                      10,000
                     </span>
                     <span className="stat-suffix">+</span>
                   </div>

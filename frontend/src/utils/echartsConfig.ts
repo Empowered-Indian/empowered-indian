@@ -5,14 +5,7 @@
 import * as echarts from 'echarts/core'
 
 // Charts - import only what we use
-import {
-  BarChart,
-  LineChart,
-  PieChart,
-  GaugeChart,
-  ScatterChart,
-  HeatmapChart,
-} from 'echarts/charts'
+import { BarChart, LineChart } from 'echarts/charts'
 
 // Components - import only what we use
 import {
@@ -20,56 +13,25 @@ import {
   TooltipComponent,
   TitleComponent,
   LegendComponent,
-  DataZoomComponent,
-  ToolboxComponent,
-  VisualMapComponent,
-  MarkLineComponent,
-  MarkPointComponent,
-  PolarComponent,
-  RadarComponent,
-  GeoComponent,
-  DatasetComponent,
-  TransformComponent,
 } from 'echarts/components'
 
 // Renderers - Canvas is lighter than SVG
 import { CanvasRenderer } from 'echarts/renderers'
-
-// Features - optional features we use
-import { LabelLayout, UniversalTransition } from 'echarts/features'
 
 // Register only the components we need
 echarts.use([
   // Charts
   BarChart,
   LineChart,
-  PieChart,
-  GaugeChart,
-  ScatterChart,
-  HeatmapChart,
 
   // Components
   GridComponent,
   TooltipComponent,
   TitleComponent,
   LegendComponent,
-  DataZoomComponent,
-  ToolboxComponent,
-  VisualMapComponent,
-  MarkLineComponent,
-  MarkPointComponent,
-  PolarComponent,
-  RadarComponent,
-  GeoComponent,
-  DatasetComponent,
-  TransformComponent,
 
   // Renderer
   CanvasRenderer,
-
-  // Features
-  LabelLayout,
-  UniversalTransition,
 ])
 
 // Export the configured echarts

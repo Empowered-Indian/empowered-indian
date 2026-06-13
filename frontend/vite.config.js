@@ -18,13 +18,13 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 500, // Warn for chunks > 500KB
     modulePreload: {
       polyfill: false,
-      resolveDependencies: (_filename, deps, context) => {
-        if (context.hostType !== 'html') return deps
+      resolveDependencies: (_filename, deps) => {
         return deps.filter(dep => !/\/(charts|pdf-vendor)-[^/]+\.js$/.test(dep))
       },
     },
     rollupOptions: {
       output: {
+        hoistTransitiveImports: false,
         manualChunks: id => {
           // Optimize chunking strategy
           if (id.includes('node_modules')) {
@@ -47,6 +47,9 @@ export default defineConfig(({ mode }) => ({
             // Radix UI components - check BEFORE react to avoid mismatching
             if (id.includes('@radix-ui')) {
               return 'radix-ui'
+            }
+            if (id.includes('/echarts/') || id.includes('/zrender/')) {
+              return 'charts'
             }
             if (
               id.includes('class-variance-authority') ||

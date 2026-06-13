@@ -4,6 +4,76 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      document.documentElement.dataset.initialRoute = location.pathname.startsWith('/mplads')
+        ? 'mplads'
+        : 'home'
+    </script>
+    <style>
+      .initial-page-shell {
+        min-height: 100vh;
+        padding: 72px 16px 40px;
+        color: #0f172a;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+      }
+
+      .initial-page-shell__inner {
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      .initial-page-shell h1 {
+        max-width: 760px;
+        margin: 0 0 16px;
+        font-size: clamp(2.25rem, 11vw, 4.75rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .initial-page-shell p {
+        max-width: 620px;
+        margin: 0;
+        color: #475569;
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      .initial-page-shell__eyebrow {
+        display: inline-block;
+        margin-bottom: 18px;
+        border-bottom: 2px solid #f59e0b;
+        color: #b45309;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      .initial-page-shell__grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .initial-page-shell__card {
+        min-height: 96px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      html[data-initial-route='home'] .initial-mplads,
+      html[data-initial-route='mplads'] .initial-home {
+        display: none;
+      }
+    </style>
     <meta
       name="description"
       content="Empowered Indian makes government data accessible through searchable public datasets, citizen-friendly dashboards, MP profiles, MPLADS spending, and state-wise development work."
@@ -86,7 +156,30 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="initial-page-shell" aria-label="Loading Empowered Indian">
+        <main class="initial-home initial-page-shell__inner">
+          <span class="initial-page-shell__eyebrow">Government Transparency Platform</span>
+          <h1>Empowered Indian</h1>
+          <p>
+            Making government data accessible, understandable, and actionable for every citizen.
+          </p>
+          <div class="initial-page-shell__grid" aria-hidden="true">
+            <div class="initial-page-shell__card"></div>
+            <div class="initial-page-shell__card"></div>
+          </div>
+        </main>
+        <main class="initial-mplads initial-page-shell__inner">
+          <span class="initial-page-shell__eyebrow">Empowered Indian</span>
+          <h1>MPLADS Dashboard</h1>
+          <p>Overview of Member of Parliament Local Area Development Scheme</p>
+          <div class="initial-page-shell__grid" aria-hidden="true">
+            <div class="initial-page-shell__card"></div>
+            <div class="initial-page-shell__card"></div>
+          </div>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

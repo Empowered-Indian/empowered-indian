@@ -117,7 +117,7 @@
   color: var(--color-text);
   margin: 0 0 1rem 0;
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .section-subtitle {
@@ -241,7 +241,7 @@
   font-size: clamp(4rem, 9vw, 7.5rem);
   font-weight: 600;
   line-height: 0.92;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
   margin: 0 0 2rem 0;
   color: var(--color-text);
 }
@@ -428,6 +428,8 @@
 }
 
 .counter {
+  display: inline-block;
+  min-width: 4ch;
   font-variant-numeric: tabular-nums;
 }
 

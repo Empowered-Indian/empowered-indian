@@ -31,7 +31,7 @@ export const useOverview = () => {
   })
 }
 
-export const useStateSummary = (params: any = {}) => {
+export const useStateSummary = (params: any = {}, options: any = {}) => {
   const { filters } = useFilters()
   const houseParam = (params && params.house) || filters.house || 'Lok Sabha'
   const sanitized = sanitize(params)
@@ -45,10 +45,11 @@ export const useStateSummary = (params: any = {}) => {
     queryKey: ['summary', 'states', merged],
     queryFn: () => summaryAPI.getStateSummary(merged),
     staleTime: CACHE_TIMES.SUMMARY,
+    ...options,
   })
 }
 
-export const useMPSummary = params => {
+export const useMPSummary = (params, options: any = {}) => {
   const { filters } = useFilters()
   const houseParam = (params && params.house) || filters.house || 'Lok Sabha'
   const sanitized = sanitize(params)
@@ -64,6 +65,7 @@ export const useMPSummary = params => {
     staleTime: CACHE_TIMES.SUMMARY,
     keepPreviousData: true, // preserve current results while fetching new ones
     placeholderData: prev => prev,
+    ...options,
   })
 }
 
