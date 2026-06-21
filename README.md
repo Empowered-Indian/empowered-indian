@@ -3,6 +3,7 @@
 This is the monorepo we'll be using to contain all the code related to the empowered indian platform.
 
 Work in progress:
+
 - As of now, the frontend and backend components are available in their respective folders.
 - The goal is to turn into a monorepo where frontend and backend will be apps sharing the same set of packages and dev tools & ergonomics.
 - We are actively gathering data on MLALADS and plan to begin development around this dataset soon.
@@ -29,6 +30,7 @@ Contributions are welcome. But please note that before raising a pull request, m
 ## Local setup
 
 ### Prerequisites
+
 - Node.js 18+
 - Docker and Docker Compose (recommended for MongoDB)
 
@@ -37,6 +39,7 @@ Contributions are welcome. But please note that before raising a pull request, m
 The easiest way to get started is using Docker Compose for the database:
 
 1. **Start MongoDB and Mongo Express (database admin UI)**
+
    ```bash
    docker-compose up -d
    ```
@@ -46,6 +49,7 @@ The easiest way to get started is using Docker Compose for the database:
    - Mongo Express web UI on `http://localhost:8081` (username: `admin`, password: `admin`)
 
 2. **Set up backend**
+
    ```bash
    cd backend
    cp .env.example .env
@@ -56,6 +60,7 @@ The easiest way to get started is using Docker Compose for the database:
    The default `.env` is already configured to connect to the Docker MongoDB.
 
 3. **Set up frontend**
+
    ```bash
    cd frontend
    cp .env.example .env
@@ -64,6 +69,7 @@ The easiest way to get started is using Docker Compose for the database:
    ```
 
 4. **Stop services**
+
    ```bash
    docker-compose down
    ```
@@ -76,6 +82,7 @@ The easiest way to get started is using Docker Compose for the database:
 ### Alternative Setup (without Docker)
 
 If you prefer not to use Docker, you can use MongoDB Atlas or a local MongoDB installation. See the detailed documentation:
+
 - FE: [README](frontend/README.md) [CONTRIBUTING](frontend/CONTRIBUTING.md)
 - BE: [README](backend/README.md) [CONTRIBUTING](backend/CONTRIBUTING.md)
 
@@ -86,4 +93,3 @@ If you prefer not to use Docker, you can use MongoDB Atlas or a local MongoDB in
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Empowered-Indian/empowered-indian&type=Date)](https://star-history.com/#Empowered-Indian/empowered-indian)
-

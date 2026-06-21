@@ -1,6 +1,6 @@
 # pnpm workspace configuration for Empowered Indian monorepo
 packages:
-  - "frontend"
-  - "backend"
-  - "upload-scripts"
-  - "packages/*"
+  - 'frontend'
+  - 'backend'
+  - 'upload-scripts'
+  - 'packages/*'
