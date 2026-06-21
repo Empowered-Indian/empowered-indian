@@ -13,11 +13,18 @@ const toCrores = amountInRupees => (amountInRupees || 0) / 10000000
 const buildChartOption = ({ seriesData, isMobile, isSmallMobile, isTouchDevice }) => {
   const { stateNames, utilizationSeries, allocationSeries, expenditureSeries } = seriesData
 
-  // More granular responsive padding for better mobile experience
-  const leftPad = isSmallMobile ? 32 : isMobile ? 38 : isTouchDevice && !isMobile ? 64 : 68
-  const rightPad = isSmallMobile ? 32 : isMobile ? 38 : isTouchDevice && !isMobile ? 68 : 72
-  const topPad = isSmallMobile ? 40 : isMobile ? 44 : 52
-  const bottomPad = isSmallMobile ? 20 : isMobile ? 24 : 28
+  // On mobile we show a simplified, bars-only view (utilization %). The Allocated
+  // and Spent ₹Crore series are moved into the tooltip so the data is not lost,
+  // while keeping the dual-axis composite on desktop where there is room.
+  const mobileSimple = isMobile
+
+  // More granular responsive padding for better mobile experience.
+  // On mobile (bars only, single left axis) we can give the plot more room and
+  // avoid wasting space on a second axis.
+  const leftPad = isSmallMobile ? 36 : isMobile ? 40 : isTouchDevice && !isMobile ? 64 : 68
+  const rightPad = mobileSimple ? (isSmallMobile ? 12 : 16) : isTouchDevice && !isMobile ? 68 : 72
+  const topPad = isSmallMobile ? 36 : isMobile ? 40 : 52
+  const bottomPad = isSmallMobile ? 24 : isMobile ? 28 : 28
 
   return {
     title: { show: false },
@@ -39,15 +46,29 @@ const buildChartOption = ({ seriesData, isMobile, isSmallMobile, isTouchDevice }
         fontSize: isSmallMobile ? 11 : isMobile ? 12 : 13,
       },
       // Prevent tooltip from being too wide on mobile
-      extraCssText: isMobile ? 'max-width: 200px; word-wrap: break-word;' : undefined,
+      extraCssText: isMobile ? 'max-width: 220px; word-wrap: break-word;' : undefined,
+      // On mobile the ₹Cr lines aren't rendered as series, so surface them here.
+      formatter:
+        mobileSimple &&
+        (params => {
+          const p = Array.isArray(params) ? params[0] : params
+          const idx = p?.dataIndex ?? 0
+          const util = utilizationSeries[idx]?.value ?? 0
+          const alloc = allocationSeries[idx] ?? 0
+          const spent = expenditureSeries[idx] ?? 0
+          return `<div style="font-weight:600;margin-bottom:4px">${p?.name ?? ''}</div>
+            <div>Utilization: <b>${Number(util).toFixed(1)}%</b></div>
+            <div>Allocated: <b>₹${Number(alloc).toFixed(1)} Cr</b></div>
+            <div>Spent: <b>₹${Number(spent).toFixed(1)} Cr</b></div>`
+        }),
     },
     legend: {
-      data: ['Utilization %', 'Allocated (₹Cr)', 'Spent (₹Cr)'],
+      data: mobileSimple ? ['Utilization %'] : ['Utilization %', 'Allocated (₹Cr)', 'Spent (₹Cr)'],
       top: isSmallMobile ? 8 : isMobile ? 10 : 8,
       left: 'center',
       type: 'scroll',
       textStyle: {
-        fontSize: isSmallMobile ? 8 : isMobile ? 9 : 11,
+        fontSize: isSmallMobile ? 9 : isMobile ? 10 : 11,
         color: '#333333',
       },
       // Better mobile legend spacing
@@ -61,69 +82,89 @@ const buildChartOption = ({ seriesData, isMobile, isSmallMobile, isTouchDevice }
       data: stateNames,
       axisPointer: { type: 'shadow' },
       axisLabel: {
-        fontSize: isSmallMobile ? 7 : isMobile ? 8 : 10,
+        // Keep mobile labels readable: never below 9px (was 7px) since we also
+        // reduced the number of categories shown.
+        fontSize: isSmallMobile ? 9 : isMobile ? 9 : 10,
         rotate: isSmallMobile ? 45 : isMobile ? 45 : 30,
         interval: 0,
         color: '#333333',
-        margin: isSmallMobile ? 3 : isMobile ? 4 : 6,
+        margin: isSmallMobile ? 4 : isMobile ? 4 : 6,
         // Improve readability on small screens
         fontWeight: isSmallMobile ? '500' : '400',
       },
     },
-    yAxis: [
-      {
-        type: 'value',
-        name: 'Utilization %',
-        position: 'left',
-        max: 100,
-        nameLocation: 'middle',
-        nameGap: isMobile ? 36 : 48,
-        axisLabel: { formatter: '{value}%', fontSize: isSmallMobile ? 8 : 10, color: '#333333' },
-        nameTextStyle: { fontSize: isSmallMobile ? 9 : 11, color: '#333333' },
-      },
-      {
-        type: 'value',
-        name: 'Amount (₹ Crores)',
-        position: 'right',
-        nameLocation: 'middle',
-        nameGap: isMobile ? 36 : 48,
-        axisLabel: { formatter: '₹{value}Cr', fontSize: isSmallMobile ? 8 : 10, color: '#333333' },
-        nameTextStyle: { fontSize: isSmallMobile ? 9 : 11, color: '#333333' },
-      },
-    ],
+    yAxis: mobileSimple
+      ? [
+          {
+            type: 'value',
+            name: 'Utilization %',
+            position: 'left',
+            max: 100,
+            nameLocation: 'middle',
+            nameGap: isMobile ? 36 : 48,
+            axisLabel: { formatter: '{value}%', fontSize: isSmallMobile ? 9 : 10, color: '#333333' },
+            nameTextStyle: { fontSize: isSmallMobile ? 9 : 11, color: '#333333' },
+          },
+        ]
+      : [
+          {
+            type: 'value',
+            name: 'Utilization %',
+            position: 'left',
+            max: 100,
+            nameLocation: 'middle',
+            nameGap: isMobile ? 36 : 48,
+            axisLabel: { formatter: '{value}%', fontSize: isSmallMobile ? 8 : 10, color: '#333333' },
+            nameTextStyle: { fontSize: isSmallMobile ? 9 : 11, color: '#333333' },
+          },
+          {
+            type: 'value',
+            name: 'Amount (₹ Crores)',
+            position: 'right',
+            nameLocation: 'middle',
+            nameGap: isMobile ? 36 : 48,
+            axisLabel: { formatter: '₹{value}Cr', fontSize: isSmallMobile ? 8 : 10, color: '#333333' },
+            nameTextStyle: { fontSize: isSmallMobile ? 9 : 11, color: '#333333' },
+          },
+        ],
     series: [
       {
         name: 'Utilization %',
         type: 'bar',
         yAxisIndex: 0,
         data: utilizationSeries,
-        barMaxWidth: isSmallMobile ? 12 : isMobile ? 16 : 22,
+        barMaxWidth: isSmallMobile ? 16 : isMobile ? 18 : 22,
         itemStyle: { borderRadius: [2, 2, 0, 0] },
         emphasis: { focus: 'series' },
         z: 3,
       },
-      {
-        name: 'Allocated (₹Cr)',
-        type: 'line',
-        yAxisIndex: 1,
-        data: allocationSeries,
-        smooth: true,
-        symbol: 'circle',
-        symbolSize: isSmallMobile ? 6 : isTouchDevice ? 8 : 6,
-        lineStyle: { width: 2, color: '#3b82f6', type: 'dashed' },
-        itemStyle: { color: '#3b82f6' },
-      },
-      {
-        name: 'Spent (₹Cr)',
-        type: 'line',
-        yAxisIndex: 1,
-        data: expenditureSeries,
-        smooth: true,
-        symbol: 'diamond',
-        symbolSize: isSmallMobile ? 6 : isTouchDevice ? 8 : 6,
-        lineStyle: { width: 3, color: '#8b5cf6' },
-        itemStyle: { color: '#8b5cf6' },
-      },
+      // ₹Crore line series only on desktop (mobile shows them in the tooltip).
+      ...(mobileSimple
+        ? []
+        : [
+            {
+              name: 'Allocated (₹Cr)',
+              type: 'line',
+              yAxisIndex: 1,
+              data: allocationSeries,
+              smooth: true,
+              symbol: 'circle',
+              symbolSize: isSmallMobile ? 6 : isTouchDevice ? 8 : 6,
+              lineStyle: { width: 2, color: '#3b82f6', type: 'dashed' },
+              itemStyle: { color: '#3b82f6' },
+            },
+            {
+              name: 'Spent (₹Cr)',
+              type: 'line',
+              yAxisIndex: 1,
+              data: expenditureSeries,
+              smooth: true,
+              symbol: 'diamond',
+              symbolSize: isSmallMobile ? 6 : isTouchDevice ? 8 : 6,
+              lineStyle: { width: 3, color: '#8b5cf6' },
+              itemStyle: { color: '#8b5cf6' },
+            },
+          ]),
     ],
     animation: true,
     animationDuration: 800,
@@ -148,7 +189,10 @@ const StatePerformanceChart = ({
   // Prepare series data once per input change
   const seriesData = useMemo(() => {
     if (!Array.isArray(data)) return null
-    const top = data.slice(0, maxItems)
+    // Show fewer states on mobile so labels stay legible instead of cramming 10
+    // rotated entries into a narrow screen.
+    const effectiveMax = responsive.isMobile ? Math.min(maxItems, 6) : maxItems
+    const top = data.slice(0, effectiveMax)
     // Responsive state name truncation
     const getStateName = state => {
       if (!state) return ''
@@ -292,18 +336,19 @@ const StatePerformanceChart = ({
       : 0
   // Responsive height calculation that works with parent containers
   const getEffectiveHeight = () => {
-    // If height is 'auto', use responsive defaults
+    // If height is 'auto', use responsive defaults. Bars-only mobile view gets a
+    // little more room than before so the (now larger) labels breathe.
     if (height === 'auto') {
-      if (responsive.isSmallMobile) return 280
-      if (responsive.isMobile) return 300
+      if (responsive.isSmallMobile) return 300
+      if (responsive.isMobile) return 320
       if (responsive.isTablet) return 320
       return 360
     }
 
     // If numeric height provided, respect it but apply mobile constraints
     const numHeight = Number(height) || 320
-    if (responsive.isSmallMobile) return Math.min(280, numHeight)
-    if (responsive.isMobile) return Math.min(300, numHeight)
+    if (responsive.isSmallMobile) return Math.min(300, numHeight)
+    if (responsive.isMobile) return Math.min(320, numHeight)
     if (responsive.isTablet) return Math.min(320, numHeight)
     return numHeight
   }

@@ -504,7 +504,7 @@
   }
 
   .wip-chart {
-    min-height: 300px;
+    min-height: 320px;
   }
 
   .chart-row {
@@ -602,7 +602,12 @@
 
   .wip-chart {
     min-width: auto;
-    min-height: 320px;
+    min-height: 340px;
+  }
+
+  .mp-personality-chart-container {
+    min-height: 360px;
+    padding: 0;
   }
 
   .quick-actions {
@@ -817,5 +822,18 @@
   .chart-header {
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
+  }
+
+  .chart-container {
+    padding: 0.75rem;
+  }
+
+  .wip-chart {
+    min-height: 320px;
+  }
+
+  .mp-personality-chart-container {
+    min-height: 320px;
+    padding: 0;
   }
 }

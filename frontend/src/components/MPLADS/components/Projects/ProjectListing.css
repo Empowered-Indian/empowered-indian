@@ -132,20 +132,21 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  gap: 0.5rem; /* match the spacing used by the other filter groups */
 }
 
+/* The compact slider has a generous touch target; keep it aligned with the
+   Year/Payment selects next to it. */
 .cost-range-group .range-slider {
-  margin-top: 0.25rem;
-  align-self: stretch; /* Use available width in container */
+  width: 100%;
 }
 
-.project-cost-slider .range-slider-header {
-  margin-bottom: 0.5rem;
-}
-
-.project-cost-slider .range-slider-values {
+/* Ensure the project cost slider's value readout stays tidy on small screens */
+.project-cost-slider .range-slider__values {
   font-size: 0.8125rem;
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
 }
 
 .filter-group select:focus,
@@ -441,8 +442,6 @@
     min-width: unset;
     max-width: none; /* Remove width constraint on mobile */
     align-items: stretch; /* Full width on mobile */
-    margin-top: 0.75rem; /* Increase spacing on mobile */
-    margin-bottom: 1rem; /* Increase spacing on mobile */
   }
 
   .projects-grid {

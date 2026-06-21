@@ -107,9 +107,15 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
   const chartData = processData(data)
   const colors = getPersonalityColors()
 
+  // On mobile switch to a horizontal bar layout: the four long category names
+  // ("High Utilizers", ...) read fully and horizontally instead of being
+  // rotated/truncated on a narrow screen. Value axis and label placement move
+  // accordingly. Desktop keeps the original vertical bar chart.
+  const isMobileLayout = responsive.isMobile
+
   const baseOption = {
     title: {
-      text: responsive.isMobile ? 'Fund Utilization Patterns' : title,
+      text: isMobileLayout ? 'Fund Utilization Patterns' : title,
       subtext: `Total MPs Analyzed: ${data?.length || 0}`,
       left: 'center',
       top: 10,
@@ -128,8 +134,9 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
         type: 'shadow',
       },
       formatter: function (params) {
-        const param = params[0]
+        const param = Array.isArray(params) ? params[0] : params
         const item = chartData.find(d => d.name === param.name)
+        if (!item) return param?.name ? `<strong>${param.name}</strong>` : ''
         return `
           <div style="max-width: 300px;">
             <strong>${item.name}</strong><br/>
@@ -157,63 +164,106 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
         `
       },
     },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: responsive.isMobile ? '15%' : '12%',
-      top: responsive.isMobile ? '15%' : '12%',
-      containLabel: true,
-    },
-    xAxis: {
-      type: 'category',
-      data: chartData.map(item => item.name),
-      axisLabel: {
-        fontSize: responsive.isSmallMobile ? 9 : responsive.isMobile ? 10 : 11,
-        rotate: responsive.isMobile ? 25 : 0,
-        interval: 0,
-        color: '#333333',
-        formatter: function (value) {
-          if (responsive.isMobile && value.length > 10) {
-            return value.replace(' Utilizers', '').replace(' Performers', '')
-          }
-          return value
+    grid: isMobileLayout
+      ? {
+          // Horizontal bars: leave room on the left for full category names and
+          // on the right for the percentage data labels.
+          left: '3%',
+          right: '12%',
+          bottom: '8%',
+          top: '15%',
+          containLabel: true,
+        }
+      : {
+          left: '3%',
+          right: '4%',
+          bottom: responsive.isMobile ? '15%' : '12%',
+          top: responsive.isMobile ? '15%' : '12%',
+          containLabel: true,
         },
-      },
-      axisLine: {
-        lineStyle: {
-          color: '#e0e6ed',
+    xAxis: isMobileLayout
+      ? {
+          type: 'value',
+          name: 'Percentage (%)',
+          nameLocation: 'middle',
+          nameGap: 30,
+          nameTextStyle: { fontSize: responsive.isSmallMobile ? 10 : 11, fontWeight: 'bold' },
+          axisLabel: {
+            fontSize: responsive.isSmallMobile ? 9 : 10,
+            color: '#333333',
+            formatter: '{value}%',
+          },
+          axisLine: { show: false },
+          axisTick: { show: false },
+          splitLine: { lineStyle: { color: '#f0f0f0' } },
+        }
+      : {
+          type: 'category',
+          data: chartData.map(item => item.name),
+          axisLabel: {
+            fontSize: responsive.isSmallMobile ? 9 : responsive.isMobile ? 10 : 11,
+            rotate: responsive.isMobile ? 25 : 0,
+            interval: 0,
+            color: '#333333',
+            formatter: function (value) {
+              if (responsive.isMobile && value.length > 10) {
+                return value.replace(' Utilizers', '').replace(' Performers', '')
+              }
+              return value
+            },
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#e0e6ed',
+            },
+          },
+          axisTick: {
+            alignWithLabel: true,
+          },
         },
-      },
-      axisTick: {
-        alignWithLabel: true,
-      },
-    },
-    yAxis: {
-      type: 'value',
-      name: 'Percentage (%)',
-      nameLocation: 'middle',
-      nameGap: responsive.isMobile ? 35 : 40,
-      nameTextStyle: {
-        fontSize: responsive.isMobile ? 11 : 12,
-        fontWeight: 'bold',
-      },
-      axisLabel: {
-        fontSize: responsive.isMobile ? 10 : 12,
-        color: '#333333',
-        formatter: '{value}%',
-      },
-      axisLine: {
-        show: false,
-      },
-      axisTick: {
-        show: false,
-      },
-      splitLine: {
-        lineStyle: {
-          color: '#f0f0f0',
+    yAxis: isMobileLayout
+      ? {
+          type: 'category',
+          // Reverse so the first/strongest category ("High") appears on top.
+          inverse: true,
+          data: chartData.map(item => item.name),
+          axisLabel: {
+            fontSize: responsive.isSmallMobile ? 10 : 11,
+            color: '#333333',
+            // No rotation needed — names have the whole row width to breathe.
+            formatter: function (value) {
+              return value.replace(' Utilizers', '')
+            },
+          },
+          axisLine: { lineStyle: { color: '#e0e6ed' } },
+          axisTick: { alignWithLabel: true },
+        }
+      : {
+          type: 'value',
+          name: 'Percentage (%)',
+          nameLocation: 'middle',
+          nameGap: responsive.isMobile ? 35 : 40,
+          nameTextStyle: {
+            fontSize: responsive.isMobile ? 11 : 12,
+            fontWeight: 'bold',
+          },
+          axisLabel: {
+            fontSize: responsive.isMobile ? 10 : 12,
+            color: '#333333',
+            formatter: '{value}%',
+          },
+          axisLine: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
+          },
+          splitLine: {
+            lineStyle: {
+              color: '#f0f0f0',
+            },
+          },
         },
-      },
-    },
     series: [
       {
         name: 'MP Distribution',
@@ -223,18 +273,24 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
           value: parseFloat(item.percentage),
           itemStyle: {
             color: colors[item.name] || '#94A3B8',
-            borderRadius: [4, 4, 0, 0],
+            borderRadius: isMobileLayout ? [0, 4, 4, 0] : [4, 4, 0, 0],
           },
         })),
-        barWidth: responsive.isMobile ? '60%' : '50%',
+        barWidth: isMobileLayout ? '55%' : responsive.isMobile ? '60%' : '50%',
         label: {
           show: true,
-          position: 'top',
+          // Horizontal bars: label inside the end of the bar; vertical bars: on
+          // top. Keep the on-bar label to just the percentage on mobile to avoid
+          // collisions; the (count) detail lives in the tooltip.
+          position: isMobileLayout ? 'right' : 'top',
           fontSize: responsive.isSmallMobile ? 10 : responsive.isMobile ? 11 : 12,
           fontWeight: 'bold',
           color: '#333333',
           formatter: function (params) {
             const item = chartData.find(d => d.name === params.name)
+            if (isMobileLayout) {
+              return `${params.value}%`
+            }
             return `${params.value}%\n(${item ? item.value : 0})`
           },
         },
@@ -287,8 +343,11 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
     <div className="mp-personality-chart-container">
       <ReactECharts
         option={getResponsiveChartOptions(baseOption, {
-          isMobile: responsive.isMobile,
-          isSmallMobile: responsive.isSmallMobile,
+          // On mobile the option is already laid out specifically for small
+          // screens (horizontal bars), so we don't run the generic mobile
+          // transforms — only desktop gets them.
+          isMobile: !isMobileLayout && responsive.isMobile,
+          isSmallMobile: false,
           isTouchDevice: responsive.isTouchDevice,
         })}
         style={{
@@ -309,39 +368,70 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
       <div
         style={{
           marginTop: '15px',
-          padding: responsive.isMobile ? '12px' : '15px',
+          padding: responsive.isMobile ? '10px 12px' : '15px',
           backgroundColor: '#f8f9fa',
           borderRadius: '8px',
           fontSize: responsive.isSmallMobile ? '11px' : '12px',
         }}
       >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: responsive.isMobile
-              ? '1fr'
-              : 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: responsive.isMobile ? '12px' : '8px',
-          }}
-        >
-          {chartData.map(item => (
-            <div key={item.name} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+        {responsive.isMobile ? (
+          // Compact mobile legend: one tight line per category (color dot +
+          // name + count + %), reclaiming vertical space for the plot. Full
+          // descriptions remain available via the chart tooltip.
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {chartData.map(item => (
               <div
+                key={item.name}
                 style={{
-                  width: responsive.isMobile ? '14px' : '12px',
-                  height: responsive.isMobile ? '14px' : '12px',
-                  backgroundColor: colors[item.name],
-                  borderRadius: '3px',
-                  marginTop: '2px',
-                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: responsive.isSmallMobile ? '11px' : '12px',
                 }}
-              ></div>
-              <div style={{ color: '#333' }}>
-                <strong>{item.name}</strong>: {item.description}
+              >
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: colors[item.name],
+                    borderRadius: '3px',
+                    flexShrink: 0,
+                  }}
+                ></div>
+                <strong>{item.name.replace(' Utilizers', '')}</strong>
+                <span style={{ color: '#666', marginLeft: 'auto' }}>
+                  {item.value} MPs · {item.percentage}%
+                </span>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '8px',
+            }}
+          >
+            {chartData.map(item => (
+              <div key={item.name} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: colors[item.name],
+                    borderRadius: '3px',
+                    marginTop: '2px',
+                    flexShrink: 0,
+                  }}
+                ></div>
+                <div style={{ color: '#333' }}>
+                  <strong>{item.name}</strong>: {item.description}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {selectedType && (
