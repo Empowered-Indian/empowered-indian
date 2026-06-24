@@ -6,6 +6,25 @@ import { sanitizeEmail, sanitizeInput } from '../../utils/inputSanitization'
 import './StickyFeedbackButton.css'
 
 const MAX_SCREENSHOT_BYTES = 600 * 1024
+const FEEDBACK_BUTTON_DISMISSED_KEY = 'empoweredIndian.feedbackButtonDismissed'
+
+const getStoredDismissal = () => {
+  if (typeof window === 'undefined') return false
+
+  try {
+    return window.localStorage.getItem(FEEDBACK_BUTTON_DISMISSED_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+const storeDismissal = () => {
+  try {
+    window.localStorage.setItem(FEEDBACK_BUTTON_DISMISSED_KEY, 'true')
+  } catch {
+    // Dismiss for this session even when storage is blocked.
+  }
+}
 
 type FeedbackType = 'bug' | 'feature_request'
 
@@ -28,10 +47,10 @@ const getDefaultPosition = () => {
 
 const getTriggerDimensions = () => {
   if (typeof window !== 'undefined' && window.innerWidth <= 520) {
-    return { width: 52, height: 52 }
+    return { width: 64, height: 64 }
   }
 
-  return { width: 132, height: 52 }
+  return { width: 156, height: 64 }
 }
 
 const clampPosition = (x: number, y: number) => {
@@ -78,6 +97,7 @@ const readScreenshot = (file: File): Promise<ScreenshotAttachment> => {
 const StickyFeedbackButton = () => {
   const [position, setPosition] = useState(getDefaultPosition)
   const [isOpen, setIsOpen] = useState(false)
+  const [isDismissed, setIsDismissed] = useState(getStoredDismissal)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedbackType, setFeedbackType] = useState<FeedbackType>('bug')
   const [name, setName] = useState('')
@@ -148,6 +168,12 @@ const StickyFeedbackButton = () => {
     if (!dragState.current.moved) {
       setIsOpen(true)
     }
+  }
+
+  const handleDismiss = () => {
+    storeDismissal()
+    setIsOpen(false)
+    setIsDismissed(true)
   }
 
   const handleScreenshotChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,20 +253,31 @@ const StickyFeedbackButton = () => {
     }
   }
 
+  if (isDismissed) return null
+
   return (
     <>
-      <button
-        type="button"
-        className="sticky-feedback-trigger"
-        style={{ left: position.x, top: position.y }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        aria-label="Open feedback form"
-      >
-        <MessageSquare size={18} aria-hidden="true" />
-        <span>Feedback</span>
-      </button>
+      <div className="sticky-feedback-control" style={{ left: position.x, top: position.y }}>
+        <button
+          type="button"
+          className="sticky-feedback-trigger"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          aria-label="Open feedback form"
+        >
+          <MessageSquare size={18} aria-hidden="true" />
+          <span>Feedback</span>
+        </button>
+        <button
+          type="button"
+          className="sticky-feedback-dismiss"
+          onClick={handleDismiss}
+          aria-label="Dismiss feedback button"
+        >
+          <X size={14} aria-hidden="true" />
+        </button>
+      </div>
 
       {isOpen && (
         <div className="sticky-feedback-modal-shell" role="presentation">

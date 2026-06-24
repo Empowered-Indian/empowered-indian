@@ -1,6 +1,12 @@
-.sticky-feedback-trigger {
+.sticky-feedback-control {
   position: fixed;
   z-index: 1030;
+  display: inline-flex;
+  width: max-content;
+  height: max-content;
+}
+
+.sticky-feedback-trigger {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -22,6 +28,36 @@
     box-shadow 160ms ease,
     transform 160ms ease,
     background 160ms ease;
+}
+
+.sticky-feedback-dismiss {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.sticky-feedback-dismiss:hover,
+.sticky-feedback-dismiss:focus-visible {
+  background: #f8fafc;
+  color: #0f172a;
+  outline: 3px solid rgba(37, 99, 235, 0.16);
+  transform: translateY(-1px);
 }
 
 .sticky-feedback-trigger:hover,
