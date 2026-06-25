@@ -104,8 +104,15 @@ const StickyFeedbackButton = () => {
   const [email, setEmail] = useState('')
   const [summary, setSummary] = useState('')
   const [screenshot, setScreenshot] = useState<ScreenshotAttachment | null>(null)
-  const dragState = useRef({
-    pointerId: 0,
+  const dragState = useRef<{
+    pointerId: number | null
+    startX: number
+    startY: number
+    originX: number
+    originY: number
+    moved: boolean
+  }>({
+    pointerId: null,
     startX: 0,
     startY: 0,
     originX: 0,
@@ -133,7 +140,26 @@ const StickyFeedbackButton = () => {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [isOpen])
 
+  const resetDragState = () => {
+    dragState.current = {
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      originX: 0,
+      originY: 0,
+      moved: false,
+    }
+  }
+
+  const releasePointerCapture = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
+
   const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (event.button !== 0) return
+
     dragState.current = {
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -146,7 +172,7 @@ const StickyFeedbackButton = () => {
   }
 
   const handlePointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (dragState.current.pointerId !== event.pointerId) return
+    if (dragState.current.pointerId === null || dragState.current.pointerId !== event.pointerId) return
 
     const dx = event.clientX - dragState.current.startX
     const dy = event.clientY - dragState.current.startY
@@ -161,12 +187,27 @@ const StickyFeedbackButton = () => {
   }
 
   const handlePointerUp = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
+    if (dragState.current.pointerId === null || dragState.current.pointerId !== event.pointerId) return
 
-    if (!dragState.current.moved) {
+    const wasMoved = dragState.current.moved
+    releasePointerCapture(event)
+    resetDragState()
+
+    if (!wasMoved) {
       setIsOpen(true)
+    }
+  }
+
+  const handlePointerCancel = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (dragState.current.pointerId !== event.pointerId) return
+
+    releasePointerCapture(event)
+    resetDragState()
+  }
+
+  const handleLostPointerCapture = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (dragState.current.pointerId === event.pointerId) {
+      resetDragState()
     }
   }
 
@@ -264,6 +305,8 @@ const StickyFeedbackButton = () => {
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          onLostPointerCapture={handleLostPointerCapture}
           aria-label="Open feedback form"
         >
           <MessageSquare size={18} aria-hidden="true" />
