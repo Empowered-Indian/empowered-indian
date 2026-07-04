@@ -16,6 +16,8 @@ Copy `.env.example` to `.env` and adjust values. Common keys:
 
 - `VITE_API_URL` — Backend API base URL (e.g., http://localhost:8080/api)
 - `VITE_API_URL_DEVELOPMENT`, `VITE_API_URL_PRODUCTION` — Optional overrides
+- `SITEMAP_SITE_URL`, `SITEMAP_API_URL` — Optional sitemap generation overrides
+- `SITEMAP_CURRENT_LOK_SABHA_TERM`, `SITEMAP_PREVIOUS_LOK_SABHA_TERM` — MP detail sitemap term buckets
 - `VITE_GA_TRACKING_ID` — Google Analytics tracking ID
 - `VITE_ENABLE_ANALYTICS`
 
@@ -23,6 +25,7 @@ Scripts
 
 - `npm run dev` — Start Vite dev server
 - `npm run build` — Production build
+- `npm run sitemap` — Regenerate `public/sitemap.xml` with public MPLADS routes
 - `npm run preview` — Preview build output
 - `npm run lint` / `npm run lint:fix` — ESLint
 - `npm run format` / `npm run format:check` — Prettier
