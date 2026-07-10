@@ -254,6 +254,24 @@ h5 {
 h6 {
   font-size: var(--text-lg);
 }
+h1 {
+  font-size: var(--text-5xl);
+}
+h2 {
+  font-size: var(--text-4xl);
+}
+h3 {
+  font-size: var(--text-3xl);
+}
+h4 {
+  font-size: var(--text-2xl);
+}
+h5 {
+  font-size: var(--text-xl);
+}
+h6 {
+  font-size: var(--text-lg);
+}
 
 p {
   margin: 0;
@@ -482,6 +500,7 @@ textarea:disabled {
   }
   .card {
     padding: var(--spacing-4);
+
     border-radius: var(--radius-lg);
   }
   .route-fallback--mplads {

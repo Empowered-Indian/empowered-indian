@@ -7,6 +7,21 @@ import ErrorBoundary from './components/common/ErrorBoundary'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import RouteAnalytics from './components/common/RouteAnalytics'
 import Layout from './components/MPLADS/components/Layout/Layout'
+import Dashboard from './components/MPLADS/pages/Dashboard'
+import TrackArea from './components/MPLADS/pages/TrackArea'
+import Compare from './components/MPLADS/pages/Compare'
+import Report from './components/MPLADS/pages/Report'
+import SearchResults from './components/MPLADS/pages/SearchResults'
+import StateList from './components/MPLADS/pages/StateList'
+import StateDetail from './components/MPLADS/pages/StateDetail'
+import MPList from './components/MPLADS/pages/MPList'
+import MPDetail from './components/MPLADS/pages/MPDetail'
+import Admin from './components/MPLADS/pages/Admin'
+import Login from './components/MPLADS/pages/Login'
+import EmailVerification from './components/EmailVerification'
+import UnsubscribeSuccess from './components/UnsubscribeSuccess'
+import NotFound from './components/NotFound'
+import StickyFeedbackButton from './components/common/StickyFeedbackButton'
 import './App.css'
 
 const Home = lazy(() => import('./components/Home'))
@@ -62,6 +77,7 @@ function App() {
                 },
               }}
             />
+            <StickyFeedbackButton />
             <Routes>
               <Route path="/" element={withRouteFallback(<Home />)} />
               <Route path="/privacy-policy" element={withRouteFallback(<PrivacyPolicy />)} />
