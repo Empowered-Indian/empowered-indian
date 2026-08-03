@@ -55,7 +55,7 @@ const SiteFooter = ({ extraInfo, className = '', showFaq = true }: SiteFooterPro
 
           {/* Quick Links */}
           <div className="footer-links-group">
-            <h4 className="footer-heading">Platform</h4>
+            <h3 className="footer-heading">Platform</h3>
             <ul className="footer-links">
               <li>
                 <Link to="/mplads">MPLADS Dashboard</Link>
@@ -74,7 +74,7 @@ const SiteFooter = ({ extraInfo, className = '', showFaq = true }: SiteFooterPro
 
           {/* Company Links */}
           <div className="footer-links-group">
-            <h4 className="footer-heading">Company</h4>
+            <h3 className="footer-heading">Company</h3>
             <ul className="footer-links">
               <li>
                 <Link to="/about-us">About Us</Link>
@@ -95,7 +95,7 @@ const SiteFooter = ({ extraInfo, className = '', showFaq = true }: SiteFooterPro
 
           {/* Sponsor */}
           <div className="footer-links-group">
-            <h4 className="footer-heading">Supported By</h4>
+            <h3 className="footer-heading">Supported By</h3>
             <a
               href="https://www.malpaniventures.com/"
               target="_blank"

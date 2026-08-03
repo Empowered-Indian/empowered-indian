@@ -2,11 +2,7 @@ const getApiBaseUrl = () => {
   const environment = import.meta.env.VITE_ENVIRONMENT || import.meta.env.MODE || 'development'
 
   if (environment === 'production') {
-    return (
-      import.meta.env.VITE_API_URL_PRODUCTION ||
-      import.meta.env.VITE_API_URL ||
-      'https://your-production-domain.com/api'
-    )
+    return import.meta.env.VITE_API_URL_PRODUCTION || import.meta.env.VITE_API_URL || '/api'
   } else {
     return (
       import.meta.env.VITE_API_URL_DEVELOPMENT ||

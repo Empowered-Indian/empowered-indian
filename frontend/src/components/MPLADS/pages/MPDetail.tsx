@@ -12,6 +12,7 @@ import {
   FiAlertTriangle,
   FiCopy,
   FiBarChart2,
+  FiDownload,
 } from 'react-icons/fi'
 import { useMPDetails, useMPWorks } from '../../../hooks/useApi'
 import { formatINRCompact } from '../../../utils/formatters'
@@ -27,12 +28,11 @@ import {
   buildMPSlugCandidates,
   normalizeMPSlug,
 } from '../../../utils/slug'
-import { summaryAPI } from '../../../services/api'
+import { mpladsAPI, summaryAPI } from '../../../services/api'
 import { useFilters } from '../../../contexts/FilterContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import './MPDetail.css'
-import ExportMPsDetailAsPdf from '../../../utils/exportMPsDetailAsPdf'
 
 const MPDetail = () => {
   const navigate = useNavigate()
@@ -44,6 +44,7 @@ const MPDetail = () => {
   const [resolvingSlug, setResolvingSlug] = useState(false)
   const [ambiguousMatches, setAmbiguousMatches] = useState(null)
   const [cacheInvalidated, setCacheInvalidated] = useState(false)
+  const [pdfStatus, setPdfStatus] = useState<'idle' | 'loading' | 'error'>('idle')
 
   // Determine if route param contains an ID
   const idInParam = getIdFromSlug(mpId)
@@ -137,6 +138,33 @@ const MPDetail = () => {
       ? mp.inProgressPayments
       : (mp.totalExpenditure || 0) - (mp.completedWorksValue || mp.totalCompletedAmount || 0)
   const showWarning = hasPaymentGap(mp)
+
+  const handlePdfDownload = async () => {
+    if (!effectiveId) return
+
+    setPdfStatus('loading')
+    try {
+      const baseParams = {
+        state: mp.state || '',
+        constituency: mp.constituency || '',
+        house: filters?.house || mp.house || 'Lok Sabha',
+        ls_term: filters?.lsTerm || 18,
+      }
+      const [completedResponse, recommendedResponse, pdfModule] = await Promise.all([
+        mpladsAPI.getMPWorks(effectiveId, { ...baseParams, status: 'completed' }),
+        mpladsAPI.getMPWorks(effectiveId, { ...baseParams, status: 'recommended' }),
+        import('../../../utils/exportMPsDetailAsPdf'),
+      ])
+      await pdfModule.generateMPDetailPdf({
+        mp,
+        completedWorks: completedResponse?.data || completedResponse,
+        recommendedWorks: recommendedResponse?.data || recommendedResponse,
+      })
+      setPdfStatus('idle')
+    } catch {
+      setPdfStatus('error')
+    }
+  }
 
   // Canonicalize URL to slug when user lands on bare id (ensure hooks are before any early returns)
   useEffect(() => {
@@ -439,7 +467,19 @@ const MPDetail = () => {
               <FiBarChart2 />
               <span>Compare</span>
             </Link>
-            <ExportMPsDetailAsPdf mpData={mp} />
+            <Button
+              variant="outline"
+              onClick={handlePdfDownload}
+              disabled={pdfStatus === 'loading'}
+              className="action-btn gap-2"
+            >
+              <FiDownload />
+              {pdfStatus === 'loading'
+                ? 'Generating PDF...'
+                : pdfStatus === 'error'
+                  ? 'Retry Report'
+                  : 'Download Report'}
+            </Button>
           </div>
         </div>
 

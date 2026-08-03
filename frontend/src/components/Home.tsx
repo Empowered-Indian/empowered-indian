@@ -20,7 +20,7 @@ import SiteFooter from './common/SiteFooter'
 import { Button } from '@/components/ui/button'
 
 function Home() {
-  const heroRef = useRef(null)
+  const pageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -43,12 +43,10 @@ function Home() {
   }, [])
 
   return (
-    <div className="home-page">
+    <div className="home-page" ref={pageRef}>
       {/* Hero Section */}
-      <section className="hero" ref={heroRef} role="banner" aria-label="MPLADS overview">
+      <section className="hero" role="banner" aria-label="MPLADS overview">
         <div className="hero-bg-pattern" aria-hidden="true">
-          <div className="hero-gradient-orb hero-gradient-orb-1"></div>
-          <div className="hero-gradient-orb hero-gradient-orb-2"></div>
           <div className="hero-grid-lines"></div>
         </div>
 
@@ -192,12 +190,12 @@ function Home() {
                   <ChevronRight size={14} /> MP performance analytics
                 </li>
               </ul>
-              <Link to="/mplads" className="dashboard-link">
-                <Button className="dashboard-btn">
+              <Button asChild className="dashboard-btn">
+                <Link to="/mplads" className="dashboard-link">
                   <span>View Dashboard</span>
                   <ArrowRight size={16} />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
 
             <div className="dashboard-card dashboard-card-secondary reveal-on-scroll">
@@ -310,7 +308,7 @@ function Home() {
               <div className="value-icon">
                 <Search size={24} />
               </div>
-              <h4 className="value-title">Transparency</h4>
+              <h3 className="value-title">Transparency</h3>
               <p className="value-description">
                 Making government spending visible and trackable for every citizen
               </p>
@@ -320,7 +318,7 @@ function Home() {
               <div className="value-icon">
                 <BarChart3 size={24} />
               </div>
-              <h4 className="value-title">Accountability</h4>
+              <h3 className="value-title">Accountability</h3>
               <p className="value-description">
                 Holding representatives accountable for public fund utilization
               </p>
@@ -330,7 +328,7 @@ function Home() {
               <div className="value-icon">
                 <Users size={24} />
               </div>
-              <h4 className="value-title">Accessibility</h4>
+              <h3 className="value-title">Accessibility</h3>
               <p className="value-description">
                 Democratizing access to government data for informed decision-making
               </p>

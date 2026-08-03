@@ -1,9 +1,5 @@
-import React, { useState } from 'react'
 import { Document, Page, Text, View, StyleSheet, Image, Link } from '@react-pdf/renderer'
-import { FiDownload } from 'react-icons/fi'
-import { Button } from '@/components/ui/button'
 import { formatINRCompact } from './formatters'
-import { useMPWorks } from '../hooks/useApi'
 import { createBaseStyles, createExtendedStyles, colors } from './pdfUIStyles'
 import { generateAndDownloadPdf } from './pdfGenerator'
 import {
@@ -394,64 +390,10 @@ const MPDetailDocument = ({ data }: any) => {
   )
 }
 
-const ExportMPsDetailAsPdf = ({ mpData }: any) => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const mpComWorksParams = {
-    state: mpData?.state || '',
-    constituency: mpData?.constituency || '',
-    status: 'completed',
-  }
-
-  const mpRecWorksParams = {
-    state: mpData?.state || '',
-    constituency: mpData?.constituency || '',
-    status: 'recommended',
-  }
-
-  const completedWorks = useMPWorks(mpData.id, mpComWorksParams)
-  const recommendedWorks = useMPWorks(mpData.id, mpRecWorksParams)
-
-  const data = {
-    mp: mpData,
-    completedWorks: completedWorks?.data?.data ? completedWorks?.data?.data : completedWorks?.data,
-    recommendedWorks: recommendedWorks?.data?.data
-      ? recommendedWorks?.data?.data
-      : recommendedWorks?.data,
-  }
-
-  // Removed console.log for production
-
-  if (!data) {
-    return (
-      <Button variant="outline" disabled className="gap-2">
-        <FiDownload /> No data to export
-      </Button>
-    )
-  }
-
-  const handleClick = async () => {
-    setError(null)
-    setLoading(true)
-    try {
-      const fileName = `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`
-      const docNode = <MPDetailDocument data={data} />
-      await generateAndDownloadPdf(docNode, fileName)
-    } catch (e) {
-      console.error('PDF generation failed', e)
-      setError('Failed to generate PDF')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <Button variant="outline" onClick={handleClick} disabled={loading} className="action-btn gap-2">
-      <FiDownload />
-      {loading ? 'Generating PDF...' : error ? 'Export Failed' : 'Download Report'}
-    </Button>
-  )
+export const generateMPDetailPdf = async (data: any) => {
+  const fileName = `empowered_indian_mp_detail_${data.mp?.name?.replace(/\s+/g, '_') || 'mp'}_${new Date().toISOString().split('T')[0]}.pdf`
+  const docNode = <MPDetailDocument data={data} />
+  return generateAndDownloadPdf(docNode, fileName)
 }
 
-export default ExportMPsDetailAsPdf
+export default generateMPDetailPdf
