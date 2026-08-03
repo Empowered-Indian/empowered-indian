@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState, useMemo } from 'react'
 import {
   FiSearch,
@@ -19,7 +18,6 @@ import { useFilters } from '../../../contexts/FilterContext'
 import { getPeriodLabel } from '../../../utils/lsTerm'
 import { sanitizeInput } from '../../../utils/inputSanitization'
 import StateCardList from '../components/States/StateCardList'
-import ExportStatesListAsPdf from '../../../utils/exportStatesListAsPdf'
 import { Button } from '@/components/ui/button'
 
 const StateList = () => {
@@ -28,14 +26,7 @@ const StateList = () => {
   const [sortOrder, setSortOrder] = useState('desc')
   const [viewMode, setViewMode] = useState('grid')
   const [filterRange, setFilterRange] = useState('all')
-
-  const exportPdfRef = React.useRef(null)
-
-  const updateExportPdfStates = newStates => {
-    if (exportPdfRef.current && exportPdfRef.current.updateFilteredStates) {
-      exportPdfRef.current.updateFilteredStates(newStates)
-    }
-  }
+  const [pdfStatus, setPdfStatus] = useState<'idle' | 'loading' | 'error'>('idle')
 
   // Fetch once; perform filter/sort client-side to avoid extra calls
   const { data, isLoading, error } = useStateSummary()
@@ -163,6 +154,17 @@ const StateList = () => {
     } else {
       setSortBy(field)
       setSortOrder('desc')
+    }
+  }
+
+  const handlePdfDownload = async () => {
+    setPdfStatus('loading')
+    try {
+      const { generateStatesListPdf } = await import('../../../utils/exportStatesListAsPdf')
+      await generateStatesListPdf(filteredStates)
+      setPdfStatus('idle')
+    } catch {
+      setPdfStatus('error')
     }
   }
 
@@ -377,7 +379,19 @@ const StateList = () => {
             </div>
             <div style={{ marginLeft: '10px' }}>
               {filteredStates.length > 0 && (
-                <ExportStatesListAsPdf ref={exportPdfRef} filteredStates={filteredStates} />
+                <Button
+                  variant="default"
+                  onClick={handlePdfDownload}
+                  disabled={pdfStatus === 'loading'}
+                  className="gap-2"
+                >
+                  <FiDownload />
+                  {pdfStatus === 'loading'
+                    ? 'Generating PDF...'
+                    : pdfStatus === 'error'
+                      ? 'Retry Download'
+                      : 'Download Report'}
+                </Button>
               )}
             </div>
           </div>
@@ -415,7 +429,7 @@ const StateList = () => {
         {filteredStates.length > 0 ? (
           <>
             {viewMode === 'list' ? (
-              <StateCardList states={filteredStates} onSortedStatesChange={updateExportPdfStates} />
+              <StateCardList states={filteredStates} onSortedStatesChange={undefined} />
             ) : (
               <div className={`states-grid`}>
                 {filteredStates.map((state, index) => (

@@ -7,6 +7,7 @@
 
 .mplads-main {
   flex: 1;
+  min-height: calc(100svh - 64px);
   padding: 2rem 0;
 }
 
@@ -43,6 +44,11 @@
   font-size: 0.95rem;
 }
 
+.mplads-footer.site-footer {
+  --footer-text: #334155;
+  --footer-link: #334155;
+}
+
 .mplads-footer.site-footer .footer-container a {
   color: #1f2937;
   text-decoration: underline;
@@ -58,5 +64,36 @@
   .mplads-container,
   .footer-container {
     padding: 0 2rem;
+  }
+}
+.mplads-route-loading {
+  min-height: 65vh;
+  padding: 2rem 0;
+}
+
+.mplads-route-loading__heading {
+  width: min(24rem, 65%);
+  height: 2.5rem;
+  margin-bottom: 2rem;
+  border-radius: 0.5rem;
+  background: var(--slate-200, #e2e8f0);
+}
+
+.mplads-route-loading__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.mplads-route-loading__grid > div {
+  min-height: 9rem;
+  border: 1px solid var(--slate-200, #e2e8f0);
+  border-radius: 0.5rem;
+  background: var(--slate-50, #f8fafc);
+}
+
+@media (max-width: 768px) {
+  .mplads-route-loading__grid {
+    grid-template-columns: 1fr;
   }
 }

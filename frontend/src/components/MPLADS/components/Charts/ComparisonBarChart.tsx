@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react'
+import ReactECharts from './OptimizedEChart'
 import { memo } from 'react'
 import { useResponsive } from '../../../../hooks/useMediaQuery'
 import {
@@ -186,7 +186,7 @@ const ComparisonBarChart = ({
         option={option}
         style={chartDimensions.style}
         opts={{
-          renderer: responsive.isMobile ? 'svg' : 'canvas',
+          renderer: 'canvas',
           devicePixelRatio: responsive.isMobile ? 2 : 1,
         }}
         notMerge={true}

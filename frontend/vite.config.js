@@ -94,14 +94,8 @@ export default defineConfig(({ mode }) => ({
         entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
-    // Optimize build performance
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
-      },
-    },
   },
+  esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : undefined,
   server: {
     port: 5173,
     open: true,

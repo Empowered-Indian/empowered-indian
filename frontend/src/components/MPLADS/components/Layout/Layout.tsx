@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Navigation from './NavigationSimple'
 import './Layout.css'
@@ -46,7 +46,20 @@ const Layout = () => {
       <Navigation />
       <main className="mplads-main">
         <div className="mplads-container">
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="mplads-route-loading" aria-busy="true" aria-label="Loading dashboard">
+                <div className="mplads-route-loading__heading" />
+                <div className="mplads-route-loading__grid" aria-hidden="true">
+                  <div />
+                  <div />
+                  <div />
+                </div>
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </div>
       </main>
       <SiteFooter
