@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react'
+import ReactECharts from './OptimizedEChart'
 import { useMemo } from 'react'
 import { useResponsive } from '../../../../hooks/useMediaQuery'
 
@@ -138,7 +138,7 @@ const FundUtilizationGauge = ({ utilization = 0, title = 'Fund Utilization' }) =
           width: '100%',
           height: `${dims.height}px`,
         }}
-        opts={{ renderer: 'svg' }}
+        opts={{ renderer: 'canvas' }}
         notMerge={true}
         lazyUpdate={true}
       />

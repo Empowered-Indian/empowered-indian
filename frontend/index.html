@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
       content="Empowered Indian - A citizen-led platform to make our government visible, searchable, and accountable. Coming soon."
@@ -42,20 +43,67 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=optional"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=optional"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-950XS79S49"></script>
     <script>
       window.dataLayer = window.dataLayer || []
-      function gtag() {
-        dataLayer.push(arguments)
+      window.gtag = function gtag() {
+        window.dataLayer.push(arguments)
       }
-      gtag('js', new Date())
+      window.gtag('js', new Date())
+      window.gtag('config', 'G-950XS79S49')
+      ;(function () {
+        var interactionEvents = ['pointerdown', 'keydown', 'touchstart']
+        var isScheduled = false
+        var fallbackTimer
 
-      gtag('config', 'G-950XS79S49')
+        function loadAnalytics() {
+          if (document.querySelector('script[data-gtag-loader]')) return
+          var script = document.createElement('script')
+          script.async = true
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-950XS79S49'
+          script.dataset.gtagLoader = 'true'
+          document.head.appendChild(script)
+        }
+
+        function scheduleAnalytics() {
+          if (isScheduled) return
+          isScheduled = true
+          if (fallbackTimer) window.clearTimeout(fallbackTimer)
+          interactionEvents.forEach(function (eventName) {
+            window.removeEventListener(eventName, scheduleAnalytics)
+          })
+
+          if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(loadAnalytics, { timeout: 2000 })
+          } else {
+            window.setTimeout(loadAnalytics, 500)
+          }
+        }
+
+        interactionEvents.forEach(function (eventName) {
+          window.addEventListener(eventName, scheduleAnalytics, { passive: true })
+        })
+
+        window.addEventListener(
+          'load',
+          function () {
+            if (!isScheduled) fallbackTimer = window.setTimeout(scheduleAnalytics, 60000)
+          },
+          { once: true }
+        )
+      })()
     </script>
   </head>
   <body>

@@ -98,7 +98,9 @@ const LoadingState = ({
             <FiLoader className="loading-spinner-inline" />
             <span>
               {message}
-              {dots}
+              <span className="loading-dots" aria-hidden="true">
+                {dots}
+              </span>
             </span>
           </div>
         )
@@ -117,7 +119,9 @@ const LoadingState = ({
             <div className="loading-message">
               <p>
                 {message}
-                {dots}
+                <span className="loading-dots" aria-hidden="true">
+                  {dots}
+                </span>
               </p>
               {showProgress && <span className="loading-percentage">{roundedProgress}%</span>}
             </div>

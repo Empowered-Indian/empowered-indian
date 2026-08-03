@@ -1,16 +1,9 @@
 .dashboard {
-  animation: fadeIn 0.3s ease-in;
+  min-height: calc(100svh - 8rem);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.deferred-charts {
+  min-height: 24rem;
 }
 
 .dashboard-loading,
@@ -70,13 +63,11 @@
 /* removed data freshness badge styles */
 
 .dashboard-header h1 {
+  font-family: var(--font-primary);
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-700) 0%, var(--civic-gold-600) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
+  color: var(--primary-700);
+  letter-spacing: 0;
   margin: 0 0 var(--spacing-2) 0;
 }
 

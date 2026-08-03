@@ -10,7 +10,7 @@
   --footer-link-hover: hsl(38 92% 50%);
   --footer-border: hsl(214.3 31.8% 91.4%);
   --footer-primary: hsl(221.2 83.2% 53.3%);
-  --footer-accent: hsl(38 92% 50%);
+  --footer-accent: #92400e;
 
   background: var(--footer-bg);
   border-top: 1px solid var(--footer-border);

@@ -14,10 +14,7 @@ import {
 import { BiHourglass } from 'react-icons/bi'
 import { IndianRupee } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import StatePerformanceChart from '../components/Charts/StatePerformanceChart'
-import MPPersonalityChart from '../components/Charts/MPPersonalityChart'
-import StateAllocationChart from '../components/Charts/StateAllocationChart'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import ProjectStatusCards from '../components/Dashboard/ProjectStatusCards'
 import SearchBar from '../components/Search/SearchBar'
 import InfoTooltip from '../components/Common/InfoTooltip'
@@ -33,18 +30,32 @@ import { getPeriodLabel } from '../../../utils/lsTerm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
+const StatePerformanceChart = lazy(() => import('../components/Charts/StatePerformanceChart'))
+const MPPersonalityChart = lazy(() => import('../components/Charts/MPPersonalityChart'))
+const StateAllocationChart = lazy(() => import('../components/Charts/StateAllocationChart'))
+
+const DashboardTitle = () => (
+  <div className="dashboard-title-section">
+    <h1>MPLADS Dashboard</h1>
+    <p>Overview of Member of Parliament Local Area Development Scheme</p>
+  </div>
+)
+
 const Dashboard = () => {
   const navigate = useNavigate()
-  const [loadingProgress, setLoadingProgress] = useState(0)
-  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false)
+  const chartsRef = useRef<HTMLDivElement>(null)
+  const [shouldLoadCharts, setShouldLoadCharts] = useState(false)
 
   const { data, isLoading, error, refetch } = useOverview()
-  const { data: mpData, isLoading: mpLoading } = useMPSummary({ limit: 800 })
+  const { data: mpData, isLoading: mpLoading } = useMPSummary(
+    { limit: 800 },
+    { enabled: shouldLoadCharts }
+  )
   const {
     data: stateData,
     isLoading: stateLoading,
     error: stateError,
-  } = useStateSummary({ limit: 50 })
+  } = useStateSummary({ limit: 50 }, { enabled: shouldLoadCharts })
   const { filters } = useFilters()
   const periodLabel =
     (filters?.house || 'Lok Sabha') === 'Lok Sabha'
@@ -53,32 +64,39 @@ const Dashboard = () => {
         ? 'Rajya Sabha'
         : `Both Houses • ${getPeriodLabel(filters?.lsTerm || 18)}`
 
-  // Progressive loading simulation
   useEffect(() => {
-    if (isLoading || mpLoading || stateLoading) {
-      const totalQueries = 3
-      let completed = 0
-      if (!isLoading) completed++
-      if (!mpLoading) completed++
-      if (!stateLoading) completed++
+    const charts = chartsRef.current
+    if (!charts || shouldLoadCharts) return
 
-      const progress = (completed / totalQueries) * 100
-      setLoadingProgress(progress)
-    } else if (!isLoading && !mpLoading && !stateLoading) {
-      setLoadingProgress(100)
-      setHasInitiallyLoaded(true)
+    if (!('IntersectionObserver' in window)) {
+      setShouldLoadCharts(true)
+      return
     }
-  }, [isLoading, mpLoading, stateLoading])
 
-  // Progressive loading state
-  if (isLoading && !hasInitiallyLoaded) {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries.some(entry => entry.isIntersecting)) {
+          setShouldLoadCharts(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '500px 0px' }
+    )
+    observer.observe(charts)
+    return () => observer.disconnect()
+  }, [isLoading, shouldLoadCharts])
+
+  if (isLoading) {
     return (
       <div className="dashboard">
+        <div className="dashboard-header">
+          <DashboardTitle />
+        </div>
         <LoadingState
           type="default"
           message="Loading dashboard data"
           showProgress={true}
-          progressValue={loadingProgress}
+          progressValue={35}
           size="large"
           timeout={15000}
         />
@@ -89,12 +107,17 @@ const Dashboard = () => {
   if (error) {
     return (
       <div className="dashboard">
+        <div className="dashboard-header">
+          <DashboardTitle />
+        </div>
         <ErrorDisplay error={error} onRetry={refetch} title="Unable to load dashboard data" />
       </div>
     )
   }
 
   const overview = data?.data || {}
+  const states = Array.isArray(stateData?.data) ? stateData.data : []
+  const mps = Array.isArray(mpData?.data) ? mpData.data : []
 
   // Removed unused formatCurrency function
 
@@ -169,10 +192,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <div className="dashboard-title-section">
-          <h1>MPLADS Dashboard</h1>
-          <p>Overview of Member of Parliament Local Area Development Scheme</p>
-        </div>
+        <DashboardTitle />
 
         <div className="dashboard-controls">
           <div className="dashboard-search">
@@ -209,7 +229,7 @@ const Dashboard = () => {
       </div>
 
       {/* Visualization Charts Section with Progressive Disclosure */}
-      <div className="charts-section">
+      <div className="charts-section" ref={chartsRef}>
         <CollapsibleSection
           title="Key Metrics Overview"
           subtitle="Visual representation of MPLADS performance metrics"
@@ -217,21 +237,35 @@ const Dashboard = () => {
           defaultOpen={true}
           className="dashboard-section"
         >
-          <div className="chart-row">
-            <div className="chart-container wip-chart">
-              <StatePerformanceChart
-                data={stateData?.data}
-                isLoading={stateLoading}
-                error={stateError}
-                title="States by Fund Utilization"
-              />
-            </div>
-            <div className="chart-container pie-chart">
-              {mpLoading ? (
-                <LoadingState type="chart" message="Loading MP data..." />
-              ) : (
-                <MPPersonalityChart data={mpData?.data || []} />
-              )}
+          <div className="deferred-charts">
+            <div className="chart-row">
+              <div className="chart-container wip-chart">
+                {!shouldLoadCharts || stateLoading ? (
+                  <SkeletonLoader type="chart" />
+                ) : states.length > 0 ? (
+                  <Suspense fallback={<SkeletonLoader type="chart" />}>
+                    <StatePerformanceChart
+                      data={states}
+                      isLoading={false}
+                      error={stateError}
+                      title="States by Fund Utilization"
+                    />
+                  </Suspense>
+                ) : (
+                  <p>No state performance data is available.</p>
+                )}
+              </div>
+              <div className="chart-container pie-chart">
+                {!shouldLoadCharts || mpLoading ? (
+                  <SkeletonLoader type="chart" />
+                ) : mps.length > 0 ? (
+                  <Suspense fallback={<SkeletonLoader type="chart" />}>
+                    <MPPersonalityChart data={mps} />
+                  </Suspense>
+                ) : (
+                  <p>No MP performance data is available.</p>
+                )}
+              </div>
             </div>
           </div>
         </CollapsibleSection>
@@ -262,10 +296,14 @@ const Dashboard = () => {
           className="dashboard-section"
         >
           <div className="chart-container full-width">
-            {stateLoading ? (
-              <LoadingState type="chart" message="Loading state allocation data..." size="large" />
+            {!shouldLoadCharts || stateLoading ? (
+              <SkeletonLoader type="chart" />
+            ) : states.length > 0 ? (
+              <Suspense fallback={<SkeletonLoader type="chart" />}>
+                <StateAllocationChart data={states} />
+              </Suspense>
             ) : (
-              <StateAllocationChart data={stateData?.data} />
+              <p>No state allocation data is available.</p>
             )}
           </div>
         </CollapsibleSection>

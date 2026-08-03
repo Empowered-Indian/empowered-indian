@@ -1,49 +1,75 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import { FilterProvider } from './contexts/FilterContext'
-import { AuthProvider } from './contexts/AuthContext'
 import ErrorBoundary from './components/common/ErrorBoundary'
-import ProtectedRoute from './components/common/ProtectedRoute'
 import Home from './components/Home'
-import PrivacyPolicy from './components/PrivacyPolicy'
-import TermsOfService from './components/TermsOfService'
-import FAQ from './components/FAQ'
-import AboutUs from './components/AboutUs'
-import Layout from './components/MPLADS/components/Layout/Layout'
-import Dashboard from './components/MPLADS/pages/Dashboard'
-import TrackArea from './components/MPLADS/pages/TrackArea'
-import Compare from './components/MPLADS/pages/Compare'
-import Report from './components/MPLADS/pages/Report'
-import SearchResults from './components/MPLADS/pages/SearchResults'
-import StateList from './components/MPLADS/pages/StateList'
-import StateDetail from './components/MPLADS/pages/StateDetail'
-import MPList from './components/MPLADS/pages/MPList'
-import MPDetail from './components/MPLADS/pages/MPDetail'
-import Admin from './components/MPLADS/pages/Admin'
-import Login from './components/MPLADS/pages/Login'
-import EmailVerification from './components/EmailVerification'
-import UnsubscribeSuccess from './components/UnsubscribeSuccess'
-import NotFound from './components/NotFound'
-import StickyFeedbackButton from './components/common/StickyFeedbackButton'
 import './App.css'
+
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'))
+const TermsOfService = lazy(() => import('./components/TermsOfService'))
+const FAQ = lazy(() => import('./components/FAQ'))
+const AboutUs = lazy(() => import('./components/AboutUs'))
+const EmailVerification = lazy(() => import('./components/EmailVerification'))
+const UnsubscribeSuccess = lazy(() => import('./components/UnsubscribeSuccess'))
+const NotFound = lazy(() => import('./components/NotFound'))
+const LoginRoute = lazy(() => import('./components/LoginRoute'))
+const MPLADSApp = lazy(() => import('./components/MPLADS/MPLADSApp'))
+const StickyFeedbackButton = lazy(() => import('./components/common/StickyFeedbackButton'))
+
+const RouteFallback = () => (
+  <main className="route-loading" aria-busy="true" aria-label="Loading page">
+    <div className="route-loading__content">
+      <span className="route-loading__eyebrow">Empowered Indian</span>
+      <div className="route-loading__title" />
+      <div className="route-loading__line" />
+      <div className="route-loading__line route-loading__line--short" />
+    </div>
+  </main>
+)
+
+const DeferredFeedback = () => {
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    const enable = () => setIsReady(true)
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+
+    if (typeof idleWindow.requestIdleCallback === 'function') {
+      const idleId = idleWindow.requestIdleCallback(enable, { timeout: 2500 })
+      return () => idleWindow.cancelIdleCallback?.(idleId)
+    }
+
+    const timeoutId = setTimeout(enable, 1500)
+    return () => clearTimeout(timeoutId)
+  }, [])
+
+  return isReady ? (
+    <Suspense fallback={null}>
+      <StickyFeedbackButton />
+    </Suspense>
+  ) : null
+}
 
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-          <div className="app">
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-              }}
-            />
-            <StickyFeedbackButton />
+      <Router>
+        <div className="app">
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+            }}
+          />
+          <DeferredFeedback />
+          <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -53,43 +79,13 @@ function App() {
               <Route path="/verify-email" element={<EmailVerification />} />
               <Route path="/unsubscribe/:token" element={<UnsubscribeSuccess />} />
               <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
-              <Route path="/login" element={<Login />} />
-
-              {/* MPLADS Routes */}
-              <Route
-                path="/mplads"
-                element={
-                  <FilterProvider>
-                    <Layout />
-                  </FilterProvider>
-                }
-              >
-                <Route index element={<Dashboard />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="track-area" element={<TrackArea />} />
-                <Route path="compare" element={<Compare />} />
-                <Route path="report" element={<Report />} />
-                <Route path="search" element={<SearchResults />} />
-                <Route path="states" element={<StateList />} />
-                <Route path="states/:stateId" element={<StateDetail />} />
-                <Route path="mps" element={<MPList />} />
-                <Route path="mps/:mpId" element={<MPDetail />} />
-                <Route
-                  path="admin"
-                  element={
-                    <ProtectedRoute requireAdmin={true}>
-                      <Admin />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
-
-              {/* All other routes show Not Found */}
+              <Route path="/login" element={<LoginRoute />} />
+              <Route path="/mplads/*" element={<MPLADSApp />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </div>
-        </Router>
-      </AuthProvider>
+          </Suspense>
+        </div>
+      </Router>
     </ErrorBoundary>
   )
 }

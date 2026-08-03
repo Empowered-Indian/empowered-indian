@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react'
+import ReactECharts from './OptimizedEChart'
 import { useState } from 'react'
 import { useResponsive } from '../../../../hooks/useMediaQuery'
 import { getResponsiveChartOptions } from '../../../../utils/chartHelpers'
@@ -356,7 +356,7 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
           minHeight: '280px',
         }}
         opts={{
-          renderer: 'svg',
+          renderer: 'canvas',
           devicePixelRatio: responsive.isMobile ? 2 : 1,
         }}
         onEvents={onEvents}
@@ -414,7 +414,10 @@ const MPPersonalityChart = ({ data, title = 'Fund Utilization Pattern Analysis' 
             }}
           >
             {chartData.map(item => (
-              <div key={item.name} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+              <div
+                key={item.name}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}
+              >
                 <div
                   style={{
                     width: '12px',

@@ -98,6 +98,12 @@
   font-family: var(--font-primary);
 }
 
+.loading-dots {
+  display: inline-block;
+  width: 1.5em;
+  text-align: left;
+}
+
 .loading-percentage {
   font-size: var(--text-xs);
   color: var(--text-tertiary);

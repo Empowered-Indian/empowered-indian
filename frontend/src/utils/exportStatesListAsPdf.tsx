@@ -1,7 +1,4 @@
-import React, { useState } from 'react'
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
-import { FiDownload } from 'react-icons/fi'
-import { Button } from '@/components/ui/button'
 import { formatINRCompact } from './formatters'
 import { colors, createBaseStyles, createExtendedStyles, utilBarStyleFor } from './pdfUIStyles'
 import { generateAndDownloadPdf } from './pdfGenerator'
@@ -284,62 +281,10 @@ const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
   )
 }
 
-const ExportStatesListAsPdf = React.forwardRef<any, any>(
-  ({ filteredStates = [], meta = {}, layout = 'cards' }, ref) => {
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [currentFilteredStates, setCurrentFilteredStates] = useState(filteredStates)
+export const generateStatesListPdf = async (data = [], meta: any = {}, layout = 'cards') => {
+  const fileName = `empowered_indian_mplads_report_${meta.key || 'all'}_${new Date().toISOString().split('T')[0]}.pdf`
+  const docNode = <MyDocument data={data} meta={meta} layout={layout} />
+  return generateAndDownloadPdf(docNode, fileName)
+}
 
-    React.useEffect(() => {
-      setCurrentFilteredStates(filteredStates)
-    }, [filteredStates])
-
-    React.useImperativeHandle(ref, () => ({
-      updateFilteredStates: newStates => {
-        setCurrentFilteredStates(newStates)
-      },
-    }))
-
-    if (!currentFilteredStates || currentFilteredStates.length === 0) {
-      return (
-        <Button variant="outline" disabled className="gap-2">
-          <FiDownload /> No data to export
-        </Button>
-      )
-    }
-
-    const handleClick = async () => {
-      setError(null)
-      setLoading(true)
-      try {
-        const fileName = `empowered_indian_mplads_report_${meta.key || 'all'}_${new Date().toISOString().split('T')[0]}.pdf`
-        const docNode = <MyDocument data={currentFilteredStates} meta={meta} layout={layout} />
-        await generateAndDownloadPdf(docNode, fileName)
-      } catch (e) {
-        console.error('PDF generation failed', e)
-        setError('Failed to generate PDF')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    return (
-      <Button
-        variant="default"
-        onClick={handleClick}
-        disabled={loading}
-        className="gap-2"
-        style={{
-          backgroundColor: 'hsl(221.2 83.2% 53.3%)',
-          color: 'white',
-          opacity: loading ? 0.5 : 1,
-        }}
-      >
-        <FiDownload />
-        {loading ? 'Generating PDF...' : error ? 'Export Failed' : 'Download Report'}
-      </Button>
-    )
-  }
-)
-
-export default ExportStatesListAsPdf
+export default generateStatesListPdf
