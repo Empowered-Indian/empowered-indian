@@ -232,7 +232,7 @@ h6 {
   font-weight: var(--font-bold);
   line-height: var(--leading-tight);
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   margin: 0;
 }
 
@@ -400,52 +400,62 @@ textarea:disabled {
   color: var(--text-primary);
 }
 
-.route-loading {
-  min-height: 100vh;
-  padding: 6rem 1rem 3rem;
-  background: linear-gradient(180deg, #ffffff 0%, var(--slate-50) 100%);
-}
-
-.route-loading__content {
-  width: min(100%, 70rem);
+.route-fallback {
+  width: min(100%, 1120px);
+  min-height: 55vh;
   margin: 0 auto;
+  padding: var(--spacing-8) var(--spacing-4);
 }
 
-.route-loading__eyebrow {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  color: var(--civic-gold-700);
-  font-size: var(--text-xs);
-  font-weight: var(--font-bold);
-  text-transform: uppercase;
+.route-fallback--mplads {
+  min-height: 75vh;
 }
 
-.route-loading__title,
-.route-loading__line {
-  border-radius: var(--radius-md);
-  background: var(--slate-200);
-  animation: route-loading-pulse 1.2s ease-in-out infinite alternate;
+.route-fallback__bar,
+.route-fallback__block,
+.route-fallback__grid > div {
+  background: linear-gradient(
+    90deg,
+    var(--slate-100) 25%,
+    var(--slate-200) 37%,
+    var(--slate-100) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: var(--radius-lg);
+  animation: route-fallback-shimmer 1.4s ease infinite;
 }
 
-.route-loading__title {
-  width: min(34rem, 80%);
-  height: 3.5rem;
-  margin-bottom: 1.5rem;
+.route-fallback__bar {
+  width: min(280px, 65vw);
+  height: 2rem;
+  margin-bottom: var(--spacing-4);
 }
 
-.route-loading__line {
-  width: min(42rem, 100%);
-  height: 1rem;
-  margin-bottom: 0.75rem;
+.route-fallback__block {
+  height: 6rem;
+  margin-bottom: var(--spacing-6);
 }
 
-.route-loading__line--short {
-  width: min(26rem, 65%);
+.route-fallback__block--wide {
+  width: 100%;
 }
 
-@keyframes route-loading-pulse {
-  to {
-    opacity: 0.45;
+.route-fallback__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-4);
+}
+
+.route-fallback__grid > div {
+  min-height: 8rem;
+}
+
+@keyframes route-fallback-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
   }
 }
 
@@ -473,6 +483,12 @@ textarea:disabled {
   .card {
     padding: var(--spacing-4);
     border-radius: var(--radius-lg);
+  }
+  .route-fallback--mplads {
+    min-height: 75vh;
+  }
+  .route-fallback__grid {
+    grid-template-columns: 1fr;
   }
 }
 

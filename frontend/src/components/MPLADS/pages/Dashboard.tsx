@@ -1,10 +1,7 @@
 import { useOverview, useMPSummary, useStateSummary } from '../../../hooks/useApi'
 import {
-  FiTrendingUp,
   FiUsers,
   FiCheckCircle,
-  FiClock,
-  FiInfo,
   FiBarChart2,
   FiPieChart,
   FiActivity,
@@ -28,34 +25,52 @@ import { formatINRCompact } from '../../../utils/formatters'
 import { useFilters } from '../../../contexts/FilterContext'
 import { getPeriodLabel } from '../../../utils/lsTerm'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const StatePerformanceChart = lazy(() => import('../components/Charts/StatePerformanceChart'))
 const MPPersonalityChart = lazy(() => import('../components/Charts/MPPersonalityChart'))
 const StateAllocationChart = lazy(() => import('../components/Charts/StateAllocationChart'))
 
-const DashboardTitle = () => (
-  <div className="dashboard-title-section">
-    <h1>MPLADS Dashboard</h1>
-    <p>Overview of Member of Parliament Local Area Development Scheme</p>
+const ChartSkeleton = ({ size = 'default' }: { size?: 'default' | 'large' }) => (
+  <div className={`chart-skeleton chart-skeleton--${size}`} aria-hidden="true">
+    <SkeletonLoader type="chart" />
+  </div>
+)
+
+const ProjectStatusSkeleton = () => (
+  <div className="project-status-skeleton" aria-hidden="true">
+    <SkeletonLoader width="min(16rem, 60%)" height="1.5rem" />
+    <div className="project-status-skeleton__grid">
+      {[1, 2, 3].map(item => (
+        <div className="project-status-skeleton__card" key={item}>
+          <div className="project-status-skeleton__header">
+            <SkeletonLoader width="4rem" height="4rem" />
+            <SkeletonLoader width="4rem" height="1.5rem" />
+          </div>
+          <SkeletonLoader width="45%" height="1rem" />
+          <SkeletonLoader width="55%" height="2rem" />
+          <SkeletonLoader width="70%" height="1rem" />
+        </div>
+      ))}
+    </div>
   </div>
 )
 
 const Dashboard = () => {
   const navigate = useNavigate()
-  const chartsRef = useRef<HTMLDivElement>(null)
-  const [shouldLoadCharts, setShouldLoadCharts] = useState(false)
+  const [chartsReady, setChartsReady] = useState(false)
+  const chartsSectionRef = useRef<HTMLDivElement | null>(null)
 
   const { data, isLoading, error, refetch } = useOverview()
   const { data: mpData, isLoading: mpLoading } = useMPSummary(
     { limit: 800 },
-    { enabled: shouldLoadCharts }
+    { enabled: chartsReady }
   )
   const {
     data: stateData,
     isLoading: stateLoading,
     error: stateError,
-  } = useStateSummary({ limit: 50 }, { enabled: shouldLoadCharts })
+  } = useStateSummary({ limit: 50 }, { enabled: chartsReady })
   const { filters } = useFilters()
   const periodLabel =
     (filters?.house || 'Lok Sabha') === 'Lok Sabha'
@@ -65,59 +80,49 @@ const Dashboard = () => {
         : `Both Houses • ${getPeriodLabel(filters?.lsTerm || 18)}`
 
   useEffect(() => {
-    const charts = chartsRef.current
-    if (!charts || shouldLoadCharts) return
+    if (chartsReady) return undefined
 
-    if (!('IntersectionObserver' in window)) {
-      setShouldLoadCharts(true)
-      return
+    let idleId: number | undefined
+    let fallbackTimer: number | undefined
+    let observer: IntersectionObserver | undefined
+
+    const revealCharts = () => setChartsReady(true)
+    const onUserIntent = () => revealCharts()
+
+    if ('IntersectionObserver' in window && chartsSectionRef.current) {
+      observer = new IntersectionObserver(
+        entries => {
+          if (entries.some(entry => entry.isIntersecting)) {
+            revealCharts()
+          }
+        },
+        { rootMargin: '300px 0px' }
+      )
+      observer.observe(chartsSectionRef.current)
     }
 
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries.some(entry => entry.isIntersecting)) {
-          setShouldLoadCharts(true)
-          observer.disconnect()
-        }
-      },
-      { rootMargin: '500px 0px' }
-    )
-    observer.observe(charts)
-    return () => observer.disconnect()
-  }, [isLoading, shouldLoadCharts])
+    if (typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(revealCharts, { timeout: 5000 })
+    } else {
+      fallbackTimer = window.setTimeout(revealCharts, 4500)
+    }
 
-  if (isLoading) {
-    return (
-      <div className="dashboard">
-        <div className="dashboard-header">
-          <DashboardTitle />
-        </div>
-        <LoadingState
-          type="default"
-          message="Loading dashboard data"
-          showProgress={true}
-          progressValue={35}
-          size="large"
-          timeout={15000}
-        />
-      </div>
-    )
-  }
+    window.addEventListener('scroll', onUserIntent, { passive: true, once: true })
+    window.addEventListener('pointerdown', onUserIntent, { passive: true, once: true })
 
-  if (error) {
-    return (
-      <div className="dashboard">
-        <div className="dashboard-header">
-          <DashboardTitle />
-        </div>
-        <ErrorDisplay error={error} onRetry={refetch} title="Unable to load dashboard data" />
-      </div>
-    )
-  }
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('scroll', onUserIntent)
+      window.removeEventListener('pointerdown', onUserIntent)
+      if (idleId !== undefined && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId)
+      }
+      if (fallbackTimer !== undefined) window.clearTimeout(fallbackTimer)
+    }
+  }, [chartsReady])
 
   const overview = data?.data || {}
-  const states = Array.isArray(stateData?.data) ? stateData.data : []
-  const mps = Array.isArray(mpData?.data) ? mpData.data : []
+  const isInitialOverviewLoading = isLoading && !data
 
   // Removed unused formatCurrency function
 
@@ -192,7 +197,10 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <DashboardTitle />
+        <div className="dashboard-title-section">
+          <h1>MPLADS Dashboard</h1>
+          <p>Overview of Member of Parliament Local Area Development Scheme</p>
+        </div>
 
         <div className="dashboard-controls">
           <div className="dashboard-search">
@@ -204,181 +212,200 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="metrics-grid">
-        {metrics.map((metric, index) => (
-          <Card key={index} className={`metric-card metric-${metric.color}`}>
-            <div className="metric-icon">{metric.icon}</div>
-            <CardContent className="metric-content">
-              <div className="metric-title-row">
-                <h2
-                  className={`metric-title ${metric.title === 'Total MPs' ? 'preserve-case' : ''}`}
-                  style={{ fontSize: '1rem' }}
-                >
-                  {metric.title}
-                </h2>
-                {metric.tooltip && (
-                  <InfoTooltip content={metric.tooltip} position="top" size="small" />
-                )}
-              </div>
-              <p className="metric-value">{metric.value}</p>
-              <p className="metric-description">{metric.description}</p>
-              <p className="metric-period">{periodLabel}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Visualization Charts Section with Progressive Disclosure */}
-      <div className="charts-section" ref={chartsRef}>
-        <CollapsibleSection
-          title="Key Metrics Overview"
-          subtitle="Visual representation of MPLADS performance metrics"
-          icon={<FiBarChart2 />}
-          defaultOpen={true}
-          className="dashboard-section"
-        >
-          <div className="deferred-charts">
-            <div className="chart-row">
-              <div className="chart-container wip-chart">
-                {!shouldLoadCharts || stateLoading ? (
-                  <SkeletonLoader type="chart" />
-                ) : states.length > 0 ? (
-                  <Suspense fallback={<SkeletonLoader type="chart" />}>
-                    <StatePerformanceChart
-                      data={states}
-                      isLoading={false}
-                      error={stateError}
-                      title="States by Fund Utilization"
+      {error && !data ? (
+        <ErrorDisplay error={error} onRetry={refetch} title="Unable to load dashboard data" />
+      ) : (
+        <>
+          <div className="metrics-grid" aria-busy={isInitialOverviewLoading}>
+            {metrics.map((metric, index) => (
+              <Card key={index} className={`metric-card metric-${metric.color}`}>
+                <div className="metric-icon">{metric.icon}</div>
+                <CardContent className="metric-content">
+                  <div className="metric-title-row">
+                    <h2
+                      className={`metric-title ${metric.title === 'Total MPs' ? 'preserve-case' : ''}`}
+                      style={{ fontSize: '1rem' }}
+                    >
+                      {metric.title}
+                    </h2>
+                    {metric.tooltip && (
+                      <InfoTooltip content={metric.tooltip} position="top" size="small" />
+                    )}
+                  </div>
+                  {isInitialOverviewLoading ? (
+                    <SkeletonLoader
+                      className="metric-value-skeleton"
+                      width="min(12rem, 80%)"
+                      height="1.7rem"
                     />
-                  </Suspense>
+                  ) : (
+                    <p className="metric-value">{metric.value}</p>
+                  )}
+                  <p className="metric-description">{metric.description}</p>
+                  <p className="metric-period">{periodLabel}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Visualization Charts Section with Progressive Disclosure */}
+          <div className="charts-section" ref={chartsSectionRef}>
+            <CollapsibleSection
+              title="Key Metrics Overview"
+              subtitle="Visual representation of MPLADS performance metrics"
+              icon={<FiBarChart2 />}
+              defaultOpen={true}
+              className="dashboard-section"
+            >
+              <div className="chart-row">
+                <div className="chart-container wip-chart">
+                  {chartsReady ? (
+                    <Suspense fallback={<ChartSkeleton />}>
+                      <StatePerformanceChart
+                        data={stateData?.data}
+                        isLoading={stateLoading}
+                        error={stateError}
+                        title="States by Fund Utilization"
+                      />
+                    </Suspense>
+                  ) : (
+                    <ChartSkeleton />
+                  )}
+                </div>
+                <div className="chart-container pie-chart">
+                  {!chartsReady ? (
+                    <ChartSkeleton />
+                  ) : mpLoading ? (
+                    <LoadingState type="chart" message="Loading MP data..." />
+                  ) : (
+                    <Suspense fallback={<ChartSkeleton />}>
+                      <MPPersonalityChart data={mpData?.data || []} />
+                    </Suspense>
+                  )}
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title="Project Status"
+              subtitle="Track the progress of MPLADS projects across different stages"
+              icon={<FiActivity />}
+              defaultOpen={true}
+              className="dashboard-section"
+            >
+              <div className="chart-container full-width">
+                {isInitialOverviewLoading ? (
+                  <ProjectStatusSkeleton />
                 ) : (
-                  <p>No state performance data is available.</p>
+                  <ProjectStatusCards
+                    data={{
+                      totalRecommended: overview.totalWorksRecommended || 0,
+                      totalInProgress: overview.pendingWorks || 0,
+                      totalCompleted: overview.totalWorksCompleted || 0,
+                    }}
+                  />
                 )}
               </div>
-              <div className="chart-container pie-chart">
-                {!shouldLoadCharts || mpLoading ? (
-                  <SkeletonLoader type="chart" />
-                ) : mps.length > 0 ? (
-                  <Suspense fallback={<SkeletonLoader type="chart" />}>
-                    <MPPersonalityChart data={mps} />
-                  </Suspense>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title="State-wise Allocation"
+              subtitle="Distribution of MPLADS funds across states and union territories"
+              icon={<FiPieChart />}
+              defaultOpen={false}
+              className="dashboard-section"
+            >
+              <div className="chart-container full-width">
+                {stateLoading ? (
+                  <LoadingState
+                    type="chart"
+                    message="Loading state allocation data..."
+                    size="large"
+                  />
+                ) : !chartsReady ? (
+                  <ChartSkeleton size="large" />
                 ) : (
-                  <p>No MP performance data is available.</p>
+                  <Suspense fallback={<ChartSkeleton size="large" />}>
+                    <StateAllocationChart data={stateData?.data} />
+                  </Suspense>
                 )}
               </div>
-            </div>
+            </CollapsibleSection>
           </div>
-        </CollapsibleSection>
 
-        <CollapsibleSection
-          title="Project Status"
-          subtitle="Track the progress of MPLADS projects across different stages"
-          icon={<FiActivity />}
-          defaultOpen={true}
-          className="dashboard-section"
-        >
-          <div className="chart-container full-width">
-            <ProjectStatusCards
-              data={{
-                totalRecommended: overview.totalWorksRecommended || 0,
-                totalInProgress: overview.pendingWorks || 0,
-                totalCompleted: overview.totalWorksCompleted || 0,
-              }}
-            />
+          <div className="dashboard-info">
+            <Card className="info-card">
+              <CardHeader>
+                <CardTitle>About MPLADS</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>
+                  The Member of Parliament Local Area Development Scheme (MPLADS) enables MPs to
+                  recommend development projects worth ₹5 crores annually in their constituencies.
+                  This dashboard provides transparency into how these funds are being utilized
+                  across India.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="info-card">
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="quick-actions">
+                  <Button
+                    className="action-btn bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={() => navigate('/mplads/states')}
+                    variant="default"
+                  >
+                    View All States
+                  </Button>
+                  <Button
+                    className="action-btn bg-blue-600 text-white hover:bg-blue-700"
+                    onClick={() => navigate('/mplads/search')}
+                    variant="default"
+                  >
+                    Search MPs
+                  </Button>
+                  <div className="action-btn-wrapper">
+                    <Button
+                      className="action-btn"
+                      disabled
+                      aria-describedby="top-performers-disabled-tooltip"
+                      variant="outline"
+                    >
+                      View Top Performers
+                    </Button>
+                    <InfoTooltip
+                      content="Top Performers feature is being worked on with very high priority and will be live soon!"
+                      position="top"
+                      className="tooltip"
+                      size="small"
+                    />
+                  </div>
+                  <div className="action-btn-wrapper">
+                    <Button
+                      className="action-btn"
+                      disabled
+                      aria-describedby="report-disabled-tooltip"
+                      variant="outline"
+                    >
+                      Download Report
+                    </Button>
+                    <InfoTooltip
+                      content="Report generation is coming soon. You'll be able to download comprehensive MPLADS reports in PDF format."
+                      position="top"
+                      className="tooltip"
+                      size="small"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CollapsibleSection>
-
-        <CollapsibleSection
-          title="State-wise Allocation"
-          subtitle="Distribution of MPLADS funds across states and union territories"
-          icon={<FiPieChart />}
-          defaultOpen={false}
-          className="dashboard-section"
-        >
-          <div className="chart-container full-width">
-            {!shouldLoadCharts || stateLoading ? (
-              <SkeletonLoader type="chart" />
-            ) : states.length > 0 ? (
-              <Suspense fallback={<SkeletonLoader type="chart" />}>
-                <StateAllocationChart data={states} />
-              </Suspense>
-            ) : (
-              <p>No state allocation data is available.</p>
-            )}
-          </div>
-        </CollapsibleSection>
-      </div>
-
-      <div className="dashboard-info">
-        <Card className="info-card">
-          <CardHeader>
-            <CardTitle>About MPLADS</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>
-              The Member of Parliament Local Area Development Scheme (MPLADS) enables MPs to
-              recommend development projects worth ₹5 crores annually in their constituencies. This
-              dashboard provides transparency into how these funds are being utilized across India.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="info-card">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="quick-actions">
-              <Button
-                className="action-btn bg-blue-600 text-white hover:bg-blue-700"
-                onClick={() => navigate('/mplads/states')}
-                variant="default"
-              >
-                View All States
-              </Button>
-              <Button
-                className="action-btn bg-blue-600 text-white hover:bg-blue-700"
-                onClick={() => navigate('/mplads/search')}
-                variant="default"
-              >
-                Search MPs
-              </Button>
-              <div className="action-btn-wrapper">
-                <Button
-                  className="action-btn"
-                  disabled
-                  aria-describedby="top-performers-disabled-tooltip"
-                  variant="outline"
-                >
-                  View Top Performers
-                </Button>
-                <InfoTooltip
-                  content="Top Performers feature is being worked on with very high priority and will be live soon!"
-                  position="top"
-                  className="tooltip"
-                  size="small"
-                />
-              </div>
-              <div className="action-btn-wrapper">
-                <Button
-                  className="action-btn"
-                  disabled
-                  aria-describedby="report-disabled-tooltip"
-                  variant="outline"
-                >
-                  Download Report
-                </Button>
-                <InfoTooltip
-                  content="Report generation is coming soon. You'll be able to download comprehensive MPLADS reports in PDF format."
-                  position="top"
-                  className="tooltip"
-                  size="small"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        </>
+      )}
     </div>
   )
 }

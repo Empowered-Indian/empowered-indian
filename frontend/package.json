@@ -10,11 +10,13 @@
   },
   "scripts": {
     "dev": "vite --mode development",
-    "build": "vite build --mode production",
-    "build:dev": "vite build --mode development",
-    "build:prod": "vite build --mode production",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "build": "node scripts/generate-sitemap.mjs && vite build --mode production",
+    "build:dev": "node scripts/generate-sitemap.mjs && vite build --mode development",
+    "build:prod": "node scripts/generate-sitemap.mjs && vite build --mode production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "vitest run",
     "format": "prettier --cache --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
@@ -55,6 +57,7 @@
     "tailwindcss": "^3.4.18",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.3",
+    "vitest": "^4.0.15",
     "vite": "^7.0.4"
   }
 }

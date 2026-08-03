@@ -2,6 +2,20 @@ const https = require('https')
 const fs = require('fs')
 const path = require('path')
 
+const DATA_TYPE_REQUEST_KEYS = {
+  works_completed: 'Works Completed',
+  works_recommended: 'Works Recommended',
+  expenditure: 'Expenditure on Completed and On-going Works as on Date',
+  allocated_limit: "Allocated Limit for Hon'ble MPs",
+}
+
+const RESPONSE_KEY_FALLBACKS = {
+  works_completed: ['Total Works Completed', 'Works Completed'],
+  works_recommended: ['Total Works Recommended', 'Works Recommended'],
+  expenditure: ['Total Expenditure', 'Expenditure on Completed and On-going Works as on Date'],
+  allocated_limit: ['Allocated Limit', 'Allocated Limit for', "Allocated Limit for Hon'ble MPs"],
+}
+
 class MPLADSApiClient {
   constructor(sessionCookies = null) {
     this.baseUrl = 'https://mplads.mospi.gov.in/rest/PreLoginDashboardData/getTilesReportData'
@@ -348,15 +362,7 @@ class MPLADSApiClient {
           houseCombo = '0,0,0,1'
         }
 
-        // Map data type to key parameter as used by the current public dashboard API
-        const dataTypeMap = {
-          works_completed: 'Works Completed',
-          works_recommended: 'Works Recommended',
-          expenditure: 'Expenditure on Completed and On-going Works as on Date',
-          allocated_limit: 'Allocated Limit for',
-        }
-
-        const keyParam = dataTypeMap[dataType]
+        const keyParam = DATA_TYPE_REQUEST_KEYS[dataType]
         if (!keyParam) {
           reject(new Error(`Invalid data type: ${dataType}`))
           return
@@ -452,17 +458,7 @@ class MPLADSApiClient {
               }
 
               if (rawData === null || rawData === undefined) {
-                const responseKeyFallbacks = {
-                  works_completed: ['Total Works Completed', 'Works Completed'],
-                  works_recommended: ['Total Works Recommended', 'Works Recommended'],
-                  expenditure: [
-                    'Total Expenditure',
-                    'Expenditure on Completed and On-going Works as on Date',
-                  ],
-                  allocated_limit: ['Allocated Limit', 'Allocated Limit for'],
-                }
-
-                const fallbackKeys = responseKeyFallbacks[dataType] || []
+                const fallbackKeys = RESPONSE_KEY_FALLBACKS[dataType] || []
                 for (const fallbackKey of fallbackKeys) {
                   if (response && response[fallbackKey] !== undefined) {
                     _dataKey = fallbackKey
@@ -667,5 +663,8 @@ class MPLADSApiClient {
     }
   }
 }
+
+MPLADSApiClient.DATA_TYPE_REQUEST_KEYS = DATA_TYPE_REQUEST_KEYS
+MPLADSApiClient.RESPONSE_KEY_FALLBACKS = RESPONSE_KEY_FALLBACKS
 
 module.exports = MPLADSApiClient

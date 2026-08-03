@@ -6,7 +6,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**", "out/**"],
-      "env": ["NODE_ENV", "VITE_*"]
+      "env": ["NODE_ENV", "VITE_*", "API_URL", "SITE_URL", "SITEMAP_*"]
     },
     "dev": {
       "cache": false,

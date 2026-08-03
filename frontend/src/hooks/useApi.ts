@@ -45,7 +45,7 @@ export const useStateSummary = (params: any = {}, options: any = {}) => {
     queryKey: ['summary', 'states', merged],
     queryFn: () => summaryAPI.getStateSummary(merged),
     staleTime: CACHE_TIMES.SUMMARY,
-    enabled: options.enabled ?? true,
+    ...options,
   })
 }
 
@@ -65,7 +65,7 @@ export const useMPSummary = (params, options: any = {}) => {
     staleTime: CACHE_TIMES.SUMMARY,
     keepPreviousData: true, // preserve current results while fetching new ones
     placeholderData: prev => prev,
-    enabled: options.enabled ?? true,
+    ...options,
   })
 }
 

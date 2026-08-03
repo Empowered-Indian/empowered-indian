@@ -1,14 +1,6 @@
 import { useState } from 'react'
 import { FiDownload, FiFileText, FiDatabase } from 'react-icons/fi'
 import { Button } from '@/components/ui/button'
-import {
-  exportCompletedWorks,
-  exportRecommendedWorks,
-  exportExpenditures,
-  exportMPSummary,
-  exportAsJSON,
-  getCurrentFilters,
-} from '../../../../utils/exportUtils'
 import { useFilters } from '../../../../contexts/FilterContext'
 import { useAnalytics } from '../../../../hooks/useAnalytics'
 import './ExportButton.css'
@@ -29,6 +21,14 @@ const ExportButton = ({
     setIsExporting(true)
 
     try {
+      const {
+        exportCompletedWorks,
+        exportRecommendedWorks,
+        exportExpenditures,
+        exportMPSummary,
+        exportAsJSON,
+        getCurrentFilters,
+      } = await import('../../../../utils/exportUtils')
       const currentFilters = getCurrentFilters(filters)
       const combinedFilters = { ...currentFilters, ...additionalFilters }
 

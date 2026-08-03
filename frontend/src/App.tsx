@@ -1,10 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, type ReactNode, useEffect, useState } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import ErrorBoundary from './components/common/ErrorBoundary'
-import Home from './components/Home'
+import RouteAnalytics from './components/common/RouteAnalytics'
 import './App.css'
 
+const Home = lazy(() => import('./components/Home'))
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'))
 const TermsOfService = lazy(() => import('./components/TermsOfService'))
 const FAQ = lazy(() => import('./components/FAQ'))
@@ -16,15 +17,20 @@ const LoginRoute = lazy(() => import('./components/LoginRoute'))
 const MPLADSApp = lazy(() => import('./components/MPLADS/MPLADSApp'))
 const StickyFeedbackButton = lazy(() => import('./components/common/StickyFeedbackButton'))
 
-const RouteFallback = () => (
-  <main className="route-loading" aria-busy="true" aria-label="Loading page">
-    <div className="route-loading__content">
-      <span className="route-loading__eyebrow">Empowered Indian</span>
-      <div className="route-loading__title" />
-      <div className="route-loading__line" />
-      <div className="route-loading__line route-loading__line--short" />
+const RouteFallback = ({ className = '' }: { className?: string }) => (
+  <div className={`route-fallback ${className}`.trim()} aria-busy="true" aria-live="polite">
+    <div className="route-fallback__bar" />
+    <div className="route-fallback__block route-fallback__block--wide" />
+    <div className="route-fallback__grid">
+      <div />
+      <div />
+      <div />
     </div>
-  </main>
+  </div>
+)
+
+const withRouteFallback = (element: ReactNode, className?: string) => (
+  <Suspense fallback={<RouteFallback className={className} />}>{element}</Suspense>
 )
 
 const DeferredFeedback = () => {
@@ -58,6 +64,7 @@ function App() {
     <ErrorBoundary>
       <Router>
         <div className="app">
+          <RouteAnalytics />
           <Toaster
             position="top-right"
             toastOptions={{
@@ -68,22 +75,26 @@ function App() {
               },
             }}
           />
+          <Routes>
+            <Route path="/" element={withRouteFallback(<Home />)} />
+            <Route path="/privacy-policy" element={withRouteFallback(<PrivacyPolicy />)} />
+            <Route path="/terms-of-service" element={withRouteFallback(<TermsOfService />)} />
+            <Route path="/faq" element={withRouteFallback(<FAQ />)} />
+            <Route path="/about-us" element={withRouteFallback(<AboutUs />)} />
+            <Route path="/verify-email" element={withRouteFallback(<EmailVerification />)} />
+            <Route path="/unsubscribe/:token" element={withRouteFallback(<UnsubscribeSuccess />)} />
+            <Route
+              path="/unsubscribe-success"
+              element={withRouteFallback(<UnsubscribeSuccess />)}
+            />
+            <Route path="/login" element={withRouteFallback(<LoginRoute />)} />
+            <Route
+              path="/mplads/*"
+              element={withRouteFallback(<MPLADSApp />, 'route-fallback--mplads')}
+            />
+            <Route path="*" element={withRouteFallback(<NotFound />)} />
+          </Routes>
           <DeferredFeedback />
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/verify-email" element={<EmailVerification />} />
-              <Route path="/unsubscribe/:token" element={<UnsubscribeSuccess />} />
-              <Route path="/unsubscribe-success" element={<UnsubscribeSuccess />} />
-              <Route path="/login" element={<LoginRoute />} />
-              <Route path="/mplads/*" element={<MPLADSApp />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
         </div>
       </Router>
     </ErrorBoundary>
