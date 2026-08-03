@@ -57,9 +57,15 @@ function App() {
             <Route path="/about-us" element={withRouteFallback(<AboutUs />)} />
             <Route path="/verify-email" element={withRouteFallback(<EmailVerification />)} />
             <Route path="/unsubscribe/:token" element={withRouteFallback(<UnsubscribeSuccess />)} />
-            <Route path="/unsubscribe-success" element={withRouteFallback(<UnsubscribeSuccess />)} />
+            <Route
+              path="/unsubscribe-success"
+              element={withRouteFallback(<UnsubscribeSuccess />)}
+            />
             <Route path="/login" element={withRouteFallback(<LoginRoute />)} />
-            <Route path="/mplads/*" element={withRouteFallback(<MPLADSApp />, 'route-fallback--mplads')} />
+            <Route
+              path="/mplads/*"
+              element={withRouteFallback(<MPLADSApp />, 'route-fallback--mplads')}
+            />
             <Route path="*" element={withRouteFallback(<NotFound />)} />
           </Routes>
         </div>

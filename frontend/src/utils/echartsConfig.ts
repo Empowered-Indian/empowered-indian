@@ -5,7 +5,7 @@
 import * as echarts from 'echarts/core'
 
 // Charts - import only what we use
-import { BarChart, LineChart } from 'echarts/charts'
+import { BarChart, GaugeChart, LineChart, PieChart } from 'echarts/charts'
 
 // Components - import only what we use
 import {
@@ -13,6 +13,7 @@ import {
   TooltipComponent,
   TitleComponent,
   LegendComponent,
+  DataZoomComponent,
 } from 'echarts/components'
 
 // Renderers - Canvas is lighter than SVG
@@ -22,13 +23,16 @@ import { CanvasRenderer } from 'echarts/renderers'
 echarts.use([
   // Charts
   BarChart,
+  GaugeChart,
   LineChart,
+  PieChart,
 
   // Components
   GridComponent,
   TooltipComponent,
   TitleComponent,
   LegendComponent,
+  DataZoomComponent,
 
   // Renderer
   CanvasRenderer,
