@@ -5,7 +5,7 @@
 import * as echarts from 'echarts/core'
 
 // Charts - import only what we use
-import { BarChart, LineChart, PieChart, GaugeChart } from 'echarts/charts'
+import { BarChart, GaugeChart, LineChart, PieChart } from 'echarts/charts'
 
 // Components - import only what we use
 import {
@@ -27,9 +27,9 @@ import { LabelLayout } from 'echarts/features'
 echarts.use([
   // Charts
   BarChart,
+  GaugeChart,
   LineChart,
   PieChart,
-  GaugeChart,
 
   // Components
   GridComponent,

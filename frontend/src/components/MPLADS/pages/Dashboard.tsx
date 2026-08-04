@@ -56,6 +56,13 @@ const ProjectStatusSkeleton = () => (
   </div>
 )
 
+const DashboardTitle = () => (
+  <div className="dashboard-title-section">
+    <h1>MPLADS Dashboard</h1>
+    <p>Overview of Member of Parliament Local Area Development Scheme</p>
+  </div>
+)
+
 const Dashboard = () => {
   const navigate = useNavigate()
   const [chartsReady, setChartsReady] = useState(false)
@@ -197,10 +204,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <div className="dashboard-title-section">
-          <h1>MPLADS Dashboard</h1>
-          <p>Overview of Member of Parliament Local Area Development Scheme</p>
-        </div>
+        <DashboardTitle />
 
         <div className="dashboard-controls">
           <div className="dashboard-search">

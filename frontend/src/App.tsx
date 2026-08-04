@@ -3,24 +3,25 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import RouteAnalytics from './components/common/RouteAnalytics'
+import Home from './components/Home'
 import './App.css'
 
-const Home = lazy(() => import('./components/Home'))
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'))
 const TermsOfService = lazy(() => import('./components/TermsOfService'))
 const FAQ = lazy(() => import('./components/FAQ'))
 const AboutUs = lazy(() => import('./components/AboutUs'))
 const EmailVerification = lazy(() => import('./components/EmailVerification'))
 const UnsubscribeSuccess = lazy(() => import('./components/UnsubscribeSuccess'))
-const NotFound = lazy(() => import('./components/NotFound'))
 const LoginRoute = lazy(() => import('./components/LoginRoute'))
 const MPLADSApp = lazy(() => import('./components/MPLADS/MPLADSApp'))
+const NotFound = lazy(() => import('./components/NotFound'))
 const StickyFeedbackButton = lazy(() => import('./components/common/StickyFeedbackButton'))
 
 const RouteFallback = ({ className = '' }: { className?: string }) => (
-  <div className={`route-fallback ${className}`.trim()} aria-busy="true" aria-live="polite">
+  <div className={`route-fallback ${className}`.trim()} aria-busy="true" aria-label="Loading">
     <div className="route-fallback__bar" />
     <div className="route-fallback__block route-fallback__block--wide" />
+    <div className="route-fallback__block" />
     <div className="route-fallback__grid">
       <div />
       <div />
@@ -76,7 +77,7 @@ function App() {
             }}
           />
           <Routes>
-            <Route path="/" element={withRouteFallback(<Home />)} />
+            <Route path="/" element={<Home />} />
             <Route path="/privacy-policy" element={withRouteFallback(<PrivacyPolicy />)} />
             <Route path="/terms-of-service" element={withRouteFallback(<TermsOfService />)} />
             <Route path="/faq" element={withRouteFallback(<FAQ />)} />
