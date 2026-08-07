@@ -20,7 +20,7 @@ import SiteFooter from './common/SiteFooter'
 import { Button } from '@/components/ui/button'
 
 function Home() {
-  const heroRef = useRef(null)
+  const pageRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -36,19 +36,17 @@ function Home() {
       { threshold: 0.2 }
     )
 
-    const revealEls = Array.from(document.querySelectorAll('.reveal-on-scroll'))
+    const revealEls = Array.from(pageRef.current?.querySelectorAll('.reveal-on-scroll') || [])
     revealEls.forEach(el => io.observe(el))
 
     return () => io.disconnect()
   }, [])
 
   return (
-    <div className="home-page">
+    <div className="home-page" ref={pageRef}>
       {/* Hero Section */}
-      <section className="hero" ref={heroRef} role="banner" aria-label="MPLADS overview">
+      <section className="hero" role="banner" aria-label="MPLADS overview">
         <div className="hero-bg-pattern" aria-hidden="true">
-          <div className="hero-gradient-orb hero-gradient-orb-1"></div>
-          <div className="hero-gradient-orb hero-gradient-orb-2"></div>
           <div className="hero-grid-lines"></div>
         </div>
 
@@ -74,17 +72,15 @@ function Home() {
             </p>
 
             <div className="hero-cta">
-              <Link to="/mplads">
-                <Button className="hero-btn-primary">
+              <Button asChild className="hero-btn-primary">
+                <Link to="/mplads">
                   <span>Explore MPLADS Data</span>
                   <ArrowRight size={18} />
-                </Button>
-              </Link>
-              <Link to="/about-us">
-                <Button variant="outline" className="hero-btn-secondary">
-                  Learn More
-                </Button>
-              </Link>
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="hero-btn-secondary">
+                <Link to="/about-us">Learn about Empowered Indian</Link>
+              </Button>
             </div>
           </div>
 
@@ -97,9 +93,7 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="5000">
-                      5,000
-                    </span>
+                    <span>5,000</span>
                     <span className="stat-suffix">+ Cr</span>
                   </div>
                   <div className="stat-label">Funds Tracked</div>
@@ -113,9 +107,7 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="543">
-                      543
-                    </span>
+                    <span>543</span>
                   </div>
                   <div className="stat-label">MPs Monitored</div>
                 </div>
@@ -128,9 +120,7 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="38">
-                      38
-                    </span>
+                    <span>38</span>
                   </div>
                   <div className="stat-label">States & UTs</div>
                 </div>
@@ -143,9 +133,7 @@ function Home() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value">
-                    <span className="counter" data-target="10000">
-                      10,000
-                    </span>
+                    <span>10,000</span>
                     <span className="stat-suffix">+</span>
                   </div>
                   <div className="stat-label">Projects Tracked</div>
@@ -192,12 +180,12 @@ function Home() {
                   <ChevronRight size={14} /> MP performance analytics
                 </li>
               </ul>
-              <Link to="/mplads" className="dashboard-link">
-                <Button className="dashboard-btn">
+              <Button asChild className="dashboard-btn">
+                <Link to="/mplads" className="dashboard-link">
                   <span>View Dashboard</span>
                   <ArrowRight size={16} />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
 
             <div className="dashboard-card dashboard-card-secondary reveal-on-scroll">
@@ -310,7 +298,7 @@ function Home() {
               <div className="value-icon">
                 <Search size={24} />
               </div>
-              <h4 className="value-title">Transparency</h4>
+              <h3 className="value-title">Transparency</h3>
               <p className="value-description">
                 Making government spending visible and trackable for every citizen
               </p>
@@ -320,7 +308,7 @@ function Home() {
               <div className="value-icon">
                 <BarChart3 size={24} />
               </div>
-              <h4 className="value-title">Accountability</h4>
+              <h3 className="value-title">Accountability</h3>
               <p className="value-description">
                 Holding representatives accountable for public fund utilization
               </p>
@@ -330,7 +318,7 @@ function Home() {
               <div className="value-icon">
                 <Users size={24} />
               </div>
-              <h4 className="value-title">Accessibility</h4>
+              <h3 className="value-title">Accessibility</h3>
               <p className="value-description">
                 Democratizing access to government data for informed decision-making
               </p>

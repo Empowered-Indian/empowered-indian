@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react'
+import ReactECharts from './OptimizedEChart'
 import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 
@@ -424,7 +424,7 @@ const StateAllocationChart = ({ data, title = 'State-wise Allocation vs Expendit
           height: 'clamp(400px, 50vh, 600px)',
           width: '100%',
         }}
-        opts={{ renderer: 'svg' }}
+        opts={{ renderer: 'canvas' }}
         onEvents={onEvents}
       />
       {selectedState && (

@@ -387,15 +387,10 @@ const ProjectListing = ({
                 step={10000}
                 value={localFilters.cost_range}
                 onChange={newRange => handleFilterChange('cost_range', newRange)}
-                formatValue={value => {
-                  if (value === 0) return '₹0'
-                  if (value >= 100000) {
-                    return `₹${(value / 100000).toFixed(0)}L`
-                  }
-                  return `₹${(value / 1000).toFixed(0)}K`
-                }}
+                formatValue={value => formatINRCompact(value, { includeRupeeSymbol: true })}
                 label="Project Cost Range"
-                debounceMs={500}
+                size="compact"
+                debounceDelay={500}
                 className="project-cost-slider"
               />
             </div>

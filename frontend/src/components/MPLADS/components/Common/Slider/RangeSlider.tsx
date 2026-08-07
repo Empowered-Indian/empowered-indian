@@ -23,6 +23,9 @@ import { Slider } from '@/components/ui/slider'
  * @param {number} props.step - Increment size (default: 1)
  * @param {boolean} props.disabled - Whether the slider is disabled (default: false)
  * @param {string} props.className - Additional CSS classes
+ * @param {'default' | 'compact'} props.size - Sizing variant forwarded to the
+ *   underlying shadcn Slider (compact = slimmer track + smaller visible knob
+ *   with a larger touch target). Defaults to 'default' (original shadcn size).
  */
 const RangeSlider = ({
   min = 0,
@@ -35,6 +38,7 @@ const RangeSlider = ({
   step = 1,
   disabled = false,
   className = '',
+  size = 'default',
   debounceDelay = 300,
 }: any) => {
   // Internal state for immediate UI updates
@@ -103,6 +107,7 @@ const RangeSlider = ({
         onValueChange={handleValueChange}
         disabled={disabled}
         aria-label={label}
+        size={size}
         className="range-slider__container"
       />
     </div>

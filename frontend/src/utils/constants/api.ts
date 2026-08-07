@@ -5,7 +5,7 @@ const getApiBaseUrl = () => {
     return (
       import.meta.env.VITE_API_URL_PRODUCTION ||
       import.meta.env.VITE_API_URL ||
-      'https://your-production-domain.com/api'
+      'https://api.empoweredindian.in/api'
     )
   } else {
     return (

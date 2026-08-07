@@ -98,7 +98,7 @@
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: #92400e;
   background: transparent;
   border: 1.5px solid var(--color-accent);
   border-radius: 0;
@@ -117,7 +117,7 @@
   color: var(--color-text);
   margin: 0 0 1rem 0;
   line-height: 1.1;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
 }
 
 .section-subtitle {
@@ -151,32 +151,6 @@
   overflow: hidden;
 }
 
-.hero-gradient-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.35;
-}
-
-.hero-gradient-orb-1 {
-  width: 700px;
-  height: 700px;
-  top: -250px;
-  right: -150px;
-  background: radial-gradient(circle, var(--color-primary-light) 0%, transparent 70%);
-  animation: heroFloat 25s ease-in-out infinite;
-}
-
-.hero-gradient-orb-2 {
-  width: 500px;
-  height: 500px;
-  bottom: -150px;
-  left: -100px;
-  background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
-  opacity: 0.2;
-  animation: heroFloat 25s ease-in-out infinite reverse;
-}
-
 .hero-grid-lines {
   position: absolute;
   inset: 0;
@@ -184,19 +158,6 @@
     linear-gradient(to right, hsla(221.2, 83.2%, 53.3%, 0.03) 1px, transparent 1px),
     linear-gradient(to bottom, hsla(221.2, 83.2%, 53.3%, 0.03) 1px, transparent 1px);
   background-size: 80px 80px;
-}
-
-@keyframes heroFloat {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -40px) scale(1.05);
-  }
-  66% {
-    transform: translate(-20px, 30px) scale(0.95);
-  }
 }
 
 /* Hero Container */
@@ -241,7 +202,7 @@
   font-size: clamp(4rem, 9vw, 7.5rem);
   font-weight: 600;
   line-height: 0.92;
-  letter-spacing: 0;
+  letter-spacing: -0.03em;
   margin: 0 0 2rem 0;
   color: var(--color-text);
 }
@@ -428,8 +389,6 @@
 }
 
 .counter {
-  display: inline-block;
-  min-width: 4ch;
   font-variant-numeric: tabular-nums;
 }
 
@@ -898,6 +857,14 @@
   position: relative;
 }
 
+.dashboards-section,
+.features-section,
+.mission-section,
+.newsletter-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 50rem;
+}
+
 .newsletter-section::before {
   content: '';
   position: absolute;
@@ -1100,10 +1067,6 @@
     opacity: 1;
     transform: none;
     transition: none;
-  }
-
-  .hero-gradient-orb {
-    animation: none;
   }
 
   .coming-soon-bar::after {

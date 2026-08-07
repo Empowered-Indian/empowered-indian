@@ -28,5 +28,6 @@ npm-debug.log*
 .vscode
 .idea
 
-# local codex context
+# local agent context
 .codex
+CLAUDE.md

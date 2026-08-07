@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import ReactECharts from 'echarts-for-react'
+import ReactECharts from './OptimizedEChart'
 
 const MPPersonalityDistribution = ({ data, title = 'MP Personality Type Distribution' }) => {
   const [isMobile, setIsMobile] = useState(false)
@@ -195,7 +195,7 @@ const MPPersonalityDistribution = ({ data, title = 'MP Personality Type Distribu
       <ReactECharts
         option={option}
         style={{ height: chartHeight, width: '100%' }}
-        opts={{ renderer: 'svg' }}
+        opts={{ renderer: 'canvas' }}
         onEvents={{
           // Ensure tooltips don't overflow on click/hover
           mouseover: () => {
