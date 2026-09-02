@@ -1,5 +1,6 @@
 const NodeCache = require('node-cache')
 const { secureLogger } = require('../utils/logger')
+const { Metadata } = require('../models')
 
 // Create cache instance with optimized settings for low memory
 const cache = new NodeCache({
@@ -16,6 +17,51 @@ const MAX_MEMORY_MB = process.env.CACHE_MAX_MEMORY_MB
   ? parseInt(process.env.CACHE_MAX_MEMORY_MB)
   : 100
 const CLEANUP_THRESHOLD = 0.8 // Start cleanup at 80% of max memory
+const DATA_VERSION_REFRESH_MS = 30 * 1000
+const DATA_VERSION_TIMEOUT_MS = 500
+let dataVersion = 'no-sync-metadata'
+let dataVersionCheckedAt = 0
+let dataVersionPromise = null
+
+const getDataVersion = async () => {
+  const now = Date.now()
+  if (now - dataVersionCheckedAt < DATA_VERSION_REFRESH_MS) return dataVersion
+
+  if (!dataVersionPromise) {
+    dataVersionPromise = Metadata.findOne({ source: 'Official MPLADS Portal API' })
+      .select('lastUpdated updatedAt')
+      .lean()
+      .then(metadata => {
+        const timestamp = metadata?.lastUpdated || metadata?.updatedAt
+        const nextDataVersion = timestamp ? new Date(timestamp).toISOString() : 'no-sync-metadata'
+        if (nextDataVersion !== dataVersion) {
+          cache.flushAll()
+          dataVersion = nextDataVersion
+        }
+        dataVersionCheckedAt = Date.now()
+        return dataVersion
+      })
+      .catch(error => {
+        dataVersionCheckedAt = Date.now()
+        secureLogger.warn('Could not refresh cache data version', {
+          category: 'cache',
+          type: 'data_version_refresh_failed',
+          error: error.message,
+        })
+        return dataVersion
+      })
+      .finally(() => {
+        dataVersionPromise = null
+      })
+  }
+
+  // Bound the metadata lookup so a database outage cannot block otherwise
+  // valid in-memory cache hits for the driver's full selection timeout.
+  return Promise.race([
+    dataVersionPromise,
+    new Promise(resolve => setTimeout(() => resolve(dataVersion), DATA_VERSION_TIMEOUT_MS)),
+  ])
+}
 
 const getMemoryUsage = () => {
   const stats = cache.getStats()
@@ -62,14 +108,15 @@ const performMemoryCleanup = req => {
 
 // Cache middleware factory
 const cacheMiddleware = (duration = 24 * 60 * 60) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     // Only cache safe idempotent GETs
     if (req.method !== 'GET') {
       return next()
     }
 
     // Create cache key from method + URL; add per-user scope when authenticated
-    const baseKey = `${req.method}:${req.originalUrl || req.url}`
+    const currentDataVersion = await getDataVersion()
+    const baseKey = `${currentDataVersion}:${req.method}:${req.originalUrl || req.url}`
     const key = req.user?.id ? `user:${req.user.id}:${baseKey}` : baseKey
 
     try {
@@ -113,7 +160,7 @@ const cacheMiddleware = (duration = 24 * 60 * 60) => {
               cache.set(key, data, duration)
             } catch (cacheError) {
               // Handle cache full errors gracefully
-              if (cacheError.code === 'ECACHEFULL') {
+              if (cacheError.code === 'ECACHEFULL' || cacheError.errorcode === 'ECACHEFULL') {
                 secureLogger.warn(
                   'Cache full, clearing oldest entries',
                   {
@@ -218,4 +265,5 @@ module.exports = {
   invalidateCache,
   getMemoryUsage,
   performMemoryCleanup,
+  getDataVersion,
 }

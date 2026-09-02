@@ -88,10 +88,9 @@ export const useConstituencySummary = params => {
 }
 
 // MPLADS hooks
-export const useMPDetails = mpId => {
+export const useMPDetails = (mpId, lsTermOverride = null) => {
   const { filters } = useFilters()
-  const baseParams =
-    filters.house === 'Lok Sabha' || !filters.house ? { ls_term: Number(filters.lsTerm || 18) } : {}
+  const baseParams = { ls_term: Number(lsTermOverride || filters.lsTerm || 18) }
   return useAnyQuery({
     queryKey: ['mplads', 'mp', mpId, baseParams.ls_term],
     queryFn: () => mpladsAPI.getMPDetails(mpId, baseParams),
@@ -105,10 +104,11 @@ export const useMPWorks = (mpId, params) => {
   const houseParam = (params && params.house) || filters.house || 'Lok Sabha'
   const sanitized = sanitize(params)
   const bothTerms = sanitized.ls_term === 'both'
+  const selectedLsTerm = sanitized.ls_term || Number(filters.lsTerm || 18)
   const merged = {
     ...sanitized,
     ...(houseParam && houseParam !== 'Both Houses' && !bothTerms ? { house: houseParam } : {}),
-    ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(filters.lsTerm || 18) } : {}),
+    ...(houseParam === 'Lok Sabha' && !bothTerms ? { ls_term: Number(selectedLsTerm) } : {}),
   }
   return useAnyQuery({
     queryKey: ['mplads', 'mp', mpId, 'works', merged],

@@ -24,10 +24,9 @@ import {
   getIdFromSlug,
   isBareObjectId,
   buildMPSlugHuman,
-  buildMPSlugCandidates,
   normalizeMPSlug,
 } from '../../../utils/slug'
-import { summaryAPI } from '../../../services/api'
+import { mpladsAPI } from '../../../services/api'
 import { useFilters } from '../../../contexts/FilterContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -41,6 +40,7 @@ const MPDetail = () => {
   const location = useLocation()
   const [activeTab, setActiveTab] = useState('overview')
   const [resolvedIdFromSlug, setResolvedIdFromSlug] = useState(null)
+  const [resolvedLsTerm, setResolvedLsTerm] = useState(null)
   const [resolvingSlug, setResolvingSlug] = useState(false)
   const [ambiguousMatches, setAmbiguousMatches] = useState(null)
   const [cacheInvalidated, setCacheInvalidated] = useState(false)
@@ -49,13 +49,20 @@ const MPDetail = () => {
   const idInParam = getIdFromSlug(mpId)
   const bareId = isBareObjectId(mpId) ? mpId : null
   const effectiveId = idInParam || bareId || resolvedIdFromSlug
+  const termInSlug = Number(String(mpId || '').match(/-(\d+)(?:st|nd|rd|th)-lok-sabha$/)?.[1] || 0)
+  const effectiveLsTerm = resolvedLsTerm || termInSlug || null
 
   // Fetch MP details
-  const { data: mpData, isLoading: mpLoading, error: mpError } = useMPDetails(effectiveId)
+  const {
+    data: mpData,
+    isLoading: mpLoading,
+    error: mpError,
+  } = useMPDetails(effectiveId, effectiveLsTerm)
 
   // Fetch MP works
   const { data: worksData, isLoading: worksLoading } = useMPWorks(effectiveId, {
     limit: 100,
+    ...(effectiveLsTerm ? { house: 'Lok Sabha', ls_term: effectiveLsTerm } : {}),
   })
 
   const mp = mpData?.data?.mp || mpData?.data || {}
@@ -86,6 +93,7 @@ const MPDetail = () => {
         }
         // Reset state to trigger re-resolution
         setResolvedIdFromSlug(null)
+        setResolvedLsTerm(null)
         setCacheInvalidated(true)
       }
     }
@@ -147,14 +155,14 @@ const MPDetail = () => {
     if (!mp || mpLoading) return
     // If URL has an ID (either as bare or trailing), canonicalize to human slug without ID
     if (idInParam || bareId) {
-      const human = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }))
+      const human = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: mp.lsTerm || filters?.lsTerm }))
       if (human) {
         // preserve the resolved id so data remains while URL updates
         if (!resolvedIdFromSlug) setResolvedIdFromSlug(idInParam || bareId)
         try {
           const LS_KEY = 'mplads_slug_index'
           const CACHE_VERSION_KEY = 'mplads_slug_cache_version'
-          const CURRENT_CACHE_VERSION = '2' // Increment when DB structure changes
+          const CURRENT_CACHE_VERSION = '3' // Increment when cache value structure changes
 
           // Check cache version and clear if outdated
           const cachedVersion = localStorage.getItem(CACHE_VERSION_KEY)
@@ -164,7 +172,7 @@ const MPDetail = () => {
           }
 
           const map = JSON.parse(localStorage.getItem(LS_KEY) || '{}')
-          map[human] = idInParam || bareId
+          map[human] = { id: idInParam || bareId, lsTerm: mp.lsTerm || null }
           localStorage.setItem(LS_KEY, JSON.stringify(map))
         } catch {
           /* ignore */
@@ -182,7 +190,7 @@ const MPDetail = () => {
 
     const LS_KEY = 'mplads_slug_index'
     const CACHE_VERSION_KEY = 'mplads_slug_cache_version'
-    const CURRENT_CACHE_VERSION = '2' // Increment when DB structure changes
+    const CURRENT_CACHE_VERSION = '3' // Increment when cache value structure changes
 
     const readIndex = () => {
       try {
@@ -208,53 +216,41 @@ const MPDetail = () => {
 
     const fromCache = readIndex()
     if (fromCache[slug]) {
-      setResolvedIdFromSlug(fromCache[slug])
+      const cached = fromCache[slug]
+      setResolvedIdFromSlug(typeof cached === 'string' ? cached : cached.id)
+      setResolvedLsTerm(typeof cached === 'object' ? cached.lsTerm || null : null)
       return
     }
 
     let cancelled = false
     const resolve = async () => {
       setResolvingSlug(true)
-      const attempts = []
-      const house = filters?.house || 'Both Houses'
-      const lsTerm = Number(filters?.lsTerm || 18)
-      // Try with current filters
-      attempts.push({
-        house: house !== 'Both Houses' ? house : undefined,
-        ls_term: house === 'Lok Sabha' ? lsTerm : undefined,
-      })
-      // Then without house (both)
-      attempts.push({})
-      // Then fallback ls terms if needed
-      attempts.push({ house: 'Lok Sabha', ls_term: 18 })
-      attempts.push({ house: 'Lok Sabha', ls_term: 17 })
-      attempts.push({ house: 'Rajya Sabha' })
-
-      let found = []
-      for (const params of attempts) {
+      for (let attempt = 0; attempt < 3; attempt += 1) {
         try {
-          const resp = await summaryAPI.getMPSummary({ page: 1, limit: 800, ...params })
-          const list = resp?.data?.data || resp?.data || []
-          if (!Array.isArray(list) || list.length === 0) continue
-          // find matching by any candidate slug
-          const matches = list.filter(m => buildMPSlugCandidates(m).includes(slug))
-          if (matches.length > 0) {
-            found = matches
-            break
+          const response = await mpladsAPI.resolveMPSlug(slug)
+          if (cancelled) return
+          const id = response?.data?.id
+          if (id) {
+            setResolvedIdFromSlug(id)
+            setResolvedLsTerm(response?.data?.lsTerm || null)
+            const idx = readIndex()
+            idx[slug] = { id, lsTerm: response?.data?.lsTerm || null }
+            writeIndex(idx)
           }
-        } catch {
-          // Continue to next attempt
+          break
+        } catch (error) {
+          if (cancelled) return
+          const status = error?.response?.status
+          if (status === 404 && attempt < 2) {
+            await new Promise(resolveRetry => setTimeout(resolveRetry, 500 * (attempt + 1)))
+            continue
+          }
+          const matches = error?.response?.data?.data?.matches
+          if (Array.isArray(matches) && matches.length > 1) {
+            setAmbiguousMatches(matches)
+          }
+          break
         }
-      }
-      if (cancelled) return
-      if (found.length === 1 && (found[0]._id || found[0].id)) {
-        const id = found[0]._id || found[0].id
-        setResolvedIdFromSlug(id)
-        const idx = readIndex()
-        idx[slug] = id
-        writeIndex(idx)
-      } else if (found.length > 1) {
-        setAmbiguousMatches(found)
       }
       setResolvingSlug(false)
     }
@@ -286,7 +282,9 @@ const MPDetail = () => {
         <div className="performance-summary" style={{ marginTop: 16 }}>
           <div className="performance-cards">
             {ambiguousMatches.map(m => {
-              const slug = normalizeMPSlug(buildMPSlugHuman(m, { lsTerm: filters?.lsTerm }))
+              const slug = normalizeMPSlug(
+                m.canonicalSlug || buildMPSlugHuman(m, { lsTerm: m.lsTerm })
+              )
               const id = m._id || m.id
               return (
                 <Link

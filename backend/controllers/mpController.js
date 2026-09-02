@@ -2,6 +2,144 @@ const { MP, Summary, Expenditure, WorksCompleted, WorksRecommended } = require('
 const { getLsTermSelection } = require('../utils/lsTerm')
 const mongoose = require('mongoose')
 const { escapeRegex, validatePagination, isValidObjectId } = require('../utils/validators')
+const { normalizeMPSlug, buildMPSlug, buildMPSlugCandidates } = require('../utils/mpSlug')
+const { getDataVersion } = require('../middleware/cache')
+
+const SLUG_LOOKUP_TTL_MS = 5 * 60 * 1000
+const slugLookupCache = new Map()
+const slugLookupPromises = new Map()
+
+const pruneSlugLookups = dataVersion => {
+  const currentPrefix = `${dataVersion}:`
+  for (const key of slugLookupCache.keys()) {
+    if (!key.startsWith(currentPrefix)) slugLookupCache.delete(key)
+  }
+}
+
+const getSlugLookup = async (cacheKey, query) => {
+  const cached = slugLookupCache.get(cacheKey)
+  if (cached && Date.now() - cached.createdAt < SLUG_LOOKUP_TTL_MS) return cached.lookup
+  if (slugLookupPromises.has(cacheKey)) return slugLookupPromises.get(cacheKey)
+
+  const lookupPromise = Summary.find(query)
+    .select('_id mpName house state constituency lsTerm')
+    .lean()
+    .then(summaries => {
+      const lookup = new Map()
+      summaries.forEach(summary => {
+        buildMPSlugCandidates(summary).forEach(candidate => {
+          const existing = lookup.get(candidate) || []
+          existing.push(summary)
+          lookup.set(candidate, existing)
+        })
+      })
+      slugLookupCache.set(cacheKey, { createdAt: Date.now(), lookup })
+      return lookup
+    })
+    .finally(() => slugLookupPromises.delete(cacheKey))
+
+  slugLookupPromises.set(cacheKey, lookupPromise)
+  return lookupPromise
+}
+
+// GET /api/mplads/mps/resolve/:slug - Resolve a human-readable MP slug to its summary ID
+const resolveMPBySlug = async (req, res, next) => {
+  try {
+    // Summary IDs are replaced by each sync. A conditional browser request can
+    // otherwise receive a 304 with no body while React remounts the resolver,
+    // leaving the detail page without an ID to fetch. Express evaluates the
+    // request validators after the handler, so explicitly ignore them here.
+    delete req.headers['if-none-match']
+    delete req.headers['if-modified-since']
+    res.set('Cache-Control', 'no-store')
+
+    const slug = normalizeMPSlug(req.params.slug)
+    if (!slug || slug.length > 300) {
+      return res.status(400).json({ success: false, error: 'Invalid MP slug' })
+    }
+
+    const query = { type: 'mp_summary' }
+    let lookupKey = 'all'
+    let requestedTerm = null
+    const lokSabhaMatch = slug.match(/-(\d+)(?:st|nd|rd|th)-lok-sabha$/)
+    if (lokSabhaMatch) {
+      query.house = 'Lok Sabha'
+      query.lsTerm = Number(lokSabhaMatch[1])
+      requestedTerm = query.lsTerm
+      lookupKey = `lok-sabha:${query.lsTerm}`
+    } else if (slug.endsWith('-rajya-sabha')) {
+      query.house = 'Rajya Sabha'
+      lookupKey = 'rajya-sabha'
+    }
+
+    const dataVersion = await getDataVersion()
+    pruneSlugLookups(dataVersion)
+    const primaryCacheKey = `${dataVersion}:${lookupKey}`
+    const lookup = await getSlugLookup(primaryCacheKey, query)
+    let matches = lookup.get(slug) || []
+    let fallbackCacheKey = null
+
+    // Historical links sometimes carried the active UI term rather than the
+    // MP summary's term. Prefer the requested term, then retain that legacy
+    // cross-term fallback only when no exact-term record exists.
+    if (matches.length === 0 && (requestedTerm === 17 || requestedTerm === 18)) {
+      const fallbackTerm = requestedTerm === 18 ? 17 : 18
+      fallbackCacheKey = `${dataVersion}:lok-sabha:${fallbackTerm}`
+      const fallbackLookup = await getSlugLookup(fallbackCacheKey, {
+        type: 'mp_summary',
+        house: 'Lok Sabha',
+        lsTerm: fallbackTerm,
+      })
+      matches = fallbackLookup.get(slug) || []
+    }
+
+    // Summary IDs are recreated during the uploader's replacement window.
+    // Never return an ID that has already disappeared; evict the affected
+    // lookup so the frontend's retry rebuilds it from the current snapshot.
+    if (matches.length > 0) {
+      const liveIds = new Set(
+        (
+          await Summary.find({
+            _id: { $in: matches.map(match => match._id) },
+            type: 'mp_summary',
+          })
+            .select('_id')
+            .lean()
+        ).map(match => String(match._id))
+      )
+      const liveMatches = matches.filter(match => liveIds.has(String(match._id)))
+      if (liveMatches.length !== matches.length) {
+        slugLookupCache.delete(primaryCacheKey)
+        if (fallbackCacheKey) slugLookupCache.delete(fallbackCacheKey)
+      }
+      matches = liveMatches
+    }
+    const responseMatches = matches.map(summary => ({
+      id: summary._id,
+      mpName: summary.mpName,
+      house: summary.house,
+      state: summary.state,
+      constituency: summary.constituency,
+      lsTerm: summary.lsTerm,
+      canonicalSlug: buildMPSlug(summary),
+    }))
+
+    if (responseMatches.length === 0) {
+      return res.status(404).json({ success: false, error: 'MP slug not found' })
+    }
+    if (responseMatches.length > 1) {
+      return res.status(409).json({
+        success: false,
+        error: 'MP slug is ambiguous',
+        data: { matches: responseMatches },
+      })
+    }
+
+    return res.json({ success: true, data: responseMatches[0] })
+  } catch (error) {
+    next(error)
+  }
+}
 
 // GET /api/mps/:id - Individual MP details
 const getMPDetails = async (req, res, next) => {
@@ -228,6 +366,7 @@ const getMPDetails = async (req, res, next) => {
           constituency: mpConstituency,
           state: mpState,
           house: mpSummary ? mpSummary.house : mp?.house,
+          lsTerm: mpSummary?.lsTerm ?? mp?.lsTerm ?? null,
           allocatedAmount,
           totalExpenditure,
           totalRecommendedAmount: mpSummary?.totalRecommendedAmount || totalRecommendedAmount,
@@ -1269,6 +1408,7 @@ const getYearWiseTrends = async (req, res, next) => {
 }
 
 module.exports = {
+  resolveMPBySlug,
   getMPDetails,
   getMPWorks,
   searchMPs,

@@ -2,6 +2,13 @@ import apiClient from './apiClient'
 import { API_ENDPOINTS } from '../../utils/constants/api'
 
 export const mpladsAPI = {
+  // Resolve a human-readable MP slug without downloading every MP to the browser
+  resolveMPSlug: async (slug: string) => {
+    return apiClient.get(`${API_ENDPOINTS.MPLADS_MP_DETAILS}/resolve/${encodeURIComponent(slug)}`, {
+      skipErrorToast: true,
+    })
+  },
+
   // Get individual MP details
   getMPDetails: async (mpId: any, params: any = {}) => {
     return apiClient.get(`${API_ENDPOINTS.MPLADS_MP_DETAILS}/${mpId}`, { params })

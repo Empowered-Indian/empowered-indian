@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --max-old-space-size=512 server.js",
     "dev": "nodemon --max-old-space-size=512 server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/*.test.js",
     "create-indexes": "node scripts/createIndexes.js",
     "analyze-performance": "node scripts/analyzePerformance.js",
     "db-optimize": "npm run analyze-performance && npm run create-indexes && npm run analyze-performance",
