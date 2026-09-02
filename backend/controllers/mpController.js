@@ -195,10 +195,23 @@ const getMPDetails = async (req, res, next) => {
       }
     }
 
-    const [completedWorksCount, recommendedWorksCount] = await Promise.all([
+    const [completedWorksCount, recommendedWorksCount, recommendedAmountStats] = await Promise.all([
       WorksCompleted.countDocuments(worksCountQuery),
       WorksRecommended.countDocuments(worksCountQuery),
+      WorksRecommended.aggregate([
+        { $match: worksCountQuery },
+        { $group: { _id: null, totalRecommendedAmount: { $sum: '$recommendedAmount' } } },
+      ]),
     ])
+    const totalRecommendedAmount = recommendedAmountStats[0]?.totalRecommendedAmount || 0
+    const allocatedAmount = mpSummary ? mpSummary.allocatedAmount : mp?.allocated_limit || 0
+    const totalExpenditure = mpSummary
+      ? mpSummary.totalExpenditure
+      : expenditureStats[0]?.totalExpenditure || 0
+    const recommendationUtilizationPercentage =
+      allocatedAmount > 0 ? Math.min((totalRecommendedAmount / allocatedAmount) * 100, 100) : 0
+    const expenditurePercentage =
+      allocatedAmount > 0 ? Math.min((totalExpenditure / allocatedAmount) * 100, 100) : 0
 
     // Get recent works
     const recentWorks = await WorksCompleted.find(worksCountQuery)
@@ -215,25 +228,27 @@ const getMPDetails = async (req, res, next) => {
           constituency: mpConstituency,
           state: mpState,
           house: mpSummary ? mpSummary.house : mp?.house,
-          allocatedAmount: mpSummary ? mpSummary.allocatedAmount : mp?.allocated_limit,
-          totalExpenditure: mpSummary
-            ? mpSummary.totalExpenditure
-            : expenditureStats[0]?.totalExpenditure || 0,
+          allocatedAmount,
+          totalExpenditure,
+          totalRecommendedAmount: mpSummary?.totalRecommendedAmount || totalRecommendedAmount,
+          // A missing summary can come from a legacy snapshot where
+          // works_recommended contains only pending works. In that case the
+          // recommendation amount is not a valid utilization numerator.
           utilizationPercentage: mpSummary
             ? mpSummary.utilizationPercentage
-            : (() => {
-                const totalExpenditure = expenditureStats[0]?.totalExpenditure || 0
-                const allocatedAmount = mpSummary?.allocatedAmount || mp?.allocated_limit || 0
-
-                // Guard against division by zero
-                if (allocatedAmount === 0) {
-                  return totalExpenditure > 0 ? 100 : 0 // 100% if spent without allocation, 0% if nothing spent
-                }
-
-                const percentage = (totalExpenditure / allocatedAmount) * 100
-                // Cap at 100% for display purposes
-                return Math.min(percentage, 100)
-              })(),
+            : expenditurePercentage,
+          recommendationUtilizationPercentage:
+            !mpSummary || (mpSummary.metricsVersion || 1) < 2
+              ? null
+              : (mpSummary?.recommendationUtilizationPercentage ??
+                mpSummary?.utilizationPercentage ??
+                recommendationUtilizationPercentage),
+          expenditurePercentage: mpSummary?.expenditurePercentage || expenditurePercentage,
+          utilizationDefinition: mpSummary
+            ? (mpSummary.metricsVersion || 1) >= 2
+              ? 'recommended_amount'
+              : 'vendor_expenditure_legacy'
+            : 'vendor_expenditure_legacy',
           completedWorksCount: mpSummary ? mpSummary.completedWorksCount : completedWorksCount,
           recommendedWorksCount: mpSummary
             ? mpSummary.recommendedWorksCount
@@ -245,10 +260,18 @@ const getMPDetails = async (req, res, next) => {
           paymentGapPercentage: mpSummary?.paymentGapPercentage || 0,
           completionRate:
             mpSummary?.completionRate ||
-            (completedWorksCount / (completedWorksCount + recommendedWorksCount || 1)) * 100,
-          pendingWorks: mpSummary?.pendingWorks || recommendedWorksCount - completedWorksCount,
+            Math.min(
+              (completedWorksCount / (completedWorksCount + recommendedWorksCount || 1)) * 100,
+              100
+            ),
+          pendingWorks:
+            mpSummary?.pendingWorks ?? Math.max(recommendedWorksCount - completedWorksCount, 0),
+          unpaidBalance:
+            mpSummary?.unpaidBalance ??
+            (!mpSummary || (mpSummary.metricsVersion || 1) < 2
+              ? null
+              : Math.max(totalRecommendedAmount - totalExpenditure, 0)),
           unspentAmount: mpSummary?.unspentAmount || 0,
-          totalRecommendedAmount: mpSummary?.totalRecommendedAmount || 0,
           name_hi: mpName, // Placeholder for Hindi translation
           constituency_hi: mpConstituency,
           state_hi: mpState,
@@ -933,7 +956,9 @@ const getConstituencyDetails = async (req, res, next) => {
       house: mp.house,
       ...(mp.house === 'Lok Sabha' ? lsGate : {}),
     }
-    const mpSummaryOne = await Summary.findOne(summaryMatch).select('allocatedAmount').lean()
+    const mpSummaryOne = await Summary.findOne(summaryMatch)
+      .select('allocatedAmount metricsVersion')
+      .lean()
     const allocatedAmount = mpSummaryOne?.allocatedAmount || 0
 
     res.json({
@@ -958,10 +983,13 @@ const getConstituencyDetails = async (req, res, next) => {
             completed: completedWorks,
             recommended: recommendedWorks,
             completionRate: (() => {
-              const total = completedWorks + recommendedWorks
-              if (total === 0) return 0
-              const rate = (completedWorks / total) * 100
-              return Number.isFinite(rate) ? rate : 0
+              const recommendationTotal =
+                (mpSummaryOne?.metricsVersion || 1) >= 2
+                  ? recommendedWorks
+                  : completedWorks + recommendedWorks
+              if (recommendationTotal === 0) return 0
+              const rate = (completedWorks / recommendationTotal) * 100
+              return Number.isFinite(rate) ? Math.min(rate, 100) : 0
             })(),
           },
         },

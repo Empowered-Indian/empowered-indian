@@ -25,6 +25,7 @@ class MPLADSApiClient {
     this.sessionFile = path.join(__dirname, '../data/session.json')
     this.maxRetries = 3
     this.retryDelay = 1000 // Start with 1 second
+    this.interRequestDelay = 1000
 
     this.headers = {
       Accept: 'application/json, text/javascript, */*; q=0.01',
@@ -525,8 +526,8 @@ class MPLADSApiClient {
           reject(error)
         })
 
-        req.setTimeout(120000, () => {
-          // 2 minutes timeout
+        req.setTimeout(300000, () => {
+          // The recommendation payload exceeds 90 MB and regularly needs over two minutes.
           req.destroy()
           reject(new Error(`Timeout fetching ${house} ${dataType}: API request took too long`))
         })
@@ -552,14 +553,39 @@ class MPLADSApiClient {
     const results = {}
 
     for (const dataType of dataTypes) {
-      try {
-        results[dataType] = await this.fetchData(house, dataType, lsTerm)
-        // Add small delay to avoid overwhelming the API
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      } catch (error) {
-        console.error(`Failed to fetch ${house} ${dataType}:`, error.message)
-        results[dataType] = []
+      let lastError
+
+      for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
+        try {
+          const records = await this.fetchData(house, dataType, lsTerm)
+          if (!Array.isArray(records) || records.length === 0) {
+            throw new Error('API returned an empty dataset')
+          }
+          results[dataType] = records
+          lastError = null
+          break
+        } catch (error) {
+          lastError = error
+          console.error(
+            `Failed to fetch ${house} ${dataType} (attempt ${attempt}/${this.maxRetries}):`,
+            error.message
+          )
+          if (attempt < this.maxRetries) {
+            await new Promise(resolve =>
+              setTimeout(resolve, this.retryDelay * Math.pow(2, attempt - 1))
+            )
+          }
+        }
       }
+
+      if (lastError) {
+        throw new Error(
+          `Incomplete MPLADS snapshot: ${house} ${dataType} failed after ${this.maxRetries} attempts: ${lastError.message}`
+        )
+      }
+
+      // Add small delay to avoid overwhelming the API
+      await new Promise(resolve => setTimeout(resolve, this.interRequestDelay))
     }
 
     return results

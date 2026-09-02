@@ -20,7 +20,7 @@ const allocationSchema = new mongoose.Schema(
     constituency: String,
     allocatedAmount: { type: Number, default: 0 },
     // Lok Sabha term indicator (null for Rajya Sabha)
-    lsTerm: { type: Number, default: null, index: true },
+    lsTerm: { type: Number, default: null },
   },
   { timestamps: true }
 )
@@ -42,13 +42,12 @@ const expenditureSchema = new mongoose.Schema(
     expenditureDate: Date,
     paymentStatus: String,
     expenditureAmount: { type: Number, default: 0 },
-    lsTerm: { type: Number, default: null, index: true },
+    lsTerm: { type: Number, default: null },
   },
   { timestamps: true }
 )
 expenditureSchema.index({ mpName: 1, house: 1, lsTerm: 1 })
 expenditureSchema.index({ state: 1, house: 1, lsTerm: 1 })
-expenditureSchema.index({ expenditureDate: -1 })
 
 // Works Completed Schema
 const worksCompletedSchema = new mongoose.Schema(
@@ -58,20 +57,19 @@ const worksCompletedSchema = new mongoose.Schema(
     state: { type: String, required: true },
     constituency: String,
     workCategory: String,
-    workId: { type: Number, index: true },
+    workId: Number,
     ida: String,
     workDescription: String,
     completedDate: Date,
     hasImage: { type: Boolean, default: false },
     averageRating: Number,
     finalAmount: { type: Number, default: 0 },
-    lsTerm: { type: Number, default: null, index: true },
+    lsTerm: { type: Number, default: null },
   },
   { timestamps: true }
 )
 worksCompletedSchema.index({ mpName: 1, house: 1, lsTerm: 1 })
-worksCompletedSchema.index({ state: 1, house: 1, lsTerm: 1 })
-worksCompletedSchema.index({ completedDate: -1 })
+worksCompletedSchema.index({ workId: 1, house: 1, lsTerm: 1 })
 
 // Works Recommended Schema
 const worksRecommendedSchema = new mongoose.Schema(
@@ -85,20 +83,24 @@ const worksRecommendedSchema = new mongoose.Schema(
     ida: String,
     workDescription: String,
     recommendationDate: Date,
+    sanctionDate: Date,
     hasImage: { type: Boolean, default: false },
     recommendedAmount: { type: Number, default: 0 },
-    lsTerm: { type: Number, default: null, index: true },
+    sanctionedAmount: { type: Number, default: 0 },
+    workStage: String,
+    isCompleted: { type: Boolean, default: false },
+    lsTerm: { type: Number, default: null },
   },
   { timestamps: true }
 )
 worksRecommendedSchema.index({ mpName: 1, house: 1, lsTerm: 1 })
-worksRecommendedSchema.index({ state: 1, house: 1, lsTerm: 1 })
-worksRecommendedSchema.index({ recommendationDate: -1 })
+worksRecommendedSchema.index({ house: 1, lsTerm: 1, isCompleted: 1, recommendationDate: -1 })
 
 // Summary Schema
 const summarySchema = new mongoose.Schema(
   {
     type: { type: String, required: true },
+    metricsVersion: { type: Number, default: 1 },
     mpName: String,
     house: String,
     state: String,
@@ -114,10 +116,13 @@ const summarySchema = new mongoose.Schema(
     avgRating: Number,
     recommendedWorksCount: Number,
     totalRecommendedAmount: Number,
+    recommendationUtilizationPercentage: Number,
     utilizationPercentage: Number,
+    expenditurePercentage: Number,
     completionRate: Number,
     pendingWorks: Number,
     unspentAmount: Number,
+    unpaidBalance: Number,
     // Additional metrics
     completedWorksValue: Number,
     totalCompletedWorksValue: Number,

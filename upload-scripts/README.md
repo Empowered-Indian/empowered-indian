@@ -14,7 +14,7 @@ Copy `.env.example` to `.env` and set values:
 
 - `MONGODB_URI` — Connection string (DO NOT COMMIT)
 - `DATABASE_NAME` — Target database
-- `LS_TERM` — `17` | `18` | `both` (default `both`)
+- Lok Sabha synchronization always refreshes both the 17th and 18th terms so metrics remain comparable.
 
 CLI Usage
 
@@ -23,9 +23,7 @@ cd upload-scripts
 npm start  # or npm run basic
 
 # Control Lok Sabha term scope
-node index.js --ls-term=17   # 17th Lok Sabha only
-node index.js --ls-term=18   # 18th Lok Sabha only
-node index.js --ls-term=both # both terms (default)
+node index.js # refresh both Lok Sabha terms (required for metric consistency)
 ```
 
 What it does

@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 const NavigationSimple = () => {
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900)
   const { filters, updateFilter } = useFilters()
   const [availableTerms, setAvailableTerms] = useState([18, 17])
   const [loadingTerms, setLoadingTerms] = useState(false)
@@ -76,8 +76,8 @@ const NavigationSimple = () => {
   // Handle responsive detection
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768)
-      if (window.innerWidth > 768) {
+      setIsMobile(window.innerWidth <= 900)
+      if (window.innerWidth > 900) {
         setIsOpen(false)
       }
     }

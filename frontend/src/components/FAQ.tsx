@@ -273,10 +273,10 @@ function FAQ() {
                 <div className="qa">
                   <h3>How is fund utilization calculated?</h3>
                   <p>
-                    Fund utilization is calculated by summing the total amount of recommended works
-                    and completed works, then comparing this to the allocated funds. This metric
-                    helps assess how effectively MPs are using their MPLADS allocation for
-                    development projects.
+                    In line with the MoSPI dashboard, MP fund utilization is the total amount
+                    recommended by the MP divided by the amount allocated. Recorded expenditure is
+                    shown separately because releases may be recorded later as works move through
+                    approval and execution.
                   </p>
                 </div>
               </AccordionContent>
@@ -299,10 +299,10 @@ function FAQ() {
                 <div className="qa">
                   <h3>What do the charts and metrics mean?</h3>
                   <p>
-                    Charts summarize sanctioned amounts, expenditures, project counts, and
-                    distribution across categories. Key metrics include fund utilization rates,
-                    project completion statistics, and category-wise spending. Hover over charts for
-                    exact values and detailed tooltips.
+                    Charts summarize recommendations, recorded expenditure, project counts, and
+                    distribution across categories. Key metrics include MP fund utilization,
+                    expenditure rate, and project completion. Hover over charts for exact values and
+                    definitions.
                   </p>
                 </div>
                 <div className="qa">

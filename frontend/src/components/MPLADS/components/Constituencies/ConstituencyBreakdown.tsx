@@ -198,7 +198,7 @@ const ConstituencyBreakdown = ({ stateName, constituencies = [] }) => {
                 <th>MP Name</th>
                 <th>House</th>
                 <th>Allocated</th>
-                <th>Utilized</th>
+                <th>Recorded Expenditure</th>
                 <th>Utilization %</th>
                 <th>Works Completed</th>
               </tr>

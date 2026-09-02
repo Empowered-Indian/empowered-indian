@@ -143,10 +143,13 @@ const Dashboard = () => {
       value: formatINRCompact(overview.totalExpenditure),
       icon: <FiFileText />,
       color: 'green',
-      description: 'Total funds spent',
+      description: 'Vendor expenditure recorded for completed and ongoing works',
     },
     {
-      title: 'Fund Utilization',
+      title:
+        overview.utilizationDefinition === 'vendor_expenditure_legacy'
+          ? 'Expenditure Rate'
+          : 'Fund Utilization',
       value: `${overview.utilizationPercentage?.toFixed(1) || 0}%`,
       icon: <FiPieChart />,
       color:
@@ -155,10 +158,28 @@ const Dashboard = () => {
           : overview.utilizationPercentage > 40
             ? 'yellow'
             : 'red',
-      description: 'Overall fund utilization rate',
+      description:
+        overview.utilizationDefinition === 'vendor_expenditure_legacy'
+          ? 'Legacy snapshot: recorded expenditure as a share of allocation'
+          : 'Share of allocation recommended by MPs',
       tooltip:
-        'Fund Utilization: Percentage of allocated MPLADS funds that have been disbursed (Total Expenditure / Total Allocation × 100). This matches official MPLADS reporting standards.',
+        overview.utilizationDefinition === 'vendor_expenditure_legacy'
+          ? 'A recommendation-based utilization snapshot is being refreshed. This temporary value is recorded vendor expenditure divided by allocation.'
+          : 'MoSPI defines MP fund utilization as the total amount recommended by the MP divided by the allocated amount.',
     },
+    ...(overview.utilizationDefinition === 'vendor_expenditure_legacy'
+      ? []
+      : [
+          {
+            title: 'Expenditure Rate',
+            value: `${overview.expenditurePercentage?.toFixed(1) || 0}%`,
+            icon: <FiFileText />,
+            color: 'blue',
+            description: 'Vendor expenditure recorded as a share of allocation',
+            tooltip:
+              'This is recorded expenditure: recorded expenditure released for completed and ongoing works divided by allocation. It is separate from MP fund utilization.',
+          },
+        ]),
     {
       title: 'Total MPs',
       value: formatNumber(overview.totalMPs),
@@ -183,14 +204,13 @@ const Dashboard = () => {
       description: 'Projects yet to be completed',
     },
     {
-      title: 'INCOMPLETE WORKS',
+      title: 'ONGOING-WORK PAYMENTS',
       value: formatINRCompact(overview.inProgressPayments || overview.totalInProgressPayments || 0),
       icon: <FiAlertTriangle />,
       color: 'red',
-      description: 'Payments made but works not completed',
+      description: 'Vendor payments linked to works not yet marked complete',
       tooltip:
-        'Amount paid to vendors/contractors for works that are not yet marked as completed. This represents funds that need accountability tracking.',
-      warning: true,
+        'Amount paid to vendors for works that implementing agencies have not yet marked complete on the MoSPI portal.',
     },
   ]
 

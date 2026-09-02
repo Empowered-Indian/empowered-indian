@@ -277,6 +277,7 @@ const getCompletedWorks = async (req, res, next) => {
 
 // GET /api/works/recommended - Recommended works with filters
 const getRecommendedWorks = async (req, res, next) => {
+  const aggregationDeadlineMs = 15000
   try {
     const {
       page = 1,
@@ -380,6 +381,33 @@ const getRecommendedWorks = async (req, res, next) => {
               ],
             }
 
+    // The flag makes the common case fast, while this lookup protects reads if a
+    // sync stops after refreshing completed works but before recommendations.
+    const excludeCompletedStages = [
+      {
+        $lookup: {
+          from: 'works_completed',
+          let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$workId', '$$workId'] },
+                    { $eq: ['$house', '$$house'] },
+                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
+                  ],
+                },
+              },
+            },
+            { $limit: 1 },
+          ],
+          as: 'completedMatch',
+        },
+      },
+      { $match: { completedMatch: { $size: 0 } } },
+    ]
+
     // Sort configuration
     const sortConfig = {}
     if (sort.startsWith('-')) {
@@ -388,41 +416,39 @@ const getRecommendedWorks = async (req, res, next) => {
       sortConfig[sort] = 1
     }
 
-    // For performance, cap initial scan size to reduce heavy lookups
-    const initialLimit = has_payments !== undefined ? 1000 : null // Limit to 1000 works when payment filtering
-    const scanCap = has_payments !== undefined ? initialLimit : Math.max(parseInt(limit) * 50, 1000)
-
-    // Fast path: small page, no expensive filters. Avoid heavy aggregation.
-    const fastPath = !has_payments && !year && !category && !search && parseInt(limit) <= 5
+    // Small unfiltered pages can use the materialized completion flag directly.
+    const fastPath = !has_payments && !year && !category && !search && safeLimit <= 5
     if (fastPath) {
       try {
-        const baseQuery = { $and: [matchConditions, lsGateR] }
-        // Fetch a small buffer to allow exclude-completed filtering
-        const bufferSize = Math.max(parseInt(limit) * 3, 20)
-        const quickDocs = await WorksRecommended.find(baseQuery)
-          .sort(sortConfig)
-          .limit(bufferSize)
-          .select(
-            'house lsTerm workDescription workCategory recommendedAmount recommendationDate ida constituency state expected_beneficiaries priority mpName workId'
-          )
-          .lean()
+        // Legacy snapshots physically excluded completed recommendations, so a
+        // missing flag is also an outstanding recommendation.
+        const baseQuery = { $and: [matchConditions, lsGateR, { isCompleted: { $ne: true } }] }
+        const quickDocs = await WorksRecommended.aggregate([
+          { $match: baseQuery },
+          ...excludeCompletedStages,
+          { $sort: sortConfig },
+          { $skip: skip },
+          { $limit: safeLimit },
+          {
+            $project: {
+              house: 1,
+              lsTerm: 1,
+              workDescription: 1,
+              workCategory: 1,
+              recommendedAmount: 1,
+              recommendationDate: 1,
+              ida: 1,
+              constituency: 1,
+              state: 1,
+              expected_beneficiaries: 1,
+              priority: 1,
+              mpName: 1,
+              workId: 1,
+            },
+          },
+        ]).option({ allowDiskUse: true, maxTimeMS: aggregationDeadlineMs })
 
-        const ids = Array.from(new Set(quickDocs.map(d => d.workId).filter(Boolean)))
-        let filtered = quickDocs
-        if (ids.length > 0) {
-          const houses = Array.from(new Set(quickDocs.map(d => d.house).filter(Boolean)))
-          const terms = Array.from(new Set(quickDocs.map(d => d.lsTerm)))
-          const completedQuery = {
-            workId: { $in: ids },
-            ...(houses.length === 1 ? { house: houses[0] } : { house: { $in: houses } }),
-            ...(terms.length > 0 ? { lsTerm: { $in: terms } } : {}),
-          }
-          const completed = await WorksCompleted.find(completedQuery).select('workId').lean()
-          const completedIds = new Set(completed.map(c => c.workId))
-          filtered = quickDocs.filter(d => !completedIds.has(d.workId))
-        }
-
-        const pageItems = filtered.slice(0, parseInt(limit)).map(doc => ({
+        const pageItems = quickDocs.map(doc => ({
           house: doc.house,
           lsTerm: doc.lsTerm,
           work_description: doc.workDescription,
@@ -456,39 +482,21 @@ const getRecommendedWorks = async (req, res, next) => {
           paymentCount: 0,
         }))
 
-        // Approximate count but exclude works already completed
-        let approxTotal = 0
+        let approxTotal
         try {
-          const approxAgg = await WorksRecommended.aggregate([
+          const countResult = await WorksRecommended.aggregate([
             { $match: baseQuery },
-            {
-              $lookup: {
-                from: 'works_completed',
-                let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $and: [
-                          { $eq: ['$workId', '$$workId'] },
-                          { $eq: ['$house', '$$house'] },
-                          {
-                            $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }],
-                          },
-                        ],
-                      },
-                    },
-                  },
-                ],
-                as: 'completedMatch',
-              },
-            },
-            { $match: { completedMatch: { $size: 0 } } },
+            ...excludeCompletedStages,
             { $count: 'total' },
-          ])
-          approxTotal = approxAgg[0]?.total || 0
-        } catch {
-          approxTotal = 0
+          ]).option({ allowDiskUse: true, maxTimeMS: aggregationDeadlineMs })
+          approxTotal = countResult[0]?.total || 0
+        } catch (countError) {
+          if (countError?.code !== 50 && countError?.codeName !== 'MaxTimeMSExpired') {
+            throw countError
+          }
+          // Preserve a successfully fetched fast-path page. This indexed count
+          // is an upper bound only while a multi-collection sync is in progress.
+          approxTotal = await WorksRecommended.countDocuments(baseQuery)
         }
 
         return res.json({
@@ -533,31 +541,12 @@ const getRecommendedWorks = async (req, res, next) => {
       }
     }
 
+    // Metrics-v2 snapshots retain completed recommendations for utilization.
+    // Check both the materialized flag and completed collection so an interrupted
+    // multi-collection refresh cannot expose completed work as outstanding.
     const pipeline = [
-      { $match: { $and: [matchConditions, lsGateR] } },
-      ...(scanCap ? [{ $limit: scanCap }] : []),
-      // Exclude works that are already completed (by identity)
-      {
-        $lookup: {
-          from: 'works_completed',
-          let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$workId', '$$workId'] },
-                    { $eq: ['$house', '$$house'] },
-                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'completedMatch',
-        },
-      },
-      { $match: { completedMatch: { $size: 0 } } },
+      { $match: { $and: [matchConditions, lsGateR, { isCompleted: { $ne: true } }] } },
+      ...excludeCompletedStages,
       {
         $lookup: {
           from: 'mps',
@@ -655,43 +644,15 @@ const getRecommendedWorks = async (req, res, next) => {
       { $limit: safeLimit },
     ]
 
-    let recommendedWorks = []
-    try {
-      recommendedWorks = await WorksRecommended.aggregate(pipeline).option({
-        allowDiskUse: true,
-        maxTimeMS: 5000,
-      })
-    } catch {
-      // Fallback: return empty page quickly if heavy pipeline times out
-      recommendedWorks = []
-    }
+    const recommendedWorks = await WorksRecommended.aggregate(pipeline).option({
+      allowDiskUse: true,
+      maxTimeMS: aggregationDeadlineMs,
+    })
 
     // Compute totalCount using the same filtering logic as main pipeline
     const totalCountPipeline = [
-      { $match: { $and: [matchConditions, lsGateR] } },
-      ...(initialLimit ? [{ $limit: initialLimit }] : []),
-      // Exclude completed works in count as well
-      {
-        $lookup: {
-          from: 'works_completed',
-          let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$workId', '$$workId'] },
-                    { $eq: ['$house', '$$house'] },
-                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'completedMatch',
-        },
-      },
-      { $match: { completedMatch: { $size: 0 } } },
+      { $match: { $and: [matchConditions, lsGateR, { isCompleted: { $ne: true } }] } },
+      ...excludeCompletedStages,
       // Add payment lookup for count calculation if payment filtering is applied
       ...(has_payments !== undefined
         ? [
@@ -749,44 +710,16 @@ const getRecommendedWorks = async (req, res, next) => {
       { $count: 'total' },
     ]
 
-    let totalCount = 0
-    try {
-      const totalCountAgg = await WorksRecommended.aggregate(totalCountPipeline).option({
-        allowDiskUse: true,
-        maxTimeMS: 5000,
-      })
-      totalCount = totalCountAgg[0]?.total || 0
-    } catch {
-      // Approximate fallback without exclude-completed (fast)
-      totalCount = await WorksRecommended.countDocuments({ $and: [matchConditions, lsGateR] })
-    }
+    const totalCountAgg = await WorksRecommended.aggregate(totalCountPipeline).option({
+      allowDiskUse: true,
+      maxTimeMS: aggregationDeadlineMs,
+    })
+    const totalCount = totalCountAgg[0]?.total || 0
 
     // Get summary statistics - include payment filtering if applied
     const summaryPipeline = [
-      { $match: { $and: [matchConditions, lsGateR] } },
-      ...(initialLimit ? [{ $limit: initialLimit }] : []),
-      // Exclude completed works in summary
-      {
-        $lookup: {
-          from: 'works_completed',
-          let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$workId', '$$workId'] },
-                    { $eq: ['$house', '$$house'] },
-                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'completedMatch',
-        },
-      },
-      { $match: { completedMatch: { $size: 0 } } },
+      { $match: { $and: [matchConditions, lsGateR, { isCompleted: { $ne: true } }] } },
+      ...excludeCompletedStages,
       // Add payment lookup for summary calculation if payment filtering is applied
       ...(has_payments !== undefined
         ? [
@@ -865,30 +798,8 @@ const getRecommendedWorks = async (req, res, next) => {
 
     // Get status distribution - include payment filtering if applied
     const statusDistributionPipeline = [
-      { $match: { $and: [matchConditions, lsGateR] } },
-      ...(initialLimit ? [{ $limit: initialLimit }] : []),
-      // Exclude completed works in status distribution
-      {
-        $lookup: {
-          from: 'works_completed',
-          let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$workId', '$$workId'] },
-                    { $eq: ['$house', '$$house'] },
-                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: 'completedMatch',
-        },
-      },
-      { $match: { completedMatch: { $size: 0 } } },
+      { $match: { $and: [matchConditions, lsGateR, { isCompleted: { $ne: true } }] } },
+      ...excludeCompletedStages,
       // Add payment lookup for status distribution if payment filtering is applied
       ...(has_payments !== undefined
         ? [
@@ -1040,6 +951,12 @@ const getRecommendedWorks = async (req, res, next) => {
       },
     })
   } catch (error) {
+    if (error?.code === 50 || error?.codeName === 'MaxTimeMSExpired') {
+      return res.status(503).json({
+        success: false,
+        error: 'This works query is too broad. Add a state, constituency, MP, or category filter.',
+      })
+    }
     next(error)
   }
 }
@@ -1095,10 +1012,44 @@ const getConstituencies = async (req, res, next) => {
       },
     ]
 
+    const recommendedPipeline = [
+      ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
+      {
+        $lookup: {
+          from: 'works_completed',
+          let: {
+            workId: '$workId',
+            house: '$house',
+            lsTerm: '$lsTerm',
+            state: '$state',
+            constituency: '$constituency',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$workId', '$$workId'] },
+                    { $eq: ['$house', '$$house'] },
+                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
+                    { $eq: ['$state', '$$state'] },
+                    { $eq: ['$constituency', '$$constituency'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'completedMatch',
+        },
+      },
+      { $match: { completedMatch: { $size: 0 } } },
+      ...pipeline.slice(Object.keys(matchStage).length > 0 ? 1 : 0),
+    ]
+
     // Run both aggregations in parallel for efficiency
     const [completedConstituencies, recommendedConstituencies] = await Promise.all([
       WorksCompleted.aggregate(pipeline),
-      WorksRecommended.aggregate(pipeline),
+      WorksRecommended.aggregate(recommendedPipeline),
     ])
 
     // Merge and deduplicate constituencies
@@ -1212,6 +1163,7 @@ const getWorkCategories = async (req, res, next) => {
       ]),
       WorksRecommended.aggregate([
         ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
+        { $match: { isCompleted: { $ne: true } } },
         {
           $project: {
             category: { $ifNull: ['$workCategory', '$category'] },

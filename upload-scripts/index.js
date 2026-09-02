@@ -40,33 +40,18 @@ console.log('')
 // Handle command line arguments
 const args = process.argv.slice(2)
 
-// Parse LS term option (17 | 18 | both)
-function parseLsTermArg(argv) {
-  const termFlag = argv.find(a => a.startsWith('--ls-term='))
-  if (termFlag) {
-    const v = termFlag.split('=')[1].trim().toLowerCase()
-    if (['17', '18', 'both'].includes(v)) return v
-  }
-  // Fallback to env or default to both to include 17th uploads
-  const envV = (process.env.LS_TERM || '').toLowerCase()
-  if (['17', '18', 'both'].includes(envV)) return envV
-  return 'both'
-}
-const lsTermOption = parseLsTermArg(args)
+const lsTermOption = 'both'
 
 if (args.includes('--help') || args.includes('-h')) {
   console.log('Usage:')
   console.log('  node index.js                # Run complete sync process')
   console.log('  node index.js --fetch-only   # Test API fetching only')
-  console.log('  node index.js --ls-term=17   # Limit to 17th Lok Sabha')
-  console.log('  node index.js --ls-term=18   # Limit to 18th Lok Sabha')
-  console.log('  node index.js --ls-term=both # Fetch 17th + 18th (default)')
+  console.log('  Full 17th + 18th Lok Sabha sync is always used for metric consistency')
   console.log('  node index.js --help         # Show this help message')
   console.log('')
   console.log('Environment Variables:')
   console.log('  MONGODB_URI    # MongoDB connection string')
   console.log('  DATABASE_NAME  # Database name (default: mplads_dashboard)')
-  console.log('  LS_TERM        # 17 | 18 | both (default: both)')
   console.log('')
   process.exit(0)
 }

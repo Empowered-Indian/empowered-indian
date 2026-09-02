@@ -86,6 +86,11 @@ const StateList = () => {
         totalAllocated,
         totalExpenditure,
         avgUtilization,
+        utilizationDefinition: uniqueStates.some(
+          state => state.utilizationDefinition === 'vendor_expenditure_legacy'
+        )
+          ? 'vendor_expenditure_legacy'
+          : 'recommended_amount',
       },
     }
   }, [states])
@@ -249,12 +254,16 @@ const StateList = () => {
               <span className="stat-period">{periodLabel}</span>
             </div>
             <div className="stat-box">
-              <span className="stat-label">Total Utilized</span>
+              <span className="stat-label">Recorded Expenditure</span>
               <span className="stat-value">{formatINRCompact(nationalStats.totalExpenditure)}</span>
               <span className="stat-period">{periodLabel}</span>
             </div>
             <div className="stat-box">
-              <span className="stat-label">Avg. Utilization</span>
+              <span className="stat-label">
+                {nationalStats.utilizationDefinition === 'vendor_expenditure_legacy'
+                  ? 'Expenditure Rate'
+                  : 'Avg. Utilization'}
+              </span>
               <span className="stat-value">{nationalStats.avgUtilization.toFixed(1)}%</span>
               <span className="stat-period">{periodLabel}</span>
             </div>
@@ -349,7 +358,7 @@ const StateList = () => {
               >
                 <option value="utilizationPercentage">Utilization %</option>
                 <option value="totalAllocated">Total Allocated</option>
-                <option value="totalExpenditure">Total Expenditure</option>
+                <option value="totalExpenditure">Recorded Expenditure</option>
                 <option value="totalWorksCompleted">Works Completed</option>
                 <option value="name">State Name</option>
               </select>

@@ -180,7 +180,7 @@
   z-index: 9; /* Lower than navigation, but still sticky */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .breadcrumb {
     top: 64px;
     padding: 0.5rem 0;
@@ -246,7 +246,7 @@
 }
 
 /* Mobile styles */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .mobile-menu-toggle {
     display: flex;
   }
@@ -377,7 +377,7 @@
 }
 
 /* Desktop navigation improvements */
-@media (min-width: 769px) {
+@media (min-width: 901px) {
   .nav-menu {
     gap: 0.25rem;
   }
@@ -409,7 +409,7 @@
 }
 
 /* Tablet breakpoint optimizations */
-@media (min-width: 769px) and (max-width: 1023px) {
+@media (min-width: 901px) and (max-width: 1023px) {
   .nav-container {
     padding: 0 1.5rem;
   }
@@ -471,7 +471,7 @@
 }
 
 /* Landscape mobile devices */
-@media (max-width: 768px) and (orientation: landscape) {
+@media (max-width: 900px) and (orientation: landscape) {
   .nav-menu {
     top: 56px;
     max-height: calc(100vh - 56px);

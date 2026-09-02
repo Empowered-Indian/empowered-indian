@@ -58,6 +58,15 @@ const Compare = () => {
     return '#ef4444'
   }
 
+  const comparisonUsesVendorPayments = selectedMPs.some(
+    mp => mp.utilizationDefinition === 'vendor_expenditure_legacy'
+  )
+  const comparisonLabel = comparisonUsesVendorPayments ? 'Expenditure Rate' : 'Fund Utilization'
+  const getComparisonPercentage = mp =>
+    comparisonUsesVendorPayments
+      ? (mp.expenditurePercentage ?? mp.utilizationPercentage ?? 0)
+      : (mp.utilizationPercentage ?? 0)
+
   // Create unique identifier for MP
   const getMPUniqueId = mp => `${mp.mpName}-${mp.constituency}-${mp.state}`
 
@@ -105,13 +114,28 @@ const Compare = () => {
 
   const getAverageUtilization = () => {
     if (selectedMPs.length === 0) return 0
-    const total = selectedMPs.reduce((sum, mp) => sum + (mp.utilizationPercentage || 0), 0)
+    const total = selectedMPs.reduce((sum, mp) => sum + getComparisonPercentage(mp), 0)
     return total / selectedMPs.length
   }
 
   const getNationalAverage = () => {
     return performanceData?.data?.averageUtilization || 75 // Fallback
   }
+
+  const comparisonSeries = [
+    {
+      name: `${comparisonLabel} %`,
+      data: selectedMPs.map(getComparisonPercentage),
+    },
+    ...(!comparisonUsesVendorPayments
+      ? [
+          {
+            name: 'National Average',
+            data: selectedMPs.map(() => getNationalAverage()),
+          },
+        ]
+      : []),
+  ]
 
   // Mobile navigation functions
   const navigateComparison = direction => {
@@ -481,26 +505,28 @@ const Compare = () => {
                   <FiTrendingUp />
                 </div>
                 <CardContent className="card-content">
-                  <div className="card-title">Average Utilization</div>
+                  <div className="card-title">Average {comparisonLabel}</div>
                   <div className="card-value">{getAverageUtilization().toFixed(1)}%</div>
                 </CardContent>
               </Card>
 
-              <Card className="summary-card">
-                <div className="card-icon">
-                  <FiBarChart2 />
-                </div>
-                <CardContent className="card-content">
-                  <div className="card-title">vs National Average</div>
-                  <div
-                    className={`card-value ${
-                      getAverageUtilization() > getNationalAverage() ? 'positive' : 'negative'
-                    }`}
-                  >
-                    {(getAverageUtilization() - getNationalAverage()).toFixed(1)}%
+              {!comparisonUsesVendorPayments && (
+                <Card className="summary-card">
+                  <div className="card-icon">
+                    <FiBarChart2 />
                   </div>
-                </CardContent>
-              </Card>
+                  <CardContent className="card-content">
+                    <div className="card-title">vs National Average</div>
+                    <div
+                      className={`card-value ${
+                        getAverageUtilization() > getNationalAverage() ? 'positive' : 'negative'
+                      }`}
+                    >
+                      {(getAverageUtilization() - getNationalAverage()).toFixed(1)}%
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
 
@@ -509,20 +535,11 @@ const Compare = () => {
               /* Mobile Comparison Cards */
               <div className="mobile-comparison-section">
                 <div className="comparison-chart-mobile">
-                  <h3>Fund Utilization Comparison</h3>
+                  <h3>{comparisonLabel} Comparison</h3>
                   <ComparisonBarChart
                     data={{
                       categories: selectedMPs.map(mp => `${mp.mpName}\n${mp.constituency}`),
-                      series: [
-                        {
-                          name: 'Fund Utilization %',
-                          data: selectedMPs.map(mp => mp.utilizationPercentage || 0),
-                        },
-                        {
-                          name: 'National Average',
-                          data: selectedMPs.map(() => getNationalAverage()),
-                        },
-                      ],
+                      series: comparisonSeries,
                     }}
                   />
                 </div>
@@ -540,11 +557,11 @@ const Compare = () => {
                           <span
                             className="large-utilization-badge"
                             style={{
-                              backgroundColor: getUtilizationColor(mp.utilizationPercentage),
+                              backgroundColor: getUtilizationColor(getComparisonPercentage(mp)),
                               color: 'white',
                             }}
                           >
-                            {mp.utilizationPercentage?.toFixed(1) || 0}%
+                            {getComparisonPercentage(mp).toFixed(1)}%
                           </span>
                         </div>
                       </div>
@@ -558,9 +575,17 @@ const Compare = () => {
                             </span>
                           </div>
                           <div className="metric-item">
-                            <span className="metric-label">Utilized</span>
+                            <span className="metric-label">
+                              {comparisonUsesVendorPayments
+                                ? 'Recorded Expenditure'
+                                : 'Recommended'}
+                            </span>
                             <span className="metric-value">
-                              {formatCurrency(mp.totalExpenditure)}
+                              {formatCurrency(
+                                comparisonUsesVendorPayments
+                                  ? mp.totalExpenditure
+                                  : mp.totalRecommendedAmount
+                              )}
                             </span>
                           </div>
                         </div>
@@ -592,20 +617,11 @@ const Compare = () => {
               /* Desktop Charts and Table */
               <>
                 <div className="chart-section">
-                  <h3>Fund Utilization Comparison</h3>
+                  <h3>MP {comparisonLabel} Comparison</h3>
                   <ComparisonBarChart
                     data={{
                       categories: selectedMPs.map(mp => `${mp.mpName}\n${mp.constituency}`),
-                      series: [
-                        {
-                          name: 'Fund Utilization %',
-                          data: selectedMPs.map(mp => mp.utilizationPercentage || 0),
-                        },
-                        {
-                          name: 'National Average',
-                          data: selectedMPs.map(() => getNationalAverage()),
-                        },
-                      ],
+                      series: comparisonSeries,
                     }}
                   />
                 </div>
@@ -618,8 +634,17 @@ const Compare = () => {
                         <tr>
                           <th>MP / Constituency</th>
                           <th>Allocated Amount</th>
-                          <th>Utilized Amount</th>
-                          <th>Utilization %</th>
+                          <th>
+                            {comparisonUsesVendorPayments
+                              ? 'Recorded Expenditure'
+                              : 'Recommended Amount'}
+                          </th>
+                          <th>{comparisonLabel} %</th>
+                          <th>
+                            {comparisonUsesVendorPayments
+                              ? 'Recommendation Data'
+                              : 'Recorded Expenditure %'}
+                          </th>
                           <th>Completed Works</th>
                           <th>Recommended Works</th>
                           <th>Completion Rate</th>
@@ -635,20 +660,31 @@ const Compare = () => {
                               </div>
                             </td>
                             <td>{formatCurrency(mp.allocatedAmount)}</td>
-                            <td>{formatCurrency(mp.totalExpenditure)}</td>
+                            <td>
+                              {formatCurrency(
+                                comparisonUsesVendorPayments
+                                  ? mp.totalExpenditure
+                                  : mp.totalRecommendedAmount
+                              )}
+                            </td>
                             <td>
                               <span
                                 className="utilization-badge"
                                 style={{
-                                  backgroundColor: getUtilizationColor(mp.utilizationPercentage),
+                                  backgroundColor: getUtilizationColor(getComparisonPercentage(mp)),
                                   color: 'white',
                                   padding: '4px 8px',
                                   borderRadius: '4px',
                                   fontSize: '12px',
                                 }}
                               >
-                                {mp.utilizationPercentage?.toFixed(1) || 0}%
+                                {getComparisonPercentage(mp).toFixed(1)}%
                               </span>
+                            </td>
+                            <td>
+                              {comparisonUsesVendorPayments
+                                ? 'Refreshing'
+                                : `${mp.expenditurePercentage?.toFixed(1) || 0}%`}
                             </td>
                             <td>{mp.completedWorksCount || 0}</td>
                             <td>{mp.recommendedWorksCount || 0}</td>
@@ -676,20 +712,22 @@ const Compare = () => {
             <div className="insights-grid">
               <Card className="insight-card">
                 <CardHeader>
-                  <CardTitle>Highest Utilization</CardTitle>
+                  <CardTitle>Highest {comparisonLabel}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {(() => {
                     const highest = selectedMPs.reduce((max, mp) =>
-                      (mp.utilizationPercentage || 0) > (max.utilizationPercentage || 0) ? mp : max
+                      getComparisonPercentage(mp) > getComparisonPercentage(max) ? mp : max
                     )
                     return (
                       <div>
                         <div className="insight-mp">{highest.mpName}</div>
                         <div className="insight-value">
-                          {highest.utilizationPercentage?.toFixed(1) || 0}%
+                          {getComparisonPercentage(highest).toFixed(1)}%
                         </div>
-                        <div className="insight-context">Highest fund utilization rate</div>
+                        <div className="insight-context">
+                          Highest {comparisonLabel.toLowerCase()}
+                        </div>
                       </div>
                     )
                   })()}
@@ -720,24 +758,26 @@ const Compare = () => {
                 </CardContent>
               </Card>
 
-              <Card className="insight-card">
-                <CardHeader>
-                  <CardTitle>Above National Average</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="insight-value">
-                    {
-                      selectedMPs.filter(
-                        mp => (mp.utilizationPercentage || 0) > getNationalAverage()
-                      ).length
-                    }{' '}
-                    of {selectedMPs.length}
-                  </div>
-                  <div className="insight-context">
-                    MPs performing better than national average ({getNationalAverage()}%)
-                  </div>
-                </CardContent>
-              </Card>
+              {!comparisonUsesVendorPayments && (
+                <Card className="insight-card">
+                  <CardHeader>
+                    <CardTitle>Above National Average</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="insight-value">
+                      {
+                        selectedMPs.filter(
+                          mp => (mp.utilizationPercentage || 0) > getNationalAverage()
+                        ).length
+                      }{' '}
+                      of {selectedMPs.length}
+                    </div>
+                    <div className="insight-context">
+                      MPs performing better than national average ({getNationalAverage()}%)
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>

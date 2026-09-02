@@ -28,11 +28,16 @@ const MPDetailDocument = ({ data }: any) => {
   const recommendedWorksData = data.recommendedWorks || {}
   const allocatedAmount = mp.allocatedAmount || 0
   const totalExpenditure = mp.totalExpenditure || 0
+  const totalRecommendedAmount = mp.totalRecommendedAmount || 0
   const utilizationPercentage = mp.utilizationPercentage || 0
+  const expenditurePercentage = mp.expenditurePercentage || 0
   const completionRate = mp.completionRate || 0
   const inProgressPayments = mp.inProgressPayments || 0
   const paymentGapPercentage = mp.paymentGapPercentage || 0
-  const unspentAmount = mp.unspentAmount || 0
+  const isLegacyMetrics = mp.utilizationDefinition === 'vendor_expenditure_legacy'
+  const balanceAmount = isLegacyMetrics
+    ? (mp.unspentAmount ?? 0)
+    : (mp.unpaidBalance ?? Math.max(totalRecommendedAmount - totalExpenditure, 0))
   const pendingWorks = mp.pendingWorks || 0
 
   const utilizationColor =
@@ -172,35 +177,42 @@ const MPDetailDocument = ({ data }: any) => {
                   <Text style={styles.summaryMetricSub}>Total MPLADS allocation</Text>
                 </View>
                 <View style={styles.summaryMetric}>
-                  <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
+                  <Text style={styles.summaryMetricLabel}>
+                    {isLegacyMetrics ? 'Recommendation Metrics' : 'Amount Recommended'}
+                  </Text>
                   <Text style={styles.summaryMetricValue}>
-                    {formatINRCompact(totalExpenditure)}
+                    {isLegacyMetrics ? 'Pending refresh' : formatINRCompact(totalRecommendedAmount)}
                   </Text>
                   <Text style={styles.summaryMetricSub}>
-                    <Text style={{ color: utilizationColor }}>
-                      {utilizationPercentage.toFixed(1)}%
-                    </Text>{' '}
-                    fund utilization
+                    {isLegacyMetrics ? (
+                      'Legacy expenditure rate shown separately'
+                    ) : (
+                      <>
+                        <Text style={{ color: utilizationColor }}>
+                          {utilizationPercentage.toFixed(1)}%
+                        </Text>{' '}
+                        MP fund utilization
+                      </>
+                    )}
                   </Text>
                 </View>
               </View>
 
               <View style={styles.summaryColumn}>
                 <View style={styles.summaryMetric}>
-                  <Text style={styles.summaryMetricLabel}>Total Works</Text>
+                  <Text style={styles.summaryMetricLabel}>Recorded Expenditure</Text>
                   <Text style={styles.summaryMetricValue}>
-                    {mp.completedWorksCount + mp.recommendedWorksCount}
+                    {formatINRCompact(totalExpenditure)}
                   </Text>
                   <Text style={styles.summaryMetricSub}>
-                    <Text style={{ color: completionColor }}>{completionRate.toFixed(1)}%</Text>{' '}
-                    completion rate
+                    <Text>{expenditurePercentage.toFixed(1)}%</Text> of allocation
                   </Text>
                 </View>
                 <View style={styles.summaryMetric}>
                   <Text style={styles.summaryMetricLabel}>Works Completed</Text>
                   <Text style={styles.summaryMetricValue}>{mp.completedWorksCount}</Text>
                   <Text style={styles.summaryMetricSub}>
-                    {mp.recommendedWorksCount || 0} pending works
+                    {pendingWorks || 0} works not yet marked complete
                   </Text>
                 </View>
               </View>
@@ -216,9 +228,13 @@ const MPDetailDocument = ({ data }: any) => {
             <View style={styles.analysisGrid}>
               <View style={styles.analysisColumn}>
                 <View style={styles.analysisMetric}>
-                  <Text style={styles.analysisMetricLabel}>Unspent Amount</Text>
-                  <Text style={styles.analysisMetricValue}>{formatINRCompact(unspentAmount)}</Text>
-                  <Text style={styles.analysisMetricSub}>Remaining allocation</Text>
+                  <Text style={styles.analysisMetricLabel}>
+                    {isLegacyMetrics ? 'Remaining Allocation' : 'Balance Not Yet Paid'}
+                  </Text>
+                  <Text style={styles.analysisMetricValue}>{formatINRCompact(balanceAmount)}</Text>
+                  <Text style={styles.analysisMetricSub}>
+                    {isLegacyMetrics ? 'Legacy snapshot' : 'Recommended but not yet paid'}
+                  </Text>
                 </View>
                 <View style={styles.analysisMetric}>
                   <Text style={styles.analysisMetricLabel}>In-Progress Payments</Text>

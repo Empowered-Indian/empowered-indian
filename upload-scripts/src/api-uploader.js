@@ -18,6 +18,21 @@ const COLLECTIONS = {
   SUMMARIES: 'summaries',
 }
 
+const REQUIRED_DATA_TYPES = [
+  'allocated_limit',
+  'expenditure',
+  'works_completed',
+  'works_recommended',
+]
+
+function assertCompleteTransformedSnapshot(bucket, label) {
+  for (const dataType of REQUIRED_DATA_TYPES) {
+    if (!Array.isArray(bucket?.[dataType]) || bucket[dataType].length === 0) {
+      throw new Error(`Transformed MPLADS snapshot is empty: ${label} ${dataType}`)
+    }
+  }
+}
+
 /**
  * Validation function to check if a record is valid (same as existing CSV uploader)
  */
@@ -214,9 +229,8 @@ async function uploadExpenditures(db, transformedData) {
 
   // Create indexes
   await collection.createIndex({ mpName: 1, house: 1, lsTerm: 1 })
+  await collection.createIndex({ workId: 1, house: 1, lsTerm: 1 })
   await collection.createIndex({ state: 1, house: 1, lsTerm: 1 })
-  await collection.createIndex({ expenditureDate: -1 })
-  await collection.createIndex({ paymentStatus: 1 })
   // Optimize lookups by workId for payments queries
   try {
     await collection.createIndex({ workId: 1 }, { background: true })
@@ -307,9 +321,6 @@ async function uploadWorksCompleted(db, transformedData) {
 
   // Create indexes
   await collection.createIndex({ mpName: 1, house: 1, lsTerm: 1 })
-  await collection.createIndex({ state: 1, house: 1, lsTerm: 1 })
-  await collection.createIndex({ completedDate: -1 })
-  await collection.createIndex({ workId: 1 })
   // Ensure uniqueness of a work within a house/term/state to prevent double counting
   try {
     await collection.createIndex(
@@ -355,8 +366,11 @@ async function uploadWorksRecommended(db, transformedData) {
         ida: row.ida,
         workDescription: row.workDescription,
         recommendationDate: row.recommendationDate ? new Date(row.recommendationDate) : null,
+        sanctionDate: row.sanctionDate ? new Date(row.sanctionDate) : null,
         hasImage: row.hasImage === true,
         recommendedAmount: parseFloat(row.recommendedAmount) || 0,
+        sanctionedAmount: parseFloat(row.sanctionedAmount) || 0,
+        workStage: row.workStage || 'Not reported',
         lsTerm: row.lsTerm ?? null,
         createdAt: new Date(),
       }
@@ -383,6 +397,17 @@ async function uploadWorksRecommended(db, transformedData) {
     }
   }
   const allWorks = Array.from(wrMap.values())
+  const completedKeys = new Set(
+    (transformedData.lok_sabha.works_completed || [])
+      .concat(transformedData.rajya_sabha.works_completed || [])
+      .map(
+        work => `${work.house}|${work.lsTerm ?? 'null'}|${work.state}|${Number(work.workId) || 0}`
+      )
+  )
+  for (const work of allWorks) {
+    const key = `${work.house}|${work.lsTerm ?? 'null'}|${work.state}|${work.workId}`
+    work.isCompleted = completedKeys.has(key)
+  }
   if (allWorks.length !== allWorksRaw.length) {
     console.log(
       `ℹ️  Deduplicated works_recommended: kept ${allWorks.length} of ${allWorksRaw.length}`
@@ -408,8 +433,7 @@ async function uploadWorksRecommended(db, transformedData) {
 
   // Create indexes
   await collection.createIndex({ mpName: 1, house: 1, lsTerm: 1 })
-  await collection.createIndex({ state: 1, house: 1, lsTerm: 1 })
-  await collection.createIndex({ recommendationDate: -1 })
+  await collection.createIndex({ house: 1, lsTerm: 1, isCompleted: 1, recommendationDate: -1 })
   await collection.createIndex({ workId: 1 })
   try {
     await collection.createIndex(
@@ -427,7 +451,7 @@ async function uploadWorksRecommended(db, transformedData) {
 /**
  * Calculate and store summaries (same logic as CSV uploader)
  */
-async function calculateSummaries(db) {
+async function calculateSummaries(db, refreshedLokSabhaTerms = new Set([17, 18])) {
   const summariesCollection = db.collection(COLLECTIONS.SUMMARIES)
 
   // Clear existing summaries
@@ -607,6 +631,45 @@ async function calculateSummaries(db) {
       },
       {
         $lookup: {
+          from: COLLECTIONS.EXPENDITURES,
+          let: {
+            mpName: '$mpName',
+            house: '$house',
+            completedIds: {
+              $ifNull: [{ $arrayElemAt: ['$completedWorkIds.completedWorkIds', 0] }, []],
+            },
+            lsTerm: '$lsTerm',
+            state: '$state',
+            constituency: '$constituency',
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$mpName', '$$mpName'] },
+                    { $eq: ['$house', '$$house'] },
+                    { $gt: ['$workId', 0] },
+                    { $not: [{ $in: ['$workId', '$$completedIds'] }] },
+                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
+                    { $eq: ['$state', '$$state'] },
+                    { $eq: ['$constituency', '$$constituency'] },
+                  ],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                inProgressPayments: { $sum: '$expenditureAmount' },
+              },
+            },
+          ],
+          as: 'inProgressPaymentData',
+        },
+      },
+      {
+        $lookup: {
           from: COLLECTIONS.WORKS_RECOMMENDED,
           let: {
             mpName: '$mpName',
@@ -625,7 +688,7 @@ async function calculateSummaries(db) {
                   $and: [
                     { $eq: ['$mpName', '$$mpName'] },
                     { $eq: ['$house', '$$house'] },
-                    { $not: { $in: ['$workId', '$$completedIds'] } },
+                    { $not: [{ $in: ['$workId', '$$completedIds'] }] },
                     { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
                     { $eq: ['$state', '$$state'] },
                     { $eq: ['$constituency', '$$constituency'] },
@@ -683,11 +746,14 @@ async function calculateSummaries(db) {
           totalRecommendedAmount: {
             $ifNull: [{ $arrayElemAt: ['$recommendedWorksData.totalRecommendedAmount', 0] }, 0],
           },
+          inProgressPayments: {
+            $ifNull: [{ $arrayElemAt: ['$inProgressPaymentData.inProgressPayments', 0] }, 0],
+          },
         },
       },
       {
         $addFields: {
-          // Keep utilizationPercentage for frontend compatibility
+          // MoSPI defines MP utilization as amount recommended / amount allocated.
           utilizationPercentage: {
             $cond: [
               { $gt: ['$allocatedAmount', 0] },
@@ -696,7 +762,7 @@ async function calculateSummaries(db) {
                   {
                     $multiply: [
                       {
-                        $divide: ['$totalExpenditure', '$allocatedAmount'],
+                        $divide: ['$totalRecommendedAmount', '$allocatedAmount'],
                       },
                       100,
                     ],
@@ -707,16 +773,46 @@ async function calculateSummaries(db) {
               0,
             ],
           },
+          recommendationUtilizationPercentage: {
+            $cond: [
+              { $gt: ['$allocatedAmount', 0] },
+              {
+                $min: [
+                  {
+                    $multiply: [{ $divide: ['$totalRecommendedAmount', '$allocatedAmount'] }, 100],
+                  },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
+          expenditurePercentage: {
+            $cond: [
+              { $gt: ['$allocatedAmount', 0] },
+              {
+                $min: [
+                  {
+                    $multiply: [{ $divide: ['$totalExpenditure', '$allocatedAmount'] }, 100],
+                  },
+                  100,
+                ],
+              },
+              0,
+            ],
+          },
           completionRate: {
             $cond: {
-              if: { $eq: [{ $add: ['$completedWorksCount', '$recommendedWorksCount'] }, 0] },
+              if: { $eq: ['$recommendedWorksCount', 0] },
               then: 0,
               else: {
-                $multiply: [
+                $min: [
                   {
-                    $divide: [
-                      '$completedWorksCount',
-                      { $add: ['$completedWorksCount', '$recommendedWorksCount'] },
+                    $multiply: [
+                      {
+                        $divide: ['$completedWorksCount', '$recommendedWorksCount'],
+                      },
+                      100,
                     ],
                   },
                   100,
@@ -727,12 +823,6 @@ async function calculateSummaries(db) {
           // Additional metrics
           // Payment breakdown
           completedWorksValue: { $ifNull: ['$totalCompletedAmount', 0] },
-          inProgressPayments: {
-            $subtract: [
-              { $ifNull: ['$totalExpenditure', 0] },
-              { $ifNull: ['$totalCompletedAmount', 0] },
-            ],
-          },
           paymentGapPercentage: {
             $cond: {
               if: { $eq: ['$totalExpenditure', 0] },
@@ -740,24 +830,45 @@ async function calculateSummaries(db) {
               else: {
                 $multiply: [
                   {
-                    $divide: [
-                      { $subtract: ['$totalExpenditure', '$totalCompletedAmount'] },
-                      '$totalExpenditure',
-                    ],
+                    $divide: ['$inProgressPayments', '$totalExpenditure'],
                   },
                   100,
                 ],
               },
             },
           },
-          pendingWorks: { $subtract: ['$recommendedWorksCount', '$completedWorksCount'] },
-          unspentAmount: { $subtract: ['$allocatedAmount', '$totalExpenditure'] },
+          pendingWorks: {
+            $max: [{ $subtract: ['$recommendedWorksCount', '$completedWorksCount'] }, 0],
+          },
+          unpaidBalance: {
+            $max: [{ $subtract: ['$totalRecommendedAmount', '$totalExpenditure'] }, 0],
+          },
+          // Legacy alias retained for API compatibility.
+          unspentAmount: {
+            $max: [{ $subtract: ['$allocatedAmount', '$totalExpenditure'] }, 0],
+          },
           type: 'mp_summary',
+          metricsVersion: 2,
           createdAt: new Date(),
         },
       },
     ])
     .toArray()
+
+  for (const summary of mpSummaries) {
+    const isRefreshed =
+      summary.house !== 'Lok Sabha' || refreshedLokSabhaTerms.has(Number(summary.lsTerm))
+    if (!isRefreshed) {
+      summary.metricsVersion = 1
+      summary.utilizationPercentage = summary.expenditurePercentage
+      summary.recommendationUtilizationPercentage = null
+      const legacyRecommendationTotal =
+        (summary.completedWorksCount || 0) + (summary.recommendedWorksCount || 0)
+      summary.completionRate = legacyRecommendationTotal
+        ? Math.min(((summary.completedWorksCount || 0) / legacyRecommendationTotal) * 100, 100)
+        : 0
+    }
+  }
 
   if (mpSummaries.length > 0) {
     await summariesCollection.insertMany(mpSummaries)
@@ -798,6 +909,15 @@ async function calculateSummaries(db) {
               if: { $eq: ['$totalAllocated', 0] },
               then: 0,
               else: {
+                $multiply: [{ $divide: ['$totalRecommendedAmount', '$totalAllocated'] }, 100],
+              },
+            },
+          },
+          overallExpenditurePercentage: {
+            $cond: {
+              if: { $eq: ['$totalAllocated', 0] },
+              then: 0,
+              else: {
                 $multiply: [{ $divide: ['$totalExpenditure', '$totalAllocated'] }, 100],
               },
             },
@@ -821,6 +941,7 @@ async function calculateSummaries(db) {
             },
           },
           type: 'overall_summary',
+          metricsVersion: 2,
           createdAt: new Date(),
         },
       },
@@ -938,8 +1059,36 @@ async function calculateSummaries(db) {
           totalCompletedAmount: {
             $ifNull: [{ $arrayElemAt: ['$completedWorksData.totalCompletedAmount', 0] }, 0],
           },
-          // Keep for frontend compatibility
+          // Keep utilizationPercentage for frontend compatibility, now using
+          // MoSPI's recommendation-based definition.
           utilizationPercentage: {
+            $cond: {
+              if: { $eq: ['$totalAllocated', 0] },
+              then: 0,
+              else: {
+                $min: [
+                  {
+                    $multiply: [
+                      {
+                        $divide: [
+                          {
+                            $ifNull: [
+                              { $arrayElemAt: ['$recommendedWorksData.totalRecommendedAmount', 0] },
+                              0,
+                            ],
+                          },
+                          '$totalAllocated',
+                        ],
+                      },
+                      100,
+                    ],
+                  },
+                  100,
+                ],
+              },
+            },
+          },
+          expenditurePercentage: {
             $cond: {
               if: { $eq: ['$totalAllocated', 0] },
               then: 0,
@@ -967,11 +1116,21 @@ async function calculateSummaries(db) {
             },
           },
           type: 'state_summary',
+          metricsVersion: 2,
           createdAt: new Date(),
         },
       },
     ])
     .toArray()
+
+  for (const summary of stateSummaries) {
+    const isRefreshed =
+      summary.house !== 'Lok Sabha' || refreshedLokSabhaTerms.has(Number(summary.lsTerm))
+    if (!isRefreshed) {
+      summary.metricsVersion = 1
+      summary.utilizationPercentage = summary.expenditurePercentage
+    }
+  }
 
   if (stateSummaries.length > 0) {
     await summariesCollection.insertMany(stateSummaries)
@@ -990,7 +1149,10 @@ async function calculateSummaries(db) {
  */
 async function syncMPLADSDataFromAPI(options = {}) {
   const startTime = Date.now()
-  const maxRunTime = 30 * 60 * 1000 // 30 minutes max
+  // Large all-India responses can legitimately take several minutes per
+  // attempt. Keep the outer deadline comfortably above the per-request retry
+  // budget so a final retry is never cut off mid-flight.
+  const maxRunTime = 4 * 60 * 60 * 1000 // 4 hours max
 
   console.log('🚀 Starting MPLADS API Data Sync...\n')
   console.log('📅 Timestamp:', new Date().toISOString())
@@ -1008,14 +1170,14 @@ async function syncMPLADSDataFromAPI(options = {}) {
   })()
   console.log('🔗 MongoDB URI:', safeUri)
   console.log('🗄️  Database:', DATABASE_NAME)
-  console.log('⏱️  Max runtime: 30 minutes')
+  console.log('⏱️  Max runtime: 4 hours')
   console.log(
     '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'
   )
 
   // Set up timeout protection
   const timeoutId = setTimeout(() => {
-    console.error('❌ Operation timed out after 30 minutes')
+    console.error('❌ Operation timed out after 4 hours')
     process.exit(1)
   }, maxRunTime)
 
@@ -1073,7 +1235,12 @@ async function syncMPLADSDataFromAPI(options = {}) {
       }
     }
 
-    const lsTermOption = options.lsTerm || process.env.LS_TERM || 'both'
+    const lsTermOption = options.lsTerm || 'both'
+    if (String(lsTermOption).toLowerCase() !== 'both') {
+      throw new Error(
+        'Partial Lok Sabha sync is disabled because fund-utilization metrics require a consistent 17th and 18th Lok Sabha snapshot'
+      )
+    }
     const rawApiData = await apiClient.fetchAllData(lsTermOption)
     console.log(
       '💾 Memory usage after fetch:',
@@ -1099,35 +1266,59 @@ async function syncMPLADSDataFromAPI(options = {}) {
         { lok_sabha: rawApiData.lok_sabha_18, rajya_sabha: { ...empty } },
         { lsTerm: 18 }
       )
+      assertCompleteTransformedSnapshot(t18.lok_sabha, 'Lok Sabha 18')
       // Use concat instead of spread to avoid stack overflow with large arrays
-      combined.lok_sabha.allocated_limit = combined.lok_sabha.allocated_limit.concat(t18.lok_sabha.allocated_limit)
-      combined.lok_sabha.expenditure = combined.lok_sabha.expenditure.concat(t18.lok_sabha.expenditure)
-      combined.lok_sabha.works_completed = combined.lok_sabha.works_completed.concat(t18.lok_sabha.works_completed)
-      combined.lok_sabha.works_recommended = combined.lok_sabha.works_recommended.concat(t18.lok_sabha.works_recommended)
+      combined.lok_sabha.allocated_limit = combined.lok_sabha.allocated_limit.concat(
+        t18.lok_sabha.allocated_limit
+      )
+      combined.lok_sabha.expenditure = combined.lok_sabha.expenditure.concat(
+        t18.lok_sabha.expenditure
+      )
+      combined.lok_sabha.works_completed = combined.lok_sabha.works_completed.concat(
+        t18.lok_sabha.works_completed
+      )
+      combined.lok_sabha.works_recommended = combined.lok_sabha.works_recommended.concat(
+        t18.lok_sabha.works_recommended
+      )
     }
     if (rawApiData.lok_sabha_17) {
       const t17 = transformAllData(
         { lok_sabha: rawApiData.lok_sabha_17, rajya_sabha: { ...empty } },
         { lsTerm: 17 }
       )
+      assertCompleteTransformedSnapshot(t17.lok_sabha, 'Lok Sabha 17')
       // Use concat instead of spread to avoid stack overflow with large arrays
-      combined.lok_sabha.allocated_limit = combined.lok_sabha.allocated_limit.concat(t17.lok_sabha.allocated_limit)
-      combined.lok_sabha.expenditure = combined.lok_sabha.expenditure.concat(t17.lok_sabha.expenditure)
-      combined.lok_sabha.works_completed = combined.lok_sabha.works_completed.concat(t17.lok_sabha.works_completed)
-      combined.lok_sabha.works_recommended = combined.lok_sabha.works_recommended.concat(t17.lok_sabha.works_recommended)
+      combined.lok_sabha.allocated_limit = combined.lok_sabha.allocated_limit.concat(
+        t17.lok_sabha.allocated_limit
+      )
+      combined.lok_sabha.expenditure = combined.lok_sabha.expenditure.concat(
+        t17.lok_sabha.expenditure
+      )
+      combined.lok_sabha.works_completed = combined.lok_sabha.works_completed.concat(
+        t17.lok_sabha.works_completed
+      )
+      combined.lok_sabha.works_recommended = combined.lok_sabha.works_recommended.concat(
+        t17.lok_sabha.works_recommended
+      )
     }
     if (rawApiData.rajya_sabha) {
       const trs = transformAllData(
         { lok_sabha: { ...empty }, rajya_sabha: rawApiData.rajya_sabha },
         { lsTerm: null }
       )
+      assertCompleteTransformedSnapshot(trs.rajya_sabha, 'Rajya Sabha')
       combined.rajya_sabha = trs.rajya_sabha
     }
 
     const transformedData = combined
 
     // Validate data quality before upload
-    validateAllData(transformedData)
+    const validation = validateAllData(transformedData)
+    if (validation.summary.invalidRecords > 0 || validation.summary.totalRecords === 0) {
+      throw new Error(
+        `MPLADS snapshot failed validation: ${validation.summary.invalidRecords} invalid of ${validation.summary.totalRecords} records`
+      )
+    }
 
     console.log('\n📤 Starting MongoDB upload process...\n')
 
@@ -1140,7 +1331,8 @@ async function syncMPLADSDataFromAPI(options = {}) {
 
     // Calculate summaries
     console.log('\n📊 Calculating MP summaries...')
-    await calculateSummaries(db)
+    const refreshedLokSabhaTerms = new Set([17, 18])
+    await calculateSummaries(db, refreshedLokSabhaTerms)
 
     // Update data sync metadata for frontend
     const endTime = Date.now()
@@ -1182,7 +1374,7 @@ async function syncMPLADSDataFromAPI(options = {}) {
         (transformedData.rajya_sabha.works_recommended?.length || 0),
       mps: mpCount,
       duration: duration,
-      dataQuality: 98, // This would come from validation results
+      dataQuality: validation.summary.dataQuality,
     }
 
     await updateDataSyncMetadata(db, syncStats)

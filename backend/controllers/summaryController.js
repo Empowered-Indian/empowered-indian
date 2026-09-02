@@ -53,8 +53,22 @@ const getOverview = async (req, res) => {
             $avg: { $ifNull: ['$allocatedAmount', { $ifNull: ['$totalAllocated', 0] }] },
           },
           totalWorksCompleted: { $sum: { $ifNull: ['$completedWorksCount', 0] } },
-          totalWorksRecommended: { $sum: { $ifNull: ['$recommendedWorksCount', 0] } },
+          totalWorksRecommended: {
+            $sum: {
+              $cond: [
+                { $gte: [{ $ifNull: ['$metricsVersion', 1] }, 2] },
+                { $ifNull: ['$recommendedWorksCount', 0] },
+                {
+                  $add: [
+                    { $ifNull: ['$completedWorksCount', 0] },
+                    { $ifNull: ['$recommendedWorksCount', 0] },
+                  ],
+                },
+              ],
+            },
+          },
           totalRecommendedAmount: { $sum: { $ifNull: ['$totalRecommendedAmount', 0] } },
+          minMetricsVersion: { $min: { $ifNull: ['$metricsVersion', 1] } },
           // Completed value: prefer completedWorksValue, then totalCompletedAmount, then totalCompletedWorksValue
           totalCompletedWorksValue: {
             $sum: {
@@ -82,22 +96,42 @@ const getOverview = async (req, res) => {
               { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
               0,
               {
-                $cond: [
+                $min: [
                   {
-                    $or: [{ $eq: ['$totalExpenditure', null] }, { $eq: ['$totalExpenditure', 0] }],
-                  },
-                  0,
-                  {
-                    $min: [
+                    $multiply: [
                       {
-                        $multiply: [
-                          { $divide: [{ $ifNull: ['$totalExpenditure', 0] }, '$totalAllocated'] },
-                          100,
+                        $divide: [
+                          {
+                            $cond: [
+                              { $gte: ['$minMetricsVersion', 2] },
+                              { $ifNull: ['$totalRecommendedAmount', 0] },
+                              { $ifNull: ['$totalExpenditure', 0] },
+                            ],
+                          },
+                          '$totalAllocated',
                         ],
                       },
                       100,
                     ],
                   },
+                  100,
+                ],
+              },
+            ],
+          },
+          expenditurePercentage: {
+            $cond: [
+              { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
+              0,
+              {
+                $min: [
+                  {
+                    $multiply: [
+                      { $divide: [{ $ifNull: ['$totalExpenditure', 0] }, '$totalAllocated'] },
+                      100,
+                    ],
+                  },
+                  100,
                 ],
               },
             ],
@@ -144,7 +178,17 @@ const getOverview = async (req, res) => {
                 ],
               },
               0,
-              { $multiply: [{ $divide: ['$totalWorksCompleted', '$totalWorksRecommended'] }, 100] },
+              {
+                $min: [
+                  {
+                    $multiply: [
+                      { $divide: ['$totalWorksCompleted', '$totalWorksRecommended'] },
+                      100,
+                    ],
+                  },
+                  100,
+                ],
+              },
             ],
           },
         },
@@ -158,7 +202,9 @@ const getOverview = async (req, res) => {
         data: {
           totalAllocated: 0,
           totalExpenditure: 0,
+          totalRecommendedAmount: 0,
           utilizationPercentage: 0,
+          expenditurePercentage: 0,
           totalMPs: 0,
           totalWorksCompleted: 0,
           totalWorksRecommended: 0,
@@ -178,7 +224,13 @@ const getOverview = async (req, res) => {
       data: {
         totalAllocated: doc.totalAllocated || 0,
         totalExpenditure: doc.totalExpenditure || 0,
+        totalRecommendedAmount: doc.totalRecommendedAmount || 0,
         utilizationPercentage: doc.utilizationPercentage || 0,
+        recommendationUtilizationPercentage:
+          (doc.minMetricsVersion || 1) >= 2 ? doc.utilizationPercentage || 0 : null,
+        utilizationDefinition:
+          (doc.minMetricsVersion || 1) >= 2 ? 'recommended_amount' : 'vendor_expenditure_legacy',
+        expenditurePercentage: doc.expenditurePercentage || 0,
         totalMPs: doc.totalMPs || 0,
         totalWorksCompleted: doc.totalWorksCompleted || 0,
         totalWorksRecommended: doc.totalWorksRecommended || 0,
@@ -250,6 +302,8 @@ const getStateSummary = async (req, res) => {
             _id: '$state',
             totalAllocated: { $sum: '$totalAllocated' },
             totalExpenditure: { $sum: '$totalExpenditure' },
+            totalRecommendedAmount: { $sum: '$totalRecommendedAmount' },
+            minMetricsVersion: { $min: { $ifNull: ['$metricsVersion', 1] } },
             mpCount: { $sum: '$mpCount' },
             houses: { $push: '$house' },
           },
@@ -261,26 +315,45 @@ const getStateSummary = async (req, res) => {
                 if: { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
                 then: 0,
                 else: {
-                  $cond: {
-                    if: {
-                      $or: [
-                        { $eq: ['$totalExpenditure', null] },
-                        { $eq: ['$totalExpenditure', 0] },
-                      ],
-                    },
-                    then: 0,
-                    else: {
-                      $min: [
+                  $min: [
+                    {
+                      $multiply: [
                         {
-                          $multiply: [
-                            { $divide: [{ $ifNull: ['$totalExpenditure', 0] }, '$totalAllocated'] },
-                            100,
+                          $divide: [
+                            {
+                              $cond: [
+                                { $gte: ['$minMetricsVersion', 2] },
+                                { $ifNull: ['$totalRecommendedAmount', 0] },
+                                { $ifNull: ['$totalExpenditure', 0] },
+                              ],
+                            },
+                            '$totalAllocated',
                           ],
                         },
                         100,
                       ],
                     },
-                  },
+                    100,
+                  ],
+                },
+              },
+            },
+            expenditurePercentage: {
+              $cond: {
+                if: { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
+                then: 0,
+                else: {
+                  $min: [
+                    {
+                      $multiply: [
+                        {
+                          $divide: [{ $ifNull: ['$totalExpenditure', 0] }, '$totalAllocated'],
+                        },
+                        100,
+                      ],
+                    },
+                    100,
+                  ],
                 },
               },
             },
@@ -302,7 +375,20 @@ const getStateSummary = async (req, res) => {
           $group: {
             _id: '$state',
             completedWorksCount: { $sum: '$completedWorksCount' },
-            recommendedWorksCount: { $sum: '$recommendedWorksCount' },
+            recommendedWorksCount: {
+              $sum: {
+                $cond: [
+                  { $gte: [{ $ifNull: ['$metricsVersion', 1] }, 2] },
+                  { $ifNull: ['$recommendedWorksCount', 0] },
+                  {
+                    $add: [
+                      { $ifNull: ['$completedWorksCount', 0] },
+                      { $ifNull: ['$recommendedWorksCount', 0] },
+                    ],
+                  },
+                ],
+              },
+            },
           },
         },
       ])
@@ -321,7 +407,15 @@ const getStateSummary = async (req, res) => {
           state: state.state,
           totalAllocated: state.totalAllocated || 0,
           totalExpenditure: state.totalExpenditure || 0,
+          totalRecommendedAmount: state.totalRecommendedAmount || 0,
           utilizationPercentage: state.utilizationPercentage || 0,
+          expenditurePercentage:
+            state.expenditurePercentage ??
+            ((state.metricsVersion || 1) < 2 ? state.utilizationPercentage || 0 : 0),
+          utilizationDefinition:
+            (state.minMetricsVersion || 1) >= 2
+              ? 'recommended_amount'
+              : 'vendor_expenditure_legacy',
           mpCount: state.mpCount || 0,
           totalMPs: state.mpCount || 0,
           totalWorksCompleted: completionMap[state.state]?.completedWorksCount || 0,
@@ -343,7 +437,13 @@ const getStateSummary = async (req, res) => {
           house: state.house,
           totalAllocated: state.totalAllocated || 0,
           totalExpenditure: state.totalExpenditure || 0,
+          totalRecommendedAmount: state.totalRecommendedAmount || 0,
           utilizationPercentage: state.utilizationPercentage || 0,
+          expenditurePercentage:
+            state.expenditurePercentage ??
+            ((state.metricsVersion || 1) < 2 ? state.utilizationPercentage || 0 : 0),
+          utilizationDefinition:
+            (state.metricsVersion || 1) >= 2 ? 'recommended_amount' : 'vendor_expenditure_legacy',
           mpCount: state.mpCount || 0,
           totalMPs: state.mpCount || 0,
           totalWorksCompleted: state.completedWorksCount || 0,
@@ -467,12 +567,27 @@ const getMPSummary = async (req, res) => {
         constituency: mp.constituency,
         allocatedAmount: mp.allocatedAmount || 0,
         totalExpenditure: mp.totalExpenditure || 0,
+        totalRecommendedAmount: mp.totalRecommendedAmount || 0,
         utilizationPercentage: mp.utilizationPercentage || 0,
+        recommendationUtilizationPercentage:
+          (mp.metricsVersion || 1) >= 2
+            ? (mp.recommendationUtilizationPercentage ?? mp.utilizationPercentage ?? 0)
+            : null,
+        expenditurePercentage:
+          mp.expenditurePercentage ??
+          ((mp.metricsVersion || 1) < 2 ? mp.utilizationPercentage || 0 : 0),
+        utilizationDefinition:
+          (mp.metricsVersion || 1) >= 2 ? 'recommended_amount' : 'vendor_expenditure_legacy',
         completedWorksCount: mp.completedWorksCount || 0,
         recommendedWorksCount: mp.recommendedWorksCount || 0,
         completionRate: mp.completionRate || 0,
         pendingWorks: mp.pendingWorks || 0,
         unspentAmount: mp.unspentAmount || 0,
+        unpaidBalance:
+          mp.unpaidBalance ??
+          ((mp.metricsVersion || 1) >= 2
+            ? Math.max((mp.totalRecommendedAmount || 0) - (mp.totalExpenditure || 0), 0)
+            : null),
         // Additional metrics
         completedWorksValue: mp.completedWorksValue || 0,
         totalCompletedAmount: mp.totalCompletedAmount || 0,
@@ -531,6 +646,8 @@ const getConstituencySummary = async (req, res) => {
           house: { $first: '$house' },
           totalAllocated: { $sum: '$allocatedAmount' },
           totalExpenditure: { $sum: '$totalExpenditure' },
+          totalRecommendedAmount: { $sum: '$totalRecommendedAmount' },
+          minMetricsVersion: { $min: { $ifNull: ['$metricsVersion', 1] } },
           totalWorksCompleted: { $sum: '$completedWorksCount' },
           totalWorksRecommended: { $sum: '$recommendedWorksCount' },
           totalMPs: { $sum: 1 },
@@ -542,7 +659,40 @@ const getConstituencySummary = async (req, res) => {
             $cond: {
               if: { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
               then: 0,
-              else: { $multiply: [{ $divide: ['$totalExpenditure', '$totalAllocated'] }, 100] },
+              else: {
+                $min: [
+                  {
+                    $multiply: [
+                      {
+                        $divide: [
+                          {
+                            $cond: [
+                              { $gte: ['$minMetricsVersion', 2] },
+                              '$totalRecommendedAmount',
+                              '$totalExpenditure',
+                            ],
+                          },
+                          '$totalAllocated',
+                        ],
+                      },
+                      100,
+                    ],
+                  },
+                  100,
+                ],
+              },
+            },
+          },
+          expenditurePercentage: {
+            $cond: {
+              if: { $or: [{ $eq: ['$totalAllocated', 0] }, { $eq: ['$totalAllocated', null] }] },
+              then: 0,
+              else: {
+                $min: [
+                  { $multiply: [{ $divide: ['$totalExpenditure', '$totalAllocated'] }, 100] },
+                  100,
+                ],
+              },
             },
           },
           constituency: '$_id',
@@ -573,7 +723,13 @@ const getConstituencySummary = async (req, res) => {
         totalMPs: constituency.totalMPs || 0,
         totalAllocated: constituency.totalAllocated || 0,
         totalExpenditure: constituency.totalExpenditure || 0,
+        totalRecommendedAmount: constituency.totalRecommendedAmount || 0,
         utilizationPercentage: constituency.utilizationPercentage || 0,
+        expenditurePercentage: constituency.expenditurePercentage || 0,
+        utilizationDefinition:
+          (constituency.minMetricsVersion || 1) >= 2
+            ? 'recommended_amount'
+            : 'vendor_expenditure_legacy',
         totalWorksCompleted: constituency.totalWorksCompleted || 0,
         totalWorksRecommended: constituency.totalWorksRecommended || 0,
       })),

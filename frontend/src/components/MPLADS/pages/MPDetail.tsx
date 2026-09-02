@@ -112,7 +112,9 @@ const MPDetail = () => {
   // Calculate project statistics from MP summary data
   const projectStats = {
     completed: mp.completedWorksCount || 0,
-    ongoing: Math.max(0, (mp.recommendedWorksCount || 0) - (mp.completedWorksCount || 0)),
+    ongoing:
+      mp.pendingWorks ??
+      Math.max(0, (mp.recommendedWorksCount || 0) - (mp.completedWorksCount || 0)),
     recommended: mp.recommendedWorksCount || 0,
     total: mp.recommendedWorksCount || 0,
   }
@@ -124,19 +126,21 @@ const MPDetail = () => {
       ? Math.min(((mp.completedWorksCount || 0) / (mp.recommendedWorksCount || 0)) * 100, 100)
       : 0)
 
-  // Payment gap analysis (same logic as MPCard)
-  const hasPaymentGap = mp => {
-    const completedValue = mp.completedWorksValue || mp.totalCompletedAmount || 0
-    const gap = (mp.totalExpenditure || 0) - completedValue
-    const gapPercentage = mp.totalExpenditure > 0 ? (gap / mp.totalExpenditure) * 100 : 0
-    return gapPercentage > 50 // Flag if more than 50% of spending is unaccounted
-  }
-
   const inProgressPayments =
     mp.inProgressPayments !== undefined
       ? mp.inProgressPayments
       : (mp.totalExpenditure || 0) - (mp.completedWorksValue || mp.totalCompletedAmount || 0)
-  const showWarning = hasPaymentGap(mp)
+  const showWarning =
+    (mp.totalExpenditure || 0) > 0 &&
+    Math.max(inProgressPayments, 0) / (mp.totalExpenditure || 0) > 0.5
+  const utilizationTooltip =
+    mp.utilizationDefinition === 'vendor_expenditure_legacy'
+      ? 'Legacy snapshot: recorded vendor expenditure divided by allocation. Recommendation-based utilization is being refreshed.'
+      : 'MoSPI defines MP fund utilization as recommended amount divided by allocated amount. Vendor-payment expenditure is a separate metric.'
+  const utilizationLabel =
+    mp.utilizationDefinition === 'vendor_expenditure_legacy'
+      ? 'Expenditure Rate'
+      : 'Fund Utilization'
 
   // Canonicalize URL to slug when user lands on bare id (ensure hooks are before any early returns)
   useEffect(() => {
@@ -470,15 +474,23 @@ const MPDetail = () => {
                 {(mp.utilizationPercentage || 0).toFixed(1)}%
               </div>
               <div className="stat-label">
-                Fund Utilization{' '}
+                {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                  ? 'Expenditure Rate'
+                  : 'Fund Utilization'}{' '}
                 <InfoTooltip
-                  content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
+                  content={
+                    mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                      ? 'Legacy snapshot: recorded vendor expenditure divided by allocation. Recommendation-based utilization is being refreshed.'
+                      : 'MoSPI defines MP fund utilization as recommended amount divided by allocated amount. Vendor-payment expenditure is a separate metric.'
+                  }
                   position="top"
                   size="small"
                 />
               </div>
               <div className="stat-subtitle">
-                {formatCurrency(mp.totalExpenditure || 0)} utilized
+                {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                  ? `${(mp.expenditurePercentage || mp.utilizationPercentage || 0).toFixed(1)}% recorded expenditure rate • recommendation metrics refreshing`
+                  : `${formatCurrency(mp.totalRecommendedAmount || 0)} recommended • ${(mp.expenditurePercentage || 0).toFixed(1)}% recorded expenditure rate`}
               </div>
             </div>
           </div>
@@ -522,7 +534,7 @@ const MPDetail = () => {
                 <span className="warning-amount">
                   {formatINRCompact(inProgressPayments, { includeRupeeSymbol: true })}
                 </span>
-                <span className="warning-message">paid but work is incomplete</span>
+                <span className="warning-message">paid on works not yet marked complete</span>
               </div>
               <InfoTooltip
                 content="This indicates funds have been disbursed but corresponding completed works haven't been fully recorded. This may represent works in progress or reporting gaps."
@@ -564,16 +576,12 @@ const MPDetail = () => {
             <div className="overview-grid">
               <div className="chart-container">
                 <h3>
-                  Fund Utilization{' '}
-                  <InfoTooltip
-                    content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                    position="top"
-                    size="small"
-                  />
+                  {utilizationLabel}{' '}
+                  <InfoTooltip content={utilizationTooltip} position="top" size="small" />
                 </h3>
                 <FundUtilizationGauge
                   utilization={mp.utilizationPercentage || 0}
-                  title={`${mp.name || mp.mpName} Utilization`}
+                  title={`${mp.name || mp.mpName} ${utilizationLabel}`}
                 />
               </div>
 
@@ -639,7 +647,7 @@ const MPDetail = () => {
                         </span>
                       </div>
                       <div className="detail-row">
-                        <span>Utilized Amount:</span>
+                        <span>Recorded Expenditure:</span>
                         <span className="amount">{formatCurrency(mp.totalExpenditure)}</span>
                       </div>
                       <div className="detail-row">
@@ -653,12 +661,8 @@ const MPDetail = () => {
                       </div>
                       <div className="detail-row highlight">
                         <span>
-                          Fund Utilization{' '}
-                          <InfoTooltip
-                            content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                            position="top"
-                            size="small"
-                          />
+                          {utilizationLabel}{' '}
+                          <InfoTooltip content={utilizationTooltip} position="top" size="small" />
                         </span>
                         <span
                           className={`percentage utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
@@ -702,12 +706,8 @@ const MPDetail = () => {
                       </div>
                       <div className="detail-row">
                         <span>
-                          Fund Utilization{' '}
-                          <InfoTooltip
-                            content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                            position="top"
-                            size="small"
-                          />
+                          {utilizationLabel}{' '}
+                          <InfoTooltip content={utilizationTooltip} position="top" size="small" />
                         </span>
                         <span
                           className={`percentage ${(mp.utilizationPercentage || 0) >= 70 ? 'high' : (mp.utilizationPercentage || 0) >= 40 ? 'medium' : 'low'}`}
@@ -788,12 +788,8 @@ const MPDetail = () => {
                   <div className="financial-items">
                     <div className="financial-item">
                       <span className="item-label">
-                        Fund Utilization{' '}
-                        <InfoTooltip
-                          content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                          position="top"
-                          size="small"
-                        />
+                        {utilizationLabel}{' '}
+                        <InfoTooltip content={utilizationTooltip} position="top" size="small" />
                       </span>
                       <span
                         className={`item-value utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}
@@ -836,12 +832,8 @@ const MPDetail = () => {
                     <div className="indicator">
                       <div className="indicator-header">
                         <span>
-                          Fund Utilization{' '}
-                          <InfoTooltip
-                            content="Percentage of allocated MPLADS funds that have been disbursed for approved development projects."
-                            position="top"
-                            size="small"
-                          />
+                          {utilizationLabel}{' '}
+                          <InfoTooltip content={utilizationTooltip} position="top" size="small" />
                         </span>
                         <span
                           className={`indicator-status utilization-${getUtilizationClass(mp.utilizationPercentage || 0)}`}

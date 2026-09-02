@@ -245,12 +245,14 @@ function transformWorksCompleted(apiData, house, lsTerm = null) {
 }
 
 /**
- * Transform API Works Recommended data to match CSV format
- * This function needs to filter out works that are already completed
+ * Transform API Works Recommended data to match CSV format.
+ *
+ * Keep completed works in this dataset. MoSPI defines an MP's utilization as
+ * the total amount recommended against the allocated amount, so removing
+ * completed recommendations understates both the numerator and work count.
+ * API consumers that need outstanding works filter completed IDs at query time.
  */
-function transformWorksRecommended(apiData, house, lsTerm = null, completedWorkIds = new Set()) {
-  let filteredCount = 0
-
+function transformWorksRecommended(apiData, house, lsTerm = null) {
   return apiData
     .filter(record => {
       // Skip invalid records (same logic as CSV cleaner)
@@ -267,12 +269,7 @@ function transformWorksRecommended(apiData, house, lsTerm = null, completedWorkI
         return false
       }
 
-      // Skip if this work is already in completed works (keyed by WORK_RECOMMENDATION_DTL_ID)
       const recId = parseInt(record.WORK_RECOMMENDATION_DTL_ID) || null
-      if (recId && completedWorkIds.has(recId)) {
-        filteredCount++
-        return false
-      }
       // Must have a valid WORK_RECOMMENDATION_DTL_ID
       if (!recId || recId <= 0) {
         return false
@@ -302,13 +299,11 @@ function transformWorksRecommended(apiData, house, lsTerm = null, completedWorkI
         constituency: normalizeConstituency(record.CONSTITUENCY),
         hasImage: record.FILE_STATUS === true || record.FILE_STATUS === 'true',
         recommendedAmount: parseIndianNumber(record.RECOMMENDED_AMOUNT),
+        workStage: cleanText(record.WORK_STAGE) || 'Not reported',
+        sanctionDate: parseDate(record.SANCTION_DATE),
+        sanctionedAmount: parseIndianNumber(record.SANCTION_AMOUNT),
         house: house,
         ...(house === 'Lok Sabha' ? { lsTerm: lsTerm } : { lsTerm: null }),
-      }
-
-      // Log deduplication stats at the end
-      if (index === 0 && filteredCount > 0) {
-        console.log(`   ⚠️  Filtered out ${filteredCount} works that are already completed`)
       }
 
       return result
@@ -351,17 +346,12 @@ function transformAllData(apiData, options = {}) {
   )
   console.log(`✅ Lok Sabha Works Completed: ${results.lok_sabha.works_completed.length} records`)
 
-  // Create a set of completed work IDs (ACTIVITY_NAME) for deduplication
-  const lsCompletedWorkIds = new Set(
-    results.lok_sabha.works_completed.map(w => w.workId).filter(Boolean)
-  )
-
-  // Transform recommended works, excluding those that are already completed
+  // Keep all recommendations, including works that later completed. This is
+  // required for MoSPI's recommendation-based MP utilization metric.
   results.lok_sabha.works_recommended = transformWorksRecommended(
     apiData.lok_sabha.works_recommended,
     'Lok Sabha',
-    lsTerm,
-    lsCompletedWorkIds
+    lsTerm
   )
   console.log(
     `✅ Lok Sabha Works Recommended: ${results.lok_sabha.works_recommended.length} records`
@@ -395,17 +385,11 @@ function transformAllData(apiData, options = {}) {
     `✅ Rajya Sabha Works Completed: ${results.rajya_sabha.works_completed.length} records`
   )
 
-  // Create a set of completed work IDs (ACTIVITY_NAME) for deduplication
-  const rsCompletedWorkIds = new Set(
-    results.rajya_sabha.works_completed.map(w => w.workId).filter(Boolean)
-  )
-
-  // Transform recommended works, excluding those that are already completed
+  // Keep all recommendations for the same reason as Lok Sabha above.
   results.rajya_sabha.works_recommended = transformWorksRecommended(
     apiData.rajya_sabha.works_recommended,
     'Rajya Sabha',
-    null,
-    rsCompletedWorkIds
+    null
   )
   console.log(
     `✅ Rajya Sabha Works Recommended: ${results.rajya_sabha.works_recommended.length} records`

@@ -35,13 +35,6 @@ const MPCard = ({ mp, rank = null }) => {
     return <FiTrendingDown />
   }
 
-  const hasPaymentGap = mp => {
-    const completedValue = mp.completedWorksValue || mp.totalCompletedAmount || 0
-    const gap = (mp.totalExpenditure || 0) - completedValue
-    const gapPercentage = mp.totalExpenditure > 0 ? (gap / mp.totalExpenditure) * 100 : 0
-    return gapPercentage > 50 // Flag if more than 50% of spending is unaccounted
-  }
-
   const { filters } = useFilters()
   const mpId = mp.id || mp._id
   const slug = normalizeMPSlug(buildMPSlugHuman(mp, { lsTerm: filters?.lsTerm }))
@@ -56,7 +49,9 @@ const MPCard = ({ mp, rank = null }) => {
     mp.inProgressPayments !== undefined
       ? mp.inProgressPayments
       : (mp.totalExpenditure || 0) - (mp.completedWorksValue || mp.totalCompletedAmount || 0)
-  const showWarning = hasPaymentGap(mp)
+  const showWarning =
+    (mp.totalExpenditure || 0) > 0 &&
+    Math.max(inProgressPayments, 0) / (mp.totalExpenditure || 0) > 0.5
 
   return (
     <Link to={`/mplads/mps/${encodeURIComponent(slug || String(mpId))}`} className="mp-card">
@@ -96,7 +91,7 @@ const MPCard = ({ mp, rank = null }) => {
             </span>
           </div>
           <div className="stat-item">
-            <span className="stat-label">Spent</span>
+            <span className="stat-label">Recorded expenditure</span>
             <span className="stat-value">{formatCurrency(mp.totalExpenditure)}</span>
           </div>
         </div>
@@ -104,16 +99,22 @@ const MPCard = ({ mp, rank = null }) => {
         {showWarning && (
           <div className="payment-warning">
             <FiAlertTriangle />
-            <span>{formatCurrency(inProgressPayments)} paid but work incomplete</span>
+            <span>{formatCurrency(inProgressPayments)} recorded on ongoing works</span>
           </div>
         )}
 
         <div className="utilization-section">
           <div className="utilization-header">
             <span className="utilization-label">
-              Fund Utilization{' '}
+              {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                ? 'Expenditure Rate'
+                : 'Fund Utilization'}{' '}
               <InfoTooltip
-                content="Fund Utilization: Percentage of allocated MPLADS funds that have been disbursed (Expenditure / Allocation × 100). This matches official MPLADS reporting standards."
+                content={
+                  mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                    ? 'Legacy snapshot: recorded vendor expenditure divided by allocation. Recommendation-based utilization is being refreshed.'
+                    : 'MoSPI MP fund utilization: recommended amount divided by allocated amount. Vendor-payment expenditure is shown separately.'
+                }
                 position="top"
                 size="small"
               />
@@ -128,9 +129,24 @@ const MPCard = ({ mp, rank = null }) => {
           <div className="utilization-breakdown">
             <div className="breakdown-item">
               <FiDollarSign />
+              {mp.utilizationDefinition === 'vendor_expenditure_legacy' ? (
+                <span>
+                  ₹{formatCurrency(mp.totalExpenditure)} of ₹
+                  {formatCurrency(mp.allocatedAmount || mp.totalAllocated)} paid to vendors
+                </span>
+              ) : (
+                <span>
+                  ₹{formatCurrency(mp.totalRecommendedAmount)} of ₹
+                  {formatCurrency(mp.allocatedAmount || mp.totalAllocated)} recommended
+                </span>
+              )}
+            </div>
+            <div className="breakdown-item">
+              <FiDollarSign />
               <span>
-                ₹{formatCurrency(mp.totalExpenditure)} of ₹
-                {formatCurrency(mp.allocatedAmount || mp.totalAllocated)} used
+                {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                  ? 'Recommendation metrics refreshing'
+                  : `${mp.expenditurePercentage?.toFixed(1) || 0}% recorded expenditure rate`}
               </span>
             </div>
           </div>

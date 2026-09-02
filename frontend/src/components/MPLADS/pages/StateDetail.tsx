@@ -169,7 +169,13 @@ const StateDetail = () => {
           compareValues(a, b, mp => mp.allocatedAmount || mp.totalAllocated || 0)
         )
       case 'utilized':
-        return sorted.sort((a, b) => compareValues(a, b, mp => mp.totalExpenditure || 0))
+        return sorted.sort((a, b) =>
+          compareValues(a, b, mp =>
+            mp.utilizationDefinition === 'vendor_expenditure_legacy'
+              ? mp.totalExpenditure || 0
+              : mp.totalRecommendedAmount || 0
+          )
+        )
       case 'utilization':
       default:
         return sorted.sort((a, b) => compareValues(a, b, mp => mp.utilizationPercentage || 0))
@@ -300,7 +306,11 @@ const StateDetail = () => {
                     >
                       {stateInfo.utilizationPercentage?.toFixed(2) || 0}%
                     </span>
-                    <span className="stat-label">Fund Utilization</span>
+                    <span className="stat-label">
+                      {stateInfo.utilizationDefinition === 'vendor_expenditure_legacy'
+                        ? 'Expenditure Rate'
+                        : 'Fund Utilization'}
+                    </span>
                   </div>
                 </div>
                 <div className="summary-stat">
@@ -347,7 +357,11 @@ const StateDetail = () => {
                 >
                   {stateInfo.utilizationPercentage?.toFixed(2) || 0}%
                 </span>
-                <span className="stat-label">Fund Utilization</span>
+                <span className="stat-label">
+                  {stateInfo.utilizationDefinition === 'vendor_expenditure_legacy'
+                    ? 'Expenditure Rate'
+                    : 'Fund Utilization'}
+                </span>
               </div>
             </div>
             <div className="summary-stat">
@@ -488,17 +502,21 @@ const StateDetail = () => {
                           </span>
                         </div>
                         <div className="breakdown-item">
-                          <span className="breakdown-label">Total Expenditure</span>
+                          <span className="breakdown-label">
+                            {stateInfo.utilizationDefinition === 'vendor_expenditure_legacy'
+                              ? 'Recommendation Metrics'
+                              : 'Amount Recommended'}
+                          </span>
                           <span className="breakdown-value">
-                            {formatCurrency(stateInfo.totalExpenditure)}
+                            {stateInfo.utilizationDefinition === 'vendor_expenditure_legacy'
+                              ? 'Refreshing'
+                              : formatCurrency(stateInfo.totalRecommendedAmount)}
                           </span>
                         </div>
                         <div className="breakdown-item">
-                          <span className="breakdown-label">Unspent Balance</span>
+                          <span className="breakdown-label">Recorded Expenditure</span>
                           <span className="breakdown-value">
-                            {formatCurrency(
-                              (stateInfo.totalAllocated || 0) - (stateInfo.totalExpenditure || 0)
-                            )}
+                            {formatCurrency(stateInfo.totalExpenditure)}
                           </span>
                         </div>
                         <div className="breakdown-item">
@@ -544,17 +562,21 @@ const StateDetail = () => {
                       </span>
                     </div>
                     <div className="breakdown-item">
-                      <span className="breakdown-label">Total Expenditure</span>
+                      <span className="breakdown-label">
+                        {stateInfo.utilizationDefinition === 'vendor_expenditure_legacy'
+                          ? 'Recommendation Metrics'
+                          : 'Amount Recommended'}
+                      </span>
                       <span className="breakdown-value">
-                        {formatCurrency(stateInfo.totalExpenditure)}
+                        {stateInfo.utilizationDefinition === 'vendor_expenditure_legacy'
+                          ? 'Refreshing'
+                          : formatCurrency(stateInfo.totalRecommendedAmount)}
                       </span>
                     </div>
                     <div className="breakdown-item">
-                      <span className="breakdown-label">Unspent Balance</span>
+                      <span className="breakdown-label">Recorded Expenditure</span>
                       <span className="breakdown-value">
-                        {formatCurrency(
-                          (stateInfo.totalAllocated || 0) - (stateInfo.totalExpenditure || 0)
-                        )}
+                        {formatCurrency(stateInfo.totalExpenditure)}
                       </span>
                     </div>
                     <div className="breakdown-item">
@@ -607,7 +629,7 @@ const StateDetail = () => {
                     >
                       <option value="utilization">Utilization %</option>
                       <option value="allocated">Allocated Amount</option>
-                      <option value="utilized">Utilized Amount</option>
+                      <option value="utilized">Recommended Amount</option>
                       <option value="name">MP Name</option>
                       <option value="constituency">Constituency</option>
                       <option value="house">House</option>
@@ -643,9 +665,15 @@ const StateDetail = () => {
                           </span>
                         </div>
                         <div className="mp-detail-item">
-                          <span className="detail-label">Utilized</span>
+                          <span className="detail-label">
+                            {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                              ? 'Recommendations'
+                              : 'Recommended'}
+                          </span>
                           <span className="detail-value">
-                            {formatCurrency(mp.totalExpenditure)}
+                            {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                              ? 'Refreshing'
+                              : formatCurrency(mp.totalRecommendedAmount)}
                           </span>
                         </div>
                       </div>
@@ -662,7 +690,7 @@ const StateDetail = () => {
                         {renderMpSortableHeader('constituency', 'Constituency')}
                         {renderMpSortableHeader('house', 'House')}
                         {renderMpSortableHeader('allocated', 'Allocated')}
-                        {renderMpSortableHeader('utilized', 'Utilized')}
+                        {renderMpSortableHeader('utilized', 'Recommended')}
                         {renderMpSortableHeader('utilization', 'Utilization %')}
                       </tr>
                     </thead>
@@ -680,7 +708,11 @@ const StateDetail = () => {
                           <td>{mp.constituency}</td>
                           <td>{mp.house}</td>
                           <td>{formatCurrency(mp.allocatedAmount || mp.totalAllocated)}</td>
-                          <td>{formatCurrency(mp.totalExpenditure)}</td>
+                          <td>
+                            {mp.utilizationDefinition === 'vendor_expenditure_legacy'
+                              ? 'Refreshing'
+                              : formatCurrency(mp.totalRecommendedAmount)}
+                          </td>
                           <td>
                             <span
                               className={`utilization-badge utilization-${getUtilizationClass(mp.utilizationPercentage)}`}

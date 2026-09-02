@@ -171,9 +171,9 @@ function validateAllData(transformedData) {
   console.log(`   Total records: ${totalRecords}`)
   console.log(`   Valid records: ${totalRecords - totalErrors}`)
   console.log(`   Invalid records: ${totalErrors}`)
-  console.log(
-    `   Data quality: ${Math.round(((totalRecords - totalErrors) / totalRecords) * 100)}%`
-  )
+  const dataQuality =
+    totalRecords > 0 ? Math.round(((totalRecords - totalErrors) / totalRecords) * 100) : 0
+  console.log(`   Data quality: ${dataQuality}%`)
 
   if (totalErrors > 0) {
     console.log(
@@ -183,7 +183,15 @@ function validateAllData(transformedData) {
     console.log('\n✅ All data passed validation!')
   }
 
-  return validationResults
+  return {
+    houses: validationResults,
+    summary: {
+      totalRecords,
+      validRecords: totalRecords - totalErrors,
+      invalidRecords: totalErrors,
+      dataQuality,
+    },
+  }
 }
 
 /**

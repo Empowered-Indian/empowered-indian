@@ -71,14 +71,18 @@ const StateCard = ({ state }) => {
             <span className="metric-value">{formatCurrency(totalAllocated)}</span>
           </div>
           <div className="metric">
-            <span className="metric-label">Utilized</span>
+            <span className="metric-label">Recorded expenditure</span>
             <span className="metric-value">{formatCurrency(totalExpenditure)}</span>
           </div>
         </div>
 
         <div className="utilization-section">
           <div className="utilization-header">
-            <span className="utilization-label">Fund Utilization</span>
+            <span className="utilization-label">
+              {state.utilizationDefinition === 'vendor_expenditure_legacy'
+                ? 'Expenditure Rate'
+                : 'Fund Utilization'}
+            </span>
             <span
               className={`utilization-value utilization-${getUtilizationClass(utilizationPercentage)}`}
             >

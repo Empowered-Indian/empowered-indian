@@ -46,6 +46,8 @@ const exportCompletedWorksCSV = async (req, res) => {
               ],
             }
 
+    // Missing isCompleted means pending in legacy snapshots, which physically
+    // excluded completed recommendations before metrics v2.
     const pipeline = [
       { $match: { $and: [matchConditions, houseGate] } },
       {
@@ -194,7 +196,29 @@ const exportRecommendedWorksCSV = async (req, res) => {
             }
 
     const pipeline = [
-      { $match: { $and: [matchConditions, houseGateR] } },
+      { $match: { $and: [matchConditions, houseGateR, { isCompleted: { $ne: true } }] } },
+      {
+        $lookup: {
+          from: 'works_completed',
+          let: { workId: '$workId', house: '$house', lsTerm: '$lsTerm' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$workId', '$$workId'] },
+                    { $eq: ['$house', '$$house'] },
+                    { $eq: [{ $ifNull: ['$lsTerm', null] }, { $ifNull: ['$$lsTerm', null] }] },
+                  ],
+                },
+              },
+            },
+            { $limit: 1 },
+          ],
+          as: 'completedMatch',
+        },
+      },
+      { $match: { completedMatch: { $size: 0 } } },
       {
         $lookup: {
           from: 'mps',
@@ -507,12 +531,18 @@ const exportMPSummaryCSV = async (req, res) => {
       State: summary.state,
       House: summary.house,
       'Allocated Amount (₹)': summary.allocatedAmount,
+      'Amount Recommended (₹)':
+        (summary.metricsVersion || 1) >= 2 ? summary.totalRecommendedAmount : 'N/A',
       'Total Expenditure (₹)': summary.totalExpenditure,
       'Utilization %': Math.round((summary.utilizationPercentage || 0) * 100) / 100,
       'Completed Works': summary.completedWorksCount,
       'Recommended Works': summary.recommendedWorksCount,
       'Completion Rate %': Math.round((summary.completionRate || 0) * 100) / 100,
-      'Unspent Amount (₹)': summary.unspentAmount,
+      'Balance Not Yet Paid to Vendors (₹)':
+        summary.unpaidBalance ??
+        ((summary.metricsVersion || 1) >= 2
+          ? Math.max((summary.totalRecommendedAmount || 0) - (summary.totalExpenditure || 0), 0)
+          : 'N/A'),
       'Transaction Count': summary.transactionCount,
       'Successful Payments': summary.successfulPayments,
       'Pending Payments': summary.pendingPayments,
@@ -526,12 +556,13 @@ const exportMPSummaryCSV = async (req, res) => {
       'State',
       'House',
       'Allocated Amount (₹)',
+      'Amount Recommended (₹)',
       'Total Expenditure (₹)',
       'Utilization %',
       'Completed Works',
       'Recommended Works',
       'Completion Rate %',
-      'Unspent Amount (₹)',
+      'Balance Not Yet Paid to Vendors (₹)',
       'Transaction Count',
       'Successful Payments',
       'Pending Payments',

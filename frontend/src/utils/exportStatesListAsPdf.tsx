@@ -13,7 +13,9 @@ const styles = { ...baseStyles, ...extendedStyles }
 const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
   const timestamp = new Date().toLocaleString()
   const totalAllocated = data.reduce((sum, s) => sum + (s.totalAllocated || 0), 0)
-  const totalExpenditure = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0)
+  const totalRecommended = data.reduce((sum, s) => sum + (s.totalRecommendedAmount || 0), 0)
+  const hasLegacyMetrics = data.some(s => s.utilizationDefinition === 'vendor_expenditure_legacy')
+  const totalVendorPayments = data.reduce((sum, s) => sum + (s.totalExpenditure || 0), 0)
   const totalWorksRecommended = data.reduce((sum, s) => sum + (s.recommendedWorksCount || 0), 0)
   const totalWorks = data.reduce((sum, s) => sum + (s.totalWorksCompleted || 0), 0)
   const topPerformers = [...data]
@@ -83,15 +85,21 @@ const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
                   <Text style={styles.summaryMetricSub}>Across {data.length} states</Text>
                 </View>
                 <View style={styles.summaryMetric}>
-                  <Text style={styles.summaryMetricLabel}>Total Expenditure</Text>
+                  <Text style={styles.summaryMetricLabel}>
+                    {hasLegacyMetrics ? 'Recorded Expenditure' : 'Amount Recommended'}
+                  </Text>
                   <Text style={styles.summaryMetricValue}>
-                    {formatINRCompact(totalExpenditure)}
+                    {formatINRCompact(hasLegacyMetrics ? totalVendorPayments : totalRecommended)}
                   </Text>
                   <Text style={styles.summaryMetricSub}>
                     {totalAllocated > 0
-                      ? ((totalExpenditure / totalAllocated) * 100).toFixed(1)
+                      ? (
+                          ((hasLegacyMetrics ? totalVendorPayments : totalRecommended) /
+                            totalAllocated) *
+                          100
+                        ).toFixed(1)
                       : 0}
-                    % of allocation
+                    {hasLegacyMetrics ? '% expenditure rate' : '% MP fund utilization'}
                   </Text>
                 </View>
               </View>
@@ -159,15 +167,21 @@ const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
             <View style={styles.insightsGrid}>
               <View style={styles.insightCard}>
                 <Text style={styles.insightValue}>{avgUtilization.toFixed(1)}%</Text>
-                <Text style={styles.insightLabel}>Average Utilization</Text>
+                <Text style={styles.insightLabel}>
+                  Average {hasLegacyMetrics ? 'Expenditure Rate' : 'Utilization'}
+                </Text>
               </View>
               <View style={styles.insightCard}>
                 <Text style={styles.insightValue}>{maxUtilization.toFixed(1)}%</Text>
-                <Text style={styles.insightLabel}>Highest Utilization</Text>
+                <Text style={styles.insightLabel}>
+                  Highest {hasLegacyMetrics ? 'Expenditure Rate' : 'Utilization'}
+                </Text>
               </View>
               <View style={styles.insightCard}>
                 <Text style={styles.insightValue}>{minUtilization.toFixed(1)}%</Text>
-                <Text style={styles.insightLabel}>Lowest Utilization</Text>
+                <Text style={styles.insightLabel}>
+                  Lowest {hasLegacyMetrics ? 'Expenditure Rate' : 'Utilization'}
+                </Text>
               </View>
               <View style={styles.insightCard}>
                 <Text style={styles.insightValue}>{highUtilStates}</Text>
@@ -179,7 +193,9 @@ const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
           <View style={styles.chart}>
             <View style={styles.chartHeader}>
               <View style={styles.chartIcon} />
-              <Text style={styles.chartTitle}>Utilization Overview</Text>
+              <Text style={styles.chartTitle}>
+                {hasLegacyMetrics ? 'Vendor Payment Overview' : 'Utilization Overview'}
+              </Text>
             </View>
             <View style={styles.chartContainer}>
               {data.slice(0, 8).map((s, i) => {
@@ -230,9 +246,17 @@ const MyDocument = ({ data = [], meta = {}, layout = 'cards' }: any) => {
                       </View>
 
                       <View style={styles.metricBlock}>
-                        <Text style={styles.metricLabel}>EXPENDITURE</Text>
+                        <Text style={styles.metricLabel}>
+                          {s.utilizationDefinition === 'vendor_expenditure_legacy'
+                            ? 'VENDOR PAYMENTS'
+                            : 'RECOMMENDED'}
+                        </Text>
                         <Text style={styles.metricValue}>
-                          {formatINRCompact(s.totalExpenditure ?? 0)}
+                          {formatINRCompact(
+                            s.utilizationDefinition === 'vendor_expenditure_legacy'
+                              ? (s.totalExpenditure ?? 0)
+                              : (s.totalRecommendedAmount ?? 0)
+                          )}
                         </Text>
                       </View>
 

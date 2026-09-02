@@ -37,9 +37,17 @@ const MPList = () => {
   const gridRef = useRef<HTMLDivElement | null>(null)
   const [columns, setColumns] = useState(4)
 
+  const { data: overviewData } = useOverview()
+  const { filters, updateFilter } = useFilters()
+  const effectiveSortBy =
+    sortBy === 'expenditurePercentage' &&
+    overviewData?.data?.utilizationDefinition === 'vendor_expenditure_legacy'
+      ? 'utilizationPercentage'
+      : sortBy
+
   const { data, isLoading, isFetching, error, refetch } = useMPSummary({
     search: debouncedSearchQuery,
-    sortBy,
+    sortBy: effectiveSortBy,
     order: sortOrder,
     // Do not pass house/ls_term here; rely on FilterContext via useMPSummary
     page,
@@ -52,8 +60,6 @@ const MPList = () => {
     limit: 800, // Get all MPs for statistics
   })
 
-  const { data: overviewData } = useOverview()
-  const { filters, updateFilter } = useFilters()
   const uiHouse =
     (filters?.house || 'Lok Sabha') === 'Both Houses' ? 'all' : filters?.house || 'Lok Sabha'
   const periodLabel =
@@ -206,9 +212,11 @@ const MPList = () => {
         return {
           totalMPs: overviewStats.totalMPs,
           totalAllocated: overviewStats.totalAllocated,
+          totalRecommendedAmount: overviewStats.totalRecommendedAmount,
           totalExpenditure: overviewStats.totalExpenditure,
           avgUtilization: overviewStats.utilizationPercentage,
           totalCompleted: overviewStats.totalWorksCompleted,
+          utilizationDefinition: overviewStats.utilizationDefinition,
         }
       }
     }
@@ -221,10 +229,16 @@ const MPList = () => {
         (sum, mp) => sum + (mp.allocatedAmount || mp.totalAllocated || 0),
         0
       ),
+      totalRecommendedAmount: source.reduce((sum, mp) => sum + (mp.totalRecommendedAmount || 0), 0),
       totalExpenditure: source.reduce((sum, mp) => sum + (mp.totalExpenditure || 0), 0),
       avgUtilization:
         source.reduce((sum, mp) => sum + (mp.utilizationPercentage || 0), 0) / source.length || 0,
       totalCompleted: source.reduce((sum, mp) => sum + (mp.completedWorksCount || 0), 0),
+      utilizationDefinition: source.some(
+        mp => mp.utilizationDefinition === 'vendor_expenditure_legacy'
+      )
+        ? 'vendor_expenditure_legacy'
+        : 'recommended_amount',
     }
   }, [overviewData, allMPs, mps, totalMPs])
 
@@ -252,12 +266,26 @@ const MPList = () => {
             <span className="stat-period">{periodLabel}</span>
           </div>
           <div className="stat-box">
-            <span className="stat-label">Total Utilized</span>
-            <span className="stat-value">{formatINRCompact(stats.totalExpenditure)}</span>
+            <span className="stat-label">
+              {stats.utilizationDefinition === 'vendor_expenditure_legacy'
+                ? 'Recorded Expenditure'
+                : 'Amount Recommended'}
+            </span>
+            <span className="stat-value">
+              {formatINRCompact(
+                stats.utilizationDefinition === 'vendor_expenditure_legacy'
+                  ? stats.totalExpenditure
+                  : stats.totalRecommendedAmount
+              )}
+            </span>
             <span className="stat-period">{periodLabel}</span>
           </div>
           <div className="stat-box">
-            <span className="stat-label">Avg. Utilization</span>
+            <span className="stat-label">
+              {stats.utilizationDefinition === 'vendor_expenditure_legacy'
+                ? 'Expenditure Rate'
+                : 'Avg. Utilization'}
+            </span>
             <span className="stat-value">{stats.avgUtilization.toFixed(1)}%</span>
             <span className="stat-period">{periodLabel}</span>
           </div>
@@ -444,7 +472,7 @@ const MPList = () => {
         <div className="control-buttons">
           <div className="filter-controls">
             <div className="filter-group">
-              <label>Utilization Level:</label>
+              <label>MP Utilization Level:</label>
               <select
                 value={filterRange}
                 onChange={e => handleFilterChange('range', e.target.value)}
@@ -481,11 +509,12 @@ const MPList = () => {
               onChange={e => handleSort(e.target.value)}
               className="sort-select"
             >
-              <option value="utilizationPercentage">Fund Utilization</option>
+              <option value="utilizationPercentage">MP Fund Utilization</option>
+              <option value="expenditurePercentage">Expenditure Rate</option>
               <option value="completionRate">Completion Rate</option>
               <option value="completedWorksCount">Works Completed</option>
               <option value="allocatedAmount">Allocated Amount</option>
-              <option value="totalExpenditure">Total Expenditure</option>
+              <option value="totalExpenditure">Recorded Expenditure</option>
               <option value="completedWorksCount">Works Completed</option>
               <option value="mpName">MP Name</option>
               <option value="constituency">Constituency</option>
