@@ -126,7 +126,6 @@ async function uploadAllocations(db, transformedData) {
       constituency: row.constituency,
       allocatedAmount: parseFloat(row.allocatedAmount) || 0,
       lsTerm: row.lsTerm ?? null,
-      createdAt: new Date(),
     }))
 
   // Clear existing data only for the scopes we're updating and insert new with error handling
@@ -176,6 +175,19 @@ async function uploadAllocations(db, transformedData) {
 async function uploadExpenditures(db, transformedData) {
   const collection = db.collection(COLLECTIONS.EXPENDITURES)
   const mpsCollection = db.collection(COLLECTIONS.MPs)
+  // workId is already the leading field of the compound index created below.
+  // Drop the older single-field duplicate before uploading so an over-quota
+  // free-tier cluster can reclaim that space before the bulk insert.
+  try {
+    await collection.dropIndex('workId_1')
+  } catch (indexError) {
+    if (indexError.codeName !== 'IndexNotFound') {
+      console.warn(
+        'Warning: Could not remove redundant expenditures.workId index:',
+        indexError.message
+      )
+    }
+  }
   // Build a quick lookup map for MP identity -> _id
   const mpDocs = await mpsCollection
     .find({}, { projection: { name: 1, house: 1, constituency: 1 } })
@@ -208,7 +220,6 @@ async function uploadExpenditures(db, transformedData) {
         paymentStatus: row.paymentStatus,
         expenditureAmount: parseFloat(row.expenditureAmount) || 0,
         lsTerm: row.lsTerm ?? null,
-        createdAt: new Date(),
       }
     })
 
@@ -231,12 +242,6 @@ async function uploadExpenditures(db, transformedData) {
   await collection.createIndex({ mpName: 1, house: 1, lsTerm: 1 })
   await collection.createIndex({ workId: 1, house: 1, lsTerm: 1 })
   await collection.createIndex({ state: 1, house: 1, lsTerm: 1 })
-  // Optimize lookups by workId for payments queries
-  try {
-    await collection.createIndex({ workId: 1 }, { background: true })
-  } catch (indexError) {
-    console.warn('Warning: Could not create expenditures.workId index:', indexError.message)
-  }
 }
 
 /**
@@ -277,7 +282,6 @@ async function uploadWorksCompleted(db, transformedData) {
         averageRating: row.averageRating ? parseFloat(row.averageRating) : null,
         finalAmount: parseFloat(row.finalAmount) || 0,
         lsTerm: row.lsTerm ?? null,
-        createdAt: new Date(),
       }
     })
 
@@ -372,7 +376,6 @@ async function uploadWorksRecommended(db, transformedData) {
         sanctionedAmount: parseFloat(row.sanctionedAmount) || 0,
         workStage: row.workStage || 'Not reported',
         lsTerm: row.lsTerm ?? null,
-        createdAt: new Date(),
       }
     })
 

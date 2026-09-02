@@ -36,7 +36,7 @@ const expenditureSchema = new mongoose.Schema(
     constituency: String,
     work: String,
     // Link to recommended/completed work when available
-    workId: { type: Number, index: true },
+    workId: Number,
     vendor: String,
     ida: String,
     expenditureDate: Date,
