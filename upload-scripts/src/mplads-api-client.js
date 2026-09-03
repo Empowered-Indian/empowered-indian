@@ -26,6 +26,10 @@ class MPLADSApiClient {
     this.maxRetries = 3
     this.retryDelay = 1000 // Start with 1 second
     this.interRequestDelay = 1000
+    this.requestTimeoutMs = Math.max(
+      Number.parseInt(process.env.MPLADS_REQUEST_TIMEOUT_MS || '300000', 10) || 300000,
+      1000
+    )
 
     this.headers = {
       Accept: 'application/json, text/javascript, */*; q=0.01',
@@ -526,7 +530,19 @@ class MPLADSApiClient {
           reject(error)
         })
 
-        req.setTimeout(300000, () => {
+        // Socket timeouts only measure inactivity. MoSPI can keep a stalled
+        // response barely active indefinitely, so also enforce an absolute
+        // wall-clock deadline for every attempt.
+        const requestDeadline = setTimeout(() => {
+          req.destroy(
+            new Error(
+              `Deadline fetching ${house} ${dataType}: API request exceeded ${this.requestTimeoutMs}ms`
+            )
+          )
+        }, this.requestTimeoutMs)
+        req.once('close', () => clearTimeout(requestDeadline))
+
+        req.setTimeout(this.requestTimeoutMs, () => {
           // The recommendation payload exceeds 90 MB and regularly needs over two minutes.
           req.destroy()
           reject(new Error(`Timeout fetching ${house} ${dataType}: API request took too long`))

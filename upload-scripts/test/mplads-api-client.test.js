@@ -1,5 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const { EventEmitter } = require('node:events')
+const https = require('node:https')
 
 const MPLADSApiClient = require('../src/mplads-api-client')
 
@@ -12,6 +14,31 @@ test('uses the current MPLADS allocation report request key', () => {
 
 test('accepts the allocation response key returned by the portal', () => {
   assert.ok(MPLADSApiClient.RESPONSE_KEY_FALLBACKS.allocated_limit.includes('Allocated Limit'))
+})
+
+test('enforces an absolute request deadline even when the socket stays active', async () => {
+  const originalRequest = https.request
+  const request = new EventEmitter()
+  request.write = () => {}
+  request.end = () => {}
+  request.setTimeout = () => {}
+  request.destroy = error => {
+    request.emit('error', error)
+    request.emit('close')
+  }
+  https.request = () => request
+
+  const client = new MPLADSApiClient('test-session')
+  client.requestTimeoutMs = 5
+
+  try {
+    await assert.rejects(
+      client.fetchData('lok_sabha', 'works_recommended', '18'),
+      /Deadline fetching lok_sabha works_recommended/
+    )
+  } finally {
+    https.request = originalRequest
+  }
 })
 
 test('retries transient failures and returns only a complete snapshot', async () => {
