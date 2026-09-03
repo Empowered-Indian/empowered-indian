@@ -33,6 +33,14 @@ function assertCompleteTransformedSnapshot(bucket, label) {
   }
 }
 
+async function insertManyInBatches(collection, documents, label, batchSize = 1000) {
+  for (let offset = 0; offset < documents.length; offset += batchSize) {
+    const batch = documents.slice(offset, offset + batchSize)
+    await collection.insertMany(batch, { ordered: false })
+  }
+  console.log(`✅ Uploaded ${documents.length} ${label}`)
+}
+
 async function reclaimSyncStorage(db) {
   const expenditures = db.collection(COLLECTIONS.EXPENDITURES)
   const obsoleteIndexes = ['workId_1', 'state_1_house_1_lsTerm_1']
@@ -237,8 +245,7 @@ async function uploadExpenditures(db, transformedData) {
     await collection.deleteMany({ house: 'Rajya Sabha' })
   }
   if (allExpenditures.length > 0) {
-    await collection.insertMany(allExpenditures)
-    console.log(`✅ Uploaded ${allExpenditures.length} expenditure records`)
+    await insertManyInBatches(collection, allExpenditures, 'expenditure records')
   }
 
   // Create indexes
@@ -321,8 +328,7 @@ async function uploadWorksCompleted(db, transformedData) {
     await collection.deleteMany({ house: 'Rajya Sabha' })
   }
   if (allWorks.length > 0) {
-    await collection.insertMany(allWorks, { ordered: false })
-    console.log(`✅ Uploaded ${allWorks.length} completed works`)
+    await insertManyInBatches(collection, allWorks, 'completed works')
   }
 
   // Create indexes
@@ -432,8 +438,7 @@ async function uploadWorksRecommended(db, transformedData) {
     await collection.deleteMany({ house: 'Rajya Sabha' })
   }
   if (allWorks.length > 0) {
-    await collection.insertMany(allWorks, { ordered: false })
-    console.log(`✅ Uploaded ${allWorks.length} recommended works`)
+    await insertManyInBatches(collection, allWorks, 'recommended works')
   }
 
   // Create indexes
