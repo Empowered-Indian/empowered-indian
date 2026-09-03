@@ -33,6 +33,22 @@ function assertCompleteTransformedSnapshot(bucket, label) {
   }
 }
 
+async function reclaimSyncStorage(db) {
+  const expenditures = db.collection(COLLECTIONS.EXPENDITURES)
+  const obsoleteIndexes = ['workId_1', 'state_1_house_1_lsTerm_1']
+
+  for (const indexName of obsoleteIndexes) {
+    try {
+      await expenditures.dropIndex(indexName)
+      console.log(`🧹 Removed expenditures.${indexName} to reclaim sync storage`)
+    } catch (indexError) {
+      if (!['IndexNotFound', 'NamespaceNotFound'].includes(indexError.codeName)) {
+        throw indexError
+      }
+    }
+  }
+}
+
 /**
  * Validation function to check if a record is valid (same as existing CSV uploader)
  */
@@ -175,19 +191,6 @@ async function uploadAllocations(db, transformedData) {
 async function uploadExpenditures(db, transformedData) {
   const collection = db.collection(COLLECTIONS.EXPENDITURES)
   const mpsCollection = db.collection(COLLECTIONS.MPs)
-  // workId is already the leading field of the compound index created below.
-  // Drop the older single-field duplicate before uploading so an over-quota
-  // free-tier cluster can reclaim that space before the bulk insert.
-  try {
-    await collection.dropIndex('workId_1')
-  } catch (indexError) {
-    if (indexError.codeName !== 'IndexNotFound') {
-      console.warn(
-        'Warning: Could not remove redundant expenditures.workId index:',
-        indexError.message
-      )
-    }
-  }
   // Build a quick lookup map for MP identity -> _id
   const mpDocs = await mpsCollection
     .find({}, { projection: { name: 1, house: 1, constituency: 1 } })
@@ -241,7 +244,6 @@ async function uploadExpenditures(db, transformedData) {
   // Create indexes
   await collection.createIndex({ mpName: 1, house: 1, lsTerm: 1 })
   await collection.createIndex({ workId: 1, house: 1, lsTerm: 1 })
-  await collection.createIndex({ state: 1, house: 1, lsTerm: 1 })
 }
 
 /**
@@ -1210,6 +1212,10 @@ async function syncMPLADSDataFromAPI(options = {}) {
     )
 
     const db = client.db(DATABASE_NAME)
+
+    // Atlas free-tier storage includes indexes. Reclaim obsolete index space
+    // before any replacement writes so an already-full cluster can recover.
+    await reclaimSyncStorage(db)
 
     // Initialize API client with manual cookies if available
     console.log(

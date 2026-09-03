@@ -47,7 +47,6 @@ const expenditureSchema = new mongoose.Schema(
   { timestamps: true }
 )
 expenditureSchema.index({ mpName: 1, house: 1, lsTerm: 1 })
-expenditureSchema.index({ state: 1, house: 1, lsTerm: 1 })
 
 // Works Completed Schema
 const worksCompletedSchema = new mongoose.Schema(
